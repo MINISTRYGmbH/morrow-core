@@ -21,6 +21,7 @@
 
 
 namespace Morrow;
+
 use Morrow\Debug;
 use Morrow\Factory;
 
