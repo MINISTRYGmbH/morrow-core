@@ -46,8 +46,10 @@ namespace Morrow;
  * }, 'This field must be an integer with the value "%s"');
  * 
  * // optional: we want a different error message for the "minlength" validator
+ * // for the password field we want a custom required message 
  * $this->validator->setMessages(array(
- * 	'minlength'			=> 'This field should have at least %s characters.',
+ * 	'minlength'				=> 'This field should have at least %s characters.',
+ * 	'password.required'		=> 'You have to enter a password.',
  * ));
  * 
  * // optional: we want always the same validator rules for a username
@@ -58,7 +60,7 @@ namespace Morrow;
  * 
  * // now let us validate the input data
  * $rules =  array(
- * 	'username'			=> array('reauired', 'composition' => 'username'),
+ * 	'username'			=> array('required', 'composition' => 'username'),
  * 	'email'				=> array('email'),
  * 	'password'			=> array('required', 'minlength' => 8),
  * 	'repeat_password'	=> array('required', 'same' => 'password'),
@@ -270,7 +272,9 @@ class Validator extends Core\Base {
 					// this error should be appended to a different field
 					if ($invalidates !== null) $identifier = $invalidates;
 					
-					$errors[$identifier][$name]			= vsprintf($this->_messages[$name], (string)$params);
+					// set the error message (take care of field specific messages)
+					$message = isset($this->_messages[$identifier .'.'. $name]) ? $this->_messages[$identifier .'.'. $name] : $this->_messages[$name];
+					$errors[$identifier][$name]			= vsprintf($message, (string)$params);
 
 					// one false result is enough to set a field as not valid
 					$is_valid = false;
@@ -311,7 +315,7 @@ class Validator extends Core\Base {
 
 	/**
 	 * Adds user defined error messages.
-	 * @param	array	$messages	An associative array with the error messages. Parameters are passed via `sprintf`, so you can use `%s` and other `sprintf` replacements.
+	 * @param	array	$messages	An associative array with the error messages (with the validators as keys). Parameters are passed via `sprintf`, so you can use `%s` and other `sprintf` replacements. It is also possible to use a key like `salutation.required` (`[fieldname].[validator]`) to get a custom message for a specific form field.
 	 */
 	public function setMessages($messages) {
 		foreach ($messages as $name => $message) {
