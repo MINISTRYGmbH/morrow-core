@@ -220,7 +220,7 @@ class Validator extends Core\Base {
 
 			// extract compositions
 			if (isset($rules_array['composition'])) {
-				$rules_array = array_merge($this->_compositions[$identifier], $rules_array);
+				$rules_array = array_merge($this->_compositions[$rules_array['composition']], $rules_array);
 				unset($rules_array['composition']);
 			}
 
