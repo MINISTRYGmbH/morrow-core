@@ -238,7 +238,7 @@ class Db extends \PDO {
 		$array = $this->_createInsertAndReplaceValues($array);
 		extract($array);
 		
-		$query = "INSERT INTO $table ($keys) VALUES ($values)";
+		$query = "INSERT INTO `$table` ($keys) VALUES ($values)";
 
 		if (count($on_duplicate_key_update) > 0) {
 			$array = $this->_createUpdateValues($on_duplicate_key_update);
@@ -308,7 +308,7 @@ class Db extends \PDO {
 			$values[] = $value;
 		}
 		
-		$query = "UPDATE $table SET $tokens $where";
+		$query = "UPDATE `$table` SET $tokens $where";
 
 		$this->connect();
 		$sth = $this->prepare($query);
@@ -365,7 +365,7 @@ class Db extends \PDO {
 		$array = $this->_createInsertAndReplaceValues($array);
 		extract($array);
 		
-		$query = "REPLACE INTO $table ($keys) VALUES ($values)";
+		$query = "REPLACE INTO `$table` ($keys) VALUES ($values)";
 
 		$this->connect();
 		$sth = $this->prepare($query);
@@ -405,7 +405,7 @@ class Db extends \PDO {
 			$values[] = $value;
 		}
 		
-		$query = "DELETE FROM $table $where";
+		$query = "DELETE FROM `$table` $where";
 
 		$this->connect();
 		$sth = $this->prepare($query);
@@ -516,9 +516,9 @@ class Db extends \PDO {
 		if (!isset($this->cache[$table])) {
 			$this->connect();
 			
-			$query = 'SHOW COLUMNS FROM '.$table;
+			$query = "SHOW COLUMNS FROM `$table`";
 			if ($this->config['driver'] == 'sqlite') {
-				$query = 'PRAGMA table_info('.$table.');';
+				$query = 'PRAGMA table_info(`'.$table.'`);';
 			}
 			$sth = $this->prepare($query);
 			$sth->execute();
