@@ -1,7 +1,7 @@
 {
     "name": "morrow/core",
     "type": "library",
-    "description": "A PHP framework for efficient web development",
+    "description": "Contains the core files of the Morrow framework that live in the vendor folder.",
     "keywords": ["php","framework"],
     "license": "LGPL-3.0",
     "require": {
