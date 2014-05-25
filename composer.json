@@ -1,5 +1,5 @@
 {
-    "name": "ministrygmbh/morrow-framework",
+    "name": "morrow/core",
     "type": "library",
     "description": "A PHP framework for efficient web development",
     "keywords": ["php","framework"],
