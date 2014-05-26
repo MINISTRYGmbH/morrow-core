@@ -192,7 +192,7 @@ class Factory {
 	
 	/**
 	 * Holds the parameters which are later passed to the Factory.
-	 * @var array $_parameters
+	 * @var array $_proxy_params
 	 */
 	protected $_proxy_params;
 
