@@ -10,12 +10,8 @@
         "phpmailer/phpmailer": "5.2.*"
     },
     "autoload": {
-        "psr-0": {
-            "": "app/libraries/"
-        },
         "psr-4": {
-            "Morrow\\": "src/",
-            "App\\Models\\": "app/models/"
+            "Morrow\\": "src/"
         }
     }
 }
