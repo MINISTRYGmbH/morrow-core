@@ -52,26 +52,29 @@ class Session extends Core\Base {
 	 * Has to be static because it represents the superglobal `$_SESSION`.
 	 * @var array $_data
 	 */
-	protected static $_data = array();
+	protected static $_data;
 
 	/**
 	 * Defines the key we want to use to store the data in `$_SESSION`.
 	 * @var string $section
 	 */
-	protected $section = "main";
+	protected $section;
 
 	/**
 	 * Defines the save path where the sessions are stored
 	 * @var string $save_path
 	 */
-	protected $save_path = "";
+	protected $save_path;
 
 	/**
 	 * Initializes the class. Usually you don't have to initialize this class yourself.
 	 * 
+	 * @param string $section	Defines the key we want to use to store the data in `$_SESSION`.
 	 * @param array $config	Config parameters as an associative array that are passed to session_set_cookie_params(). Use the keys `lifetime`, `path`, `domain`, `secure` and `httponly` that are described in the documentation to session_set_cookie_params().
 	 */
-	public function __construct($config) {
+	public function __construct($section, $config) {
+		$this->section = $section;
+
 		if (ini_get('session.auto_start') == true) {
 			session_destroy();
 		}
@@ -109,13 +112,24 @@ class Session extends Core\Base {
 
 
 		// start session
-		session_start();
+		// cause of the pagesession it is possible that this constructor is called twice
+		// so we should prevent that an exception is thrown here
+		@session_start();
 		
 		// it should not be possible to inject a session
 		$this->_preventSessionFixation();
 		
 		// get session data
-		self::$_data = $_SESSION;
+		if (!isset(self::$_data)) {
+			self::$_data = $_SESSION;
+		}
+
+		// delete keys of flash messages
+		// if (isset($_SESSION[$this->section '._flash_identifiers'])) {
+		// 	foreach ($_SESSION[$this->section '._flash_identifiers'] as $_flash_identifier) {
+		// 		$this->delete($_flash_identifier);
+		// 	}
+		// }
 	}
 
 	/**
@@ -145,7 +159,35 @@ class Session extends Core\Base {
 	 * @return null
 	 */
 	public function set($identifier, $value) {
-		$this->arraySet(self::$_data, $this->section . "." . $identifier, $value);
+		$this->arraySet(self::$_data, $this->section . '.' . $identifier, $value);
+	}
+
+	/**
+	 * Retrieves session data saved with a given identifier that only presists in the session for the next request.
+	 * 
+	 * @param string $identifier	The identifier you have used on setting the data.
+	 * @param mixed $fallback The return value if the identifier was not found.
+	 * @return mixed 	The requested data.
+	 */
+	public function getFlash($identifier = null, $fallback = null) {
+		return $this->arrayGet(self::$_data, '_flash.' . $this->section . ($identifier !== null ? '.' . $identifier : ''), $fallback);
+	}
+
+	/**
+	 * Sets session data with a given identifier that only presists in the session for the next request.
+	 * 
+	 * @param string $identifier	The identifier you want to store the data with.
+	 * @param string $value	The data you want to store.
+	 * @return null
+	 */
+	public function setFlash($identifier, $value) {
+		$this->arraySet(self::$_data, '_flash.' . $this->section . '.' . $identifier, $value);
+
+		$to_delete = $this->arrayGet(self::$_data, '_flash_identifiers', array());
+		$to_delete[] = '_flash.' . $this->section . '.' . $identifier;
+
+		//$delete = $this->get();
+		$this->arraySet(self::$_data, '_flash_identifiers', $to_delete);
 	}
 
 	/**
