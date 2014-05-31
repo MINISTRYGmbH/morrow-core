@@ -30,7 +30,7 @@ namespace Morrow;
 * Dot Syntax
 * ----------
 * 
-* This class works with the extended dot syntax. So if you use keys like `foo.bar` and `foo.bar2` as identifiers in your config, you can call `$this->session->get("foo")` to receive an array with the keys `bar` and `bar2`. 
+* This class works with the extended dot syntax. So if you use keys like `foo.bar` and `foo.bar2` as identifiers in your config, you can call `$this->pagesession->get("foo")` to receive an array with the keys `bar` and `bar2`. 
 * 
 * Examples
 * ---------
@@ -38,8 +38,7 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 *  
-* // counting user visits for each page
-* 
+* // counting user visits for the current page
 * $visits = $this->pagesession->get('visits');
 * if ($visits === null) $visits = 0;
 *  
@@ -48,13 +47,4 @@ namespace Morrow;
 * // ... Controller code
 * ~~~
 */
-class PageSession extends Session {
-	/**
-	 * Initializes the class. Usually you don't have to initialize this class yourself.
-	 * 
-	 * @param string $section Defines the key you want to save the data in the `$_SESSION`.
-	 */
-	public function __construct($section) {
-		$this->section = $section;
-	}
-}
+class PageSession extends Session {}
