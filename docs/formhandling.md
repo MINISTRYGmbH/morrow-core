@@ -75,7 +75,7 @@ No matter what type an element has, the following attributes can always be set:
 
 **i18n**
 
-Some attributes of form elements are language dependent. For example almost all elements have labels. According to the conventions of MorrowTwo, language dependent content is defined in files under ''i18n. Form definitions have their own array $form and the basic structure is the same as that of the $elements array.
+Some attributes of form elements are language dependent. For example almost all elements have labels. According to the conventions of Morrow, language dependent content is defined in files under ''i18n. Form definitions have their own array $form and the basic structure is the same as that of the $elements array.
 
 ~~~{.php}
 $form['testform']['name']['label'] = "Zahl";

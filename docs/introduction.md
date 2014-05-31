@@ -17,9 +17,8 @@ OK, some people simply need a feature list. Now, here is a list which shows what
 
 * Main focus on performance, security and low level requirements
 * i18n and l10n integration
-* Multi-project capable
-* Not only HTML can be outputted. There are additional view handlers for: XML, JSON, CSV, Excel and Flash LoadVars files
+* View handlers for: XML, JSON, JSONP, CSV, Excel and Flash LoadVars files
 * Granular adjustable caching
 * Extensive form validation 
-* PSR-0 and Composer compatible
+* Composer powered
 * Well documented

@@ -1,7 +1,7 @@
 Security
 =============================
 
-MorrowTwo have some measures builtin to improve the protection against attackers.
+Morrow have some measures builtin to improve the protection against attackers.
 But they only work if you use them.
 So this is a little guide to assist you in building safe applications.
 

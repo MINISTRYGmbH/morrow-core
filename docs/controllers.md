@@ -4,9 +4,9 @@ Controllers
 The controller is the central point where you do all your work.
 In the previous article you have seen how the alias is created and how the controller path is derived from it.
 
-All controllers are located in the folder `App/`. So Morrow will now use the controller file:
+All controllers are located in the folder `app/` and have the following name:
 
-`App/products_hard-stuff_funky-stuff_cool-funky-product.class.php`
+`app/[alias].php`
 
 The controller inheritance
 ---------------------------
@@ -15,9 +15,9 @@ The principle is very simple. A page specific controller (PageController) extend
 
 ### The DefaultController
 
-This default controller is loaded if your PageController extends the DefaultController, and is under full control of the user. The file has to be called `App/_default.php` and there has to be a method `setup()` which is automatically called. So your origin DefaultController looks like that:
+This default controller is loaded if your PageController extends the DefaultController, and is under full control of the user. The file has to be called `app/_default.php` and there has to be a method `setup()` which is automatically called. So your origin DefaultController looks like that:
 
-**App/_default.php**
+**app/_default.php**
 
 ~~~{.php}
 <?php
@@ -38,7 +38,7 @@ class DefaultController extends Factory {
 
 At least your URL specific controller gets loaded. It extends the DefaultController and has to contain a method `run()` which is automatically called. It looks like this:
 
-**App/products_hard-stuff_funky-stuff_cool-funky-product.php**
+**app/products_hard-stuff_funky-stuff_cool-funky-product.php**
 
 ~~~{.php}
 <?php
@@ -97,7 +97,7 @@ use Morrow\Debug;
 class PageController extends DefaultController {
 	public function run() {
 		// load the benchmark class under a different instance name
-		$this->prepare('benchmark:bm');
+		$this->prepare('Benchmark:bm');
 	   
 		// auto initialize and use the benchmark class
 		$this->bm->start('Section 1');

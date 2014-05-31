@@ -97,8 +97,7 @@ class Security {
 			}
 		}
 
-		$this->view->setHeader('X-Content-Security-Policy', $csp); // Used by Firefox and Internet Explorer,
-		$this->view->setHeader('Content-Security-Policy', $csp); // Defined by W3C Specs as standard header, used by Chrome starting with version 25
+		$this->view->setHeader('Content-Security-Policy', $csp);
 	}
 	
 	/**

@@ -6,7 +6,7 @@ Debugging is of course one of the most interesting topics while developing. Morr
 Dumping variables
 -----------------
 
-The most interesting tool is Morrow's system wide replacement for print_r() and var_dump(). It returns a nice layout with a lot more of information than other tools. For example where you did the call. Never forget anymore where you have placed your debugging call. Just try out.
+The most interesting tool is Morrow's system wide replacement for print_r() and var_dump(). It returns a nice layout with a lot more of information than other tools. For example where you did the call. Never forget anymore where you have placed your debugging calls. Just try out.
 
 ~~~{.php}
 <?php
@@ -33,13 +33,13 @@ Otherwise you would have to call
 Errors & Exceptions
 -------------------
 
-Morrow's preferred way is to work with exceptions. For that reason errors throw an exception, so you can catch them as you would do with normal exceptions. Furthermore we integrated a state-of-the-art-top-level-exception-handler&trade;.
+Morrow's preferred way is to work with exceptions. For that reason errors throw exceptions, so you can catch them as you would do with normal exceptions. Furthermore we integrated a state-of-the-art-top-level-exception-handler&trade;.
 
 ~~~{.php}
 // ... controller code
  
 try {
-    echo $undefined; // yes, the variable undefined was not defined before
+    echo $undefined; // yes, the variable $undefined was not defined before
 } catch (Exception $e) {
     die($e->getMessage());
 }
@@ -75,11 +75,11 @@ If you work in a local development environment (like `localhost` or `192.168.1.1
 ...
 ~~~
 
-Time Handling
+Date & Time Handling
 --------------
 
 Sometimes it is useful to check several time phases of a project, e.g. for a raffle.
-It is helpful to instantiate a DateTime object in the DefaultController so you can imitate every date in your project.
+It is helpful to instantiate a native DateTime object in the DefaultController so you can simulate every date in your project.
 
 ~~~{.php}
 <?php
