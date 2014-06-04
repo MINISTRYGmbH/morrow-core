@@ -217,7 +217,7 @@ class Validator extends Core\Base {
 	 * @return 	mixed	Returns an array with all valid fields or `false` if `$strict` was set and at least one field was not valid.
 	 */
 	public function filter(array $input, array $rules, &$errors = array(), $strict = false) {
-		$output		= array();
+		$output			= array();
 		$errors			= array();
 		$return_null	= false;
 
