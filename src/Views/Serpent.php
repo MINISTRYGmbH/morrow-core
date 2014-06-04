@@ -253,7 +253,7 @@ class Serpent extends AbstractView {
 				$path = Factory::load('Image')->get($params['fallback'], $params);
 				$path = str_replace(PUBLIC_PATH, '', $path);
 			} else {
-				throw new \Exception (__CLASS__ . ': image "'.$filepath.'" does not exist.');
+				throw new \Exception (__CLASS__ . ': ' . $e);
 			}
 		}
 		return $path;

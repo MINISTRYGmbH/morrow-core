@@ -1,34 +1,42 @@
 Installation
 ============
 
-Requirements
--------------
+The requirements for the Morrow PHP Framework are just an Apache Webserver with the mod_rewrite extension enabled and PHP >= 5.3.8.
+You must also have [Composer](http://getcomposer.org/) installed.
+If you don't have experience in using Composer, take a look at [Composer - Getting started](http://getcomposer.org/doc/00-intro.md).
 
-* Apache Webserver (mod_rewrite required)
-* PHP >= 5.3.*
+Now the installation is as simple as this:
+~~~
+composer create-project morrow/framework [YOUR_PATH]
+~~~
+This gives you a clean and empty project to build your next website.
 
-Extract
--------
+The documentation you read at the moment is also a web project build with the Morrow framework.
+To install it on your own webserver you have to do this (but this is of course optional):
+~~~
+composer create-project morrow/docs [YOUR_PATH]
+~~~
 
-Extract the downloaded package to a folder of your choice below the document root of your webserver. You should have the following file structure:
+Folder structure
+----------------
 
-* `main/` Project folder
-	* `app/` The App folder you are mostly working in
-		* `configs/` Configuration files of the framework
-		* `languages/` Configuration and translations for the used languages
-		* `models/` Your models for the project
-		* `storage/` Temporary files for the project (also log files and error logs)
-		* `templates/` Templates for (X)HTML output
-	* `public/` All data that is accessible by HTTP
-	* `vendor/` Composer handled libraries
+Now you should have the following folder structure:
+
+* `app/` The App folder you are mostly working in
+	* `configs/` Configuration files of the framework
+	* `languages/` Configuration and translations for the used languages
+	* `libraries/` Your own (helper) classes, PSR-0 compatible
+	* `models/` Your models for the project
+	* `storage/` Temporary files for the project (also log files and error logs)
+	* `templates/` Templates for (X)HTML output
+* `public/` All data that is accessible by HTTP
+* `vendor/` Composer handled libraries
 
 
 Permissions
 ---------------
 
-The following folders have to be readable & writable by the web server user:
+The following folder has to be writable by the web server user:
  
- * `main/app/storage/`
-
-If you have more than one MorrowTwo project (beside `main/`) you have to repeat this step for each of them.
+ * `app/storage/`
 

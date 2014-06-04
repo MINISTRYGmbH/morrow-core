@@ -45,6 +45,32 @@ namespace Morrow;
 * 
 * // ... Controller code
 * ~~~
+* 
+* Often in web applications, you will need to display a one-time notification message to the user after processing a form or acknowledging data.
+* In Morrow, these are referred to as "flash messages" and they will be deleted in the moment you retrieve them by `getFlash()`.
+* 
+* ~~~{.php}
+* // ... Controller code
+*  
+* // if a username was passed we redirect the user to the welcome page ...
+* $username = $this->input->get('username');
+* if ($username !== null) {
+* 	$this->session->setFlash('welcome', $username);
+* 	$this->url->redirect('welcome-page');
+* }
+* 
+* // ... Controller code
+* ~~~
+* 
+* **welcome-page**
+* ~~~{.php}
+* // ... Controller code
+*  
+* // and show a nice welcome message.
+* $this->view->setContent('welcome', 'Hello ' . $this->session->getFlash('username'));
+* 
+* // ... Controller code
+* ~~~
 */
 class Session extends Core\Base {
 	/**
@@ -124,12 +150,10 @@ class Session extends Core\Base {
 			self::$_data = $_SESSION;
 		}
 
-		// delete keys of flash messages
-		// if (isset($_SESSION[$this->section '._flash_identifiers'])) {
-		// 	foreach ($_SESSION[$this->section '._flash_identifiers'] as $_flash_identifier) {
-		// 		$this->delete($_flash_identifier);
-		// 	}
-		// }
+		// all data of this class will be maintained below this key
+		if (!isset(self::$_data['_session_class'])) {
+			self::$_data['_session_class'] = array();
+		}
 	}
 
 	/**
@@ -148,7 +172,7 @@ class Session extends Core\Base {
 	 * @return mixed 	The requested data.
 	 */
 	public function get($identifier = null, $fallback = null) {
-		return $this->arrayGet(self::$_data, $this->section . ($identifier !== null ? '.' . $identifier : ''), $fallback);
+		return $this->arrayGet(self::$_data, '_session_class._standard.' . $this->section . ($identifier !== null ? '.' . $identifier : ''), $fallback);
 	}
 
 	/**
@@ -159,35 +183,33 @@ class Session extends Core\Base {
 	 * @return null
 	 */
 	public function set($identifier, $value) {
-		$this->arraySet(self::$_data, $this->section . '.' . $identifier, $value);
+		$this->arraySet(self::$_data, '_session_class._standard.' . $this->section . '.' . $identifier, $value);
 	}
 
 	/**
-	 * Retrieves session data saved with a given identifier that only presists in the session for the next request.
+	 * Retrieves session data saved with a given identifier and removes the data from the session.
 	 * 
 	 * @param string $identifier	The identifier you have used on setting the data.
 	 * @param mixed $fallback The return value if the identifier was not found.
 	 * @return mixed 	The requested data.
 	 */
 	public function getFlash($identifier = null, $fallback = null) {
-		return $this->arrayGet(self::$_data, '_flash.' . $this->section . ($identifier !== null ? '.' . $identifier : ''), $fallback);
+		$value = $this->arrayGet(self::$_data, '_session_class._flash.' . $this->section . ($identifier !== null ? '.' . $identifier : ''), $fallback);
+		if ($value !== null) {
+			$this->arrayDelete(self::$_data, '_session_class._flash.' . $this->section . ($identifier !== null ? '.' . $identifier : ''));
+		}
+		return $value;
 	}
 
 	/**
-	 * Sets session data with a given identifier that only presists in the session for the next request.
+	 * Sets session data with a given identifier that only presists in the session till the next getFlash().
 	 * 
 	 * @param string $identifier	The identifier you want to store the data with.
 	 * @param string $value	The data you want to store.
 	 * @return null
 	 */
 	public function setFlash($identifier, $value) {
-		$this->arraySet(self::$_data, '_flash.' . $this->section . '.' . $identifier, $value);
-
-		$to_delete = $this->arrayGet(self::$_data, '_flash_identifiers', array());
-		$to_delete[] = '_flash.' . $this->section . '.' . $identifier;
-
-		//$delete = $this->get();
-		$this->arraySet(self::$_data, '_flash_identifiers', $to_delete);
+		$this->arraySet(self::$_data, '_session_class._flash.' . $this->section . '.' . $identifier, $value);
 	}
 
 	/**
@@ -198,7 +220,7 @@ class Session extends Core\Base {
 	 */
 	public function delete($identifier = null) {
 		if ($this->get($identifier) === null) return;
-		$this->arrayDelete(self::$_data, $this->section . ($identifier !== null ? '.' . $identifier : ''));
+		$this->arrayDelete(self::$_data, '_session_class._standard.' . $this->section . ($identifier !== null ? '.' . $identifier : ''));
 	}
 	
 	/**
@@ -210,10 +232,10 @@ class Session extends Core\Base {
 	 */
 	protected function _preventSessionFixation() {
 		if (!isset($_SERVER['HTTP_USER_AGENT'])) return;
-		if (!isset($_SESSION['SERVER_GENERATED_SID']) or $_SESSION['SERVER_GENERATED_SID'] != md5($_SERVER['HTTP_USER_AGENT'])) {
+		if (!isset($_SESSION['_session_class']['_server_generated_sid']) or $_SESSION['_session_class']['_server_generated_sid'] != md5($_SERVER['HTTP_USER_AGENT'])) {
 			session_regenerate_id();
 			session_unset();
-			$_SESSION['SERVER_GENERATED_SID'] = md5($_SERVER['HTTP_USER_AGENT']);
+			$_SESSION['_session_class']['_server_generated_sid'] = md5($_SERVER['HTTP_USER_AGENT']);
 		}
 	}
 

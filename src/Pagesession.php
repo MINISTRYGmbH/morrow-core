@@ -38,8 +38,7 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 *  
-* // counting user visits for each page
-* 
+* // counting user visits for the current page
 * $visits = $this->pagesession->get('visits');
 * if ($visits === null) $visits = 0;
 *  

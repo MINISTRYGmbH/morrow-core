@@ -4,13 +4,13 @@ Environment information
 There are some constants provided from the framework that could be useful for you:
 
 
-Constant               | Description
-------------------     | ------------
-`PUBLIC_PATH`          | The absolute path to the public folder (`.../main/public/`).
-`PUBLIC_STORAGE_PATH`  | The absolute path to the public storage folder (`.../main/public/`). Use this for temporary files that should be public accessible, e.g. thumbnails of images.
-`APP_PATH`             | The absolute path to the App folder (`.../main/app/`).
-`STORAGE_PATH`         | The absolute path to the storage folder (`.../main/app/storage/`). Use this for temporary files that should NOT be public accessible, e.g. internal caches.
-`VENDOR_PATH`          | The absolute path to the vendor folder (`.../main/vendor/`).
+Constant               | Path                    | Description
+------------------     | ------------            |
+`PUBLIC_PATH`          | `.../public/`           | The absolute path to the public folder.
+`PUBLIC_STORAGE_PATH`  | `.../public/storage/`   | The absolute path to the public storage folder. Use this for temporary files that should be public accessible, e.g. thumbnails of images.
+`APP_PATH`             | `.../main/app/`         | The absolute path to the App folder.
+`STORAGE_PATH`         | `.../main/app/storage/` | The absolute path to the storage folder. Use this for temporary files that should NOT be public accessible, e.g. internal caches.
+`VENDOR_PATH`          | `.../main/vendor/`      | The absolute path to the vendor folder.
 
 As in these constants all classes expect folder paths to have a trailing slash.
 
@@ -23,7 +23,6 @@ Its output is automatically passed to the view handler.
 Here is the content of the current page:
 
 ~~~
-
 Array
 (
     ['nodes'] => Array (2)
@@ -31,14 +30,14 @@ Array
         ['0'] = String(4) "page"
         ['1'] = String(11) "environment"
     )
-    ['base_href'] = String(31) "http://ce/morrowtwo/trunk/docs/"
-    ['alias'] = String(4) "page"
+    ['base_href'] = String(31) "http://example.com/docs/"
+    ['alias'] = String(4) "page_environment"
     ['path'] => Array (4)
     (
         ['relative'] = String(16) "page/environment"
         ['relative_with_query'] = String(16) "page/environment"
-        ['absolute'] = String(47) "http://ce/morrowtwo/trunk/docs/page/environment"
-        ['absolute_with_query'] = String(47) "http://ce/morrowtwo/trunk/docs/page/environment"
+        ['absolute'] = String(47) "http://example.com/morrow/trunk/docs/page/environment"
+        ['absolute_with_query'] = String(47) "http://example.com/morrow/trunk/docs/page/environment"
     )
 )
 ~~~
@@ -59,3 +58,5 @@ class PageController extends DefaultController {
 }
 ?>
 ~~~
+
+In the templates it is always accessible by `$page`.

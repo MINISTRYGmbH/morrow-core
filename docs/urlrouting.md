@@ -7,7 +7,7 @@ This is very useful if you want to build speaking or just clean URLs.
 Configuration
 --------------
 
-**App/_default.php**
+**app/_default.php**
 ~~~{.php}
 ...
 // routing rules
@@ -34,6 +34,7 @@ Example
 
 Imagine you want to have URL paths like `products/category/this-is-the-product-2067` rather than `products/?id=2067`
 
+**app/_app_default.php**
 ~~~{.php}
 ...
 // routing rules
@@ -44,10 +45,11 @@ Imagine you want to have URL paths like `products/category/this-is-the-product-2
 ...
 ~~~
 
-In this example the controller `App/products.php` will be used and you have access to the category and the product via `$this->input->get('routed.category')` and `$this->input->get('routed.product_id')`.
+In this example the controller `app/products.php` will be used and you have access to the category and the product via `$this->input->get('routed.category')` and `$this->input->get('routed.product_id')`.
 
 In the first example we have used named groups (a feature of regular expressions) to name the parameters. You could also have used
 
+**app/_app_default.php**
 ~~~{.php}
 ...
 // routing rules

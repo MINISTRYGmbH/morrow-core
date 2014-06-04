@@ -8,7 +8,7 @@ Here an example:
 
 **URL:** `http://example.com/products/hard-stuff/funky-stuff/cool-funky-product`
 
-MorrowTwo takes the given URL and creates an internal identifier (`alias`).
+Morrow takes the given URL and creates an internal identifier (`alias`).
 It is the same as the URL path but with underscores instead of slashes. So the URL above will get the following alias:
 
 **Alias:** `products_hard-stuff_funky-stuff_cool-funky-product`
@@ -24,14 +24,13 @@ and to use the template (if you have set Serpent as your default view handler)
 
 ### URL nodes are case insensitive
 
-To create the MorrowTwo alias they get lowered.
 `products/cool-funky-product/` loads the same controller as `Products/Cool-Funky-Product`.
 So you have to take care of using the same notation website wide because search engines respect different notations and could find duplicate content.
 
 
-### Write your URLs without the trailing slash
+### Write your page requests without a trailing slash
 
-The Morrow skeleton is able to handle multiple projects. So you can have a project `docs` and a page `docs` in your main project.
+At [Multiple sites](page/multiplesites) you will get an .htaccess file solution to handly multiple sites simply. You can e.g. have a project `docs` and a page `docs` in your main project.
 To differentiate them the trailing slash is used.
 
 The URL `http://example.com/docs/` would request the project `docs` whereas `http://example.com/docs` would request the page `docs` in the main project.
@@ -44,7 +43,7 @@ For advanced users
 If you are writing an application rather than creating a presentational website, it can make more sense to use the Controller-Action URL layout.
 Just use URL Routing and call the action in your default controller by hand.
 
-**_App/configs/\_default\_app.php**
+**app/configs/\_default\_app.php**
 ~~~{.php}
 	'routing' = array(
 		'(?P<controller>[^/]+)/(?P<action>[^/]+)(?P<params>/.*)?'	=> '$1'
@@ -52,7 +51,7 @@ Just use URL Routing and call the action in your default controller by hand.
 );
 ~~~
 
-**App/\_default.php**
+**app/\_default.php**
 ~~~{.php}
 // init "application url design"
 $controller = $this->input->get('routed.controller');
