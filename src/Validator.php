@@ -46,12 +46,20 @@ namespace Morrow;
  * }, 'This field must be an integer with the value "%s"');
  * 
  * // optional: we want a different error message for the "minlength" validator
- * // for the password field we want a custom required message 
+ * // for the password field we want a custom required message
  * $this->validator->setMessages(array(
  * 	'minlength'				=> 'This field should have at least %s characters.',
  * 	'password.required'		=> 'You have to enter a password.',
  * ));
- * 
+ *
+ * // it is also possible to create custom error messages for specific compositions:
+ * // for our composition 'animals', we want to display a custom message for the validator 'required'
+ * // and for the specific field 'insects', we want to set up a further customized message
+ * $this->validator->setMessages(array(
+ *	'composition.animals.required' 			=> 'Enter an animal.',
+ *	'composition.animals.insects.required' 	=> 'Enter an insect.',
+ * ));
+  * 
  * // optional: we want always the same validator rules for a username
  * // so do this in the DefaultController
  * $this->validator->addComposition('username', array(
@@ -209,17 +217,19 @@ class Validator extends Core\Base {
 	 * @return 	mixed	Returns an array with all valid fields or `false` if `$strict` was set and at least one field was not valid.
 	 */
 	public function filter(array $input, array $rules, &$errors = array(), $strict = false) {
-		$output		= array();
+		$output			= array();
 		$errors			= array();
 		$return_null	= false;
 
 		// iterate all fields
-		foreach ($rules as $identifier => $rules_array) {
+		foreach ($rules as $field_name => $rules_array) {
 			// get value from input array
-			$value = $this->arrayGet($input, $identifier);
+			$value = $this->arrayGet($input, $field_name);
 
-			// extract compositions
+			// extract and save compositions
+			$composition_name = null;
 			if (isset($rules_array['composition'])) {
+				$composition_name = $rules_array['composition'];
 				$rules_array = array_merge($this->_compositions[$rules_array['composition']], $rules_array);
 				unset($rules_array['composition']);
 			}
@@ -243,7 +253,7 @@ class Validator extends Core\Base {
 
 			// if we get an empty file upload array or an empty field we need not to check the validators if the field is also not required
 			if (!array_key_exists('required', $rules_array) && ($value == '' || is_array($value) && isset($value['error']) && $value['error'] == 4)) {
-				$this->arraySet($output, $identifier, $value);
+				$this->arraySet($output, $field_name, $value);
 				continue;
 			}
 
@@ -270,11 +280,22 @@ class Validator extends Core\Base {
 					if (!is_scalar($params)) $params	= json_encode($params);
 
 					// this error should be appended to a different field
-					if ($invalidates !== null) $identifier = $invalidates;
+					if ($invalidates !== null) $field_name = $invalidates;
 					
 					// set the error message (take care of field specific messages)
-					$message = isset($this->_messages[$identifier .'.'. $name]) ? $this->_messages[$identifier .'.'. $name] : $this->_messages[$name];
-					$errors[$identifier][$name]			= vsprintf($message, (string)$params);
+					$message = isset($this->_messages[$field_name.'.'.$name]) ? $this->_messages[$field_name.'.'.$name] : $this->_messages[$name];
+
+					// if composition was given, check for further specific messages
+					if (isset($composition_name)) {
+						if (isset($this->_messages['composition.'.$composition_name.'.'.$name])) {
+							$message = $this->_messages['composition.'.$composition_name.'.'.$name];
+						}
+						if (isset($this->_messages['composition.'.$composition_name.'.'.$field_name.'.'.$name])) {
+							$message = $this->_messages['composition.'.$composition_name.'.'.$field_name.'.'.$name];
+						}
+					}
+
+					$errors[$field_name][$name] = vsprintf($message, (string)$params);
 
 					// one false result is enough to set a field as not valid
 					$is_valid = false;
@@ -286,7 +307,7 @@ class Validator extends Core\Base {
 			}
 
 			// we don't have to add the field to the output if we already know that we will return null
-			if ($is_valid && !$return_null) $this->arraySet($output, $identifier, $value);
+			if ($is_valid && !$return_null) $this->arraySet($output, $field_name, $value);
 		}
 
 		if ($return_null) return null;
