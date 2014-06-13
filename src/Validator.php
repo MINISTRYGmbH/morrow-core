@@ -242,14 +242,15 @@ class Validator extends Core\Base {
 			}
 
 			// rewrite rules to normal form (validator => value)
+			$rules_array_temp = array();
 			foreach ($rules_array as $unknown_key => $unknown_value) {
 				if (is_numeric($unknown_key)) {
-					unset($rules_array[$unknown_key]);
-					$rules_array[$unknown_value] = null;
+					$rules_array_temp[$unknown_value] = null;
 				} else {
-					$rules_array[$unknown_key] = array($unknown_value);
+					$rules_array_temp[$unknown_key] = array($unknown_value);
 				}
 			}
+			$rules_array = $rules_array_temp;
 
 			// if we get an empty file upload array or an empty field we need not to check the validators if the field is also not required
 			if (!array_key_exists('required', $rules_array) && ($value == '' || is_array($value) && isset($value['error']) && $value['error'] == 4)) {
