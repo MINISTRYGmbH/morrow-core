@@ -8,7 +8,7 @@ Format
 
 You just have to follow this format in your shell:
 
-~~~{.cli}
+~~~{.bash}
 [php] [index.php] [alias] [parameters]
 ~~~
 
@@ -26,7 +26,7 @@ Example
 -------
 
 If your current working directory is `.../App/public/`, an example call to the homepage could be:
-~~~{.cli}
+~~~{.bash}
 php index.php home foo=bar&foo2=bar2
 ~~~
 
