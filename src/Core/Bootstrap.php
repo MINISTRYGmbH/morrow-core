@@ -227,7 +227,7 @@ class Bootstrap {
 		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
 
 		$frontcontroller = new FrontController;
-		$data = $frontcontroller->execute('\\app\\', ucfirst($alias), true);
+		$data = $frontcontroller->run('\\app\\', ucfirst($alias), true);
 
 		$headers	= $data['headers'];
 		$handle		= $data['content'];

@@ -21,7 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 
-namespace Morrow\Core;
+namespace Morrow;
 
 use Morrow\Factory;
 use Morrow\Debug;
@@ -30,25 +30,43 @@ use Morrow\Debug;
  * The main class which defines the cycle of a request.
  */
 class Features {
-	public function execute($namespace, $classname, $master = false) {
+	protected $_data;
+	protected $_classname;
 
+	public function __construct($features_path, $classname) {
+		$this->_data		= include($features_path);
+		$this->_classname	= $classname;
+	}
 
-		/* load features
-		********************************************************************************************/
-		$features = include($root_path_absolute . 'features/features.php');
+	public function delete($feature_name) {
+		foreach ($this->_data as $controller_regex => $page_features) {
+			if (!preg_match('~^'.$controller_regex.'$~', $this->_classname)) continue;
 
+			foreach ($page_features as $ii => $section_features) {
+				foreach ($section_features as $iii => $actions) {
+					if (strpos(current($actions), $feature_name . '\\') === 0) {
+						unset($this->_data[$controller_regex][$ii][$iii]);
+					} 
+				}
+			}
+		}
+	}
+
+	public function run($view_data) {
 		// create DOM object
 		libxml_use_internal_errors(true);
-		$data		= $view->get();
-		$content	= stream_get_contents($data['content']);
+		$content	= stream_get_contents($view_data['content']);
 		$doc		= new \DOMDocument();
+		// workaround to force DOMDocument to work with UTF-8
 		$doc->loadHtml('<?xml encoding="UTF-8">' . $content);
 		libxml_use_internal_errors(false);
 		
 		$xpath = new \DOMXPath($doc);
 
-		foreach ($features as $controller_regex => $page_features) {
-			if (!preg_match('~^'.$controller_regex.'$~', $classname)) continue;
+		// we have to use $page_references as a reference here so it shows changes on this->_data if we have modified it with delete()
+		// http://nikic.github.io/2011/11/11/PHP-Internals-When-does-foreach-copy.html
+		foreach ($this->_data as $controller_regex => &$page_features) {
+			if (!preg_match('~^'.$controller_regex.'$~', $this->_classname)) continue;
 
 			foreach ($page_features as $xpath_query => $section_features) {
 				$nodelist = $xpath->query($xpath_query);
@@ -59,8 +77,8 @@ class Features {
 							$namespace = preg_replace('~[^\\\\]+$~', '', $class);
 							$classname = preg_replace('~.+\\\\~', '', $class);
 
-							$frontcontroller = new Frontcontroller;
-							$data = $frontcontroller->execute($namespace, $classname);
+							$frontcontroller = new Core\Frontcontroller;
+							$data = $frontcontroller->run('\\app\\features\\' . $namespace, $classname, false);
 
 							$fragment = $doc->createDocumentFragment();
 							$fragment->appendXML(stream_get_contents($data['content']));
@@ -69,6 +87,10 @@ class Features {
 								$node->insertBefore($fragment, $node->firstChild);
 							} elseif ($action === 'append') {
 								$node->appendChild($fragment);
+							} elseif ($action === 'before') {
+								$node->parentNode->insertBefore($fragment, $node);
+							} elseif ($action === 'after') {
+								$node->parentNode->appendChild($fragment);
 							}
 						}
 					}

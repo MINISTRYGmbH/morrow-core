@@ -30,7 +30,7 @@ use Morrow\Debug;
  * The main class which defines the cycle of a request.
  */
 class Frontcontroller {
-	public function execute($namespace, $classname, $master) {
+	public function run($namespace, $classname, $master) {
 
 		$root_path			= trim(str_replace('\\', '/', $namespace), '/') . '/';
 		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
@@ -58,63 +58,15 @@ class Frontcontroller {
 		$controller->run();
 
 		$view_data = $view->get();
-		if (!is_file($root_path_absolute . 'Features/features.php')) return $view_data;
+		
+		$features_path = $root_path_absolute . 'Features/features.php';
+		if (!is_file($features_path)) return $view_data;
 
 		/* load features
 		********************************************************************************************/
-		$features = include($root_path_absolute . 'Features/features.php');
-
-		// create DOM object
-		libxml_use_internal_errors(true);
-		$data		= $view->get();
-		$content	= stream_get_contents($data['content']);
-		$doc		= new \DOMDocument();
-		$doc->loadHtml('<?xml encoding="UTF-8">' . $content);
-		libxml_use_internal_errors(false);
-		
-		$xpath = new \DOMXPath($doc);
-
-		foreach ($features as $controller_regex => $page_features) {
-			if (!preg_match('~^'.$controller_regex.'$~', $classname)) continue;
-
-			foreach ($page_features as $xpath_query => $section_features) {
-				$nodelist = $xpath->query($xpath_query);
-
-				foreach ($nodelist as $node) {
-					foreach ($section_features as $actions) {
-						foreach ($actions as $action => $class) {
-							$namespace = preg_replace('~[^\\\\]+$~', '', $class);
-							$classname = preg_replace('~.+\\\\~', '', $class);
-
-							$frontcontroller = new Frontcontroller;
-							$data = $frontcontroller->execute($namespace, $classname, false);
-
-							$fragment = $doc->createDocumentFragment();
-							$fragment->appendXML(stream_get_contents($data['content']));
-							
-							if ($action === 'prepend') {
-								$node->insertBefore($fragment, $node->firstChild);
-							} elseif ($action === 'append') {
-								$node->appendChild($fragment);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// remove XML prolog
-		foreach ($doc->childNodes as $item) {
-			if ($item->nodeType == XML_PI_NODE) {
-				$doc->removeChild($item);
-				break;
-			}
-		}
-
-		$handle = fopen('php://memory', 'r+');
-		$view_data['content'] = $handle;
-		fwrite($view_data['content'], $doc->saveHtml());
-
+		$alias		= Factory::load('Page')->get('alias');
+		$feature	= Factory::load('Features', $features_path, ucfirst($alias));
+		$view_data	= $feature->run($view_data);
 		return $view_data;
 	}
 }
