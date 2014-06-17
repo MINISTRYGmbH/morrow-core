@@ -24,52 +24,96 @@
 namespace Morrow\Core;
 
 use Morrow\Factory;
+use Morrow\Debug;
 
 /**
  * The main class which defines the cycle of a request.
  */
 class Frontcontroller {
-	/**
-	 * This function contains the main application flow.
-	 * @hidden
-	 */
-	public function __construct($alias, $root_path, $from_bootstrap = true) {
-		/* load all config files
-		********************************************************************************************/
-		$this->config	= Factory::load('Config');
-		$config = $this->config->load($root_path . 'configs/');
+	public function execute($namespace, $classname, $master = false) {
 
-		/* prepare some internal variables
-		********************************************************************************************/
-		$controller_file		= $root_path .'_default.php';
-		$page_controller_file	= $root_path . $alias .'.php';
-		
-		/* load classes we need anyway
-		********************************************************************************************/
-		if ($from_bootstrap) {
- 			$this->view	= Factory::load('View');
- 		} else {
- 			$this->view	= Factory::load('View:view_' . md5($root_path));
- 		}
-		
-		/* load controller and render page
-		********************************************************************************************/
-		// include global controller class
-		include($controller_file);
+		$root_path			= trim(str_replace('\\', '/', $namespace), '/') . '/';
+		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
 
-		// include page controller class
-		if (is_file($page_controller_file)) {
-			include($page_controller_file);
-			$controller = new \App\PageController();
-			if (method_exists($controller, 'setup')) $controller->setup();
-			$controller->run();
-			if (method_exists($controller, 'teardown')) $controller->teardown();
-		} else {
-			$controller = new \App\DefaultController();
-			if (method_exists($controller, 'setup')) $controller->setup();
-			if (method_exists($controller, 'teardown')) $controller->teardown();
+		/* load config
+		********************************************************************************************/
+		// add config of features to master config
+		if (!$master) {
+			$config_path	= strtolower(str_replace('/', '.', trim($root_path, '/')));
+			$config			= Factory::load('Config')->load($root_path . 'configs/', $config_path);
 		}
 
-		return $this->view->get();
+		/* load view
+		********************************************************************************************/
+		$view = Factory::load('View');
+		$view->setHandler('serpent');
+		$view->setProperty('template_path', $root_path_absolute . 'templates/');
+		$view->setProperty('template', $classname);
+
+		/* load controller
+		********************************************************************************************/
+		$class		= $namespace . $classname;
+		$controller	= new $class;
+		$controller->run();
+
+		$view_data = $view->get();
+		if (!is_file($root_path_absolute . 'Features/features.php')) return $view_data;
+
+		/* load features
+		********************************************************************************************/
+		$features = include($root_path_absolute . 'Features/features.php');
+
+		// create DOM object
+		libxml_use_internal_errors(true);
+		$data		= $view->get();
+		$content	= stream_get_contents($data['content']);
+		$doc		= new \DOMDocument();
+		$doc->loadHtml('<?xml encoding="UTF-8">' . $content);
+		libxml_use_internal_errors(false);
+		
+		$xpath = new \DOMXPath($doc);
+
+		foreach ($features as $controller_regex => $page_features) {
+			if (!preg_match('~^'.$controller_regex.'$~', $classname)) continue;
+
+			foreach ($page_features as $xpath_query => $section_features) {
+				$nodelist = $xpath->query($xpath_query);
+
+				foreach ($nodelist as $node) {
+					foreach ($section_features as $actions) {
+						foreach ($actions as $action => $class) {
+							$namespace = preg_replace('~[^\\\\]+$~', '', $class);
+							$classname = preg_replace('~.+\\\\~', '', $class);
+
+							$frontcontroller = new Frontcontroller;
+							$data = $frontcontroller->execute($namespace, $classname);
+
+							$fragment = $doc->createDocumentFragment();
+							$fragment->appendXML(stream_get_contents($data['content']));
+							
+							if ($action === 'prepend') {
+								$node->insertBefore($fragment, $node->firstChild);
+							} elseif ($action === 'append') {
+								$node->appendChild($fragment);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// remove XML prolog
+		foreach ($doc->childNodes as $item) {
+			if ($item->nodeType == XML_PI_NODE) {
+				$doc->removeChild($item);
+				break;
+			}
+		}
+
+		$handle = fopen('php://memory', 'r+');
+		$view_data['content'] = $handle;
+		fwrite($view_data['content'], $doc->saveHtml());
+
+		return $view_data;
 	}
 }

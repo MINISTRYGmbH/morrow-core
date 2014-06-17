@@ -85,12 +85,15 @@ class Config extends Core\Base {
 	 * @param	string	$directory	The directory path where the config files are.
 	 * @return	array	An array with the config.
 	 */
-	public function load($directory) {
-		// load main config
-		$config = include ($directory.'_default.php');
+	public function load($directory, $subkey = null) {
+		$config = array();
 
-		$file0 = $directory.'_default_app.php';
-		if (is_file($file0)) $config = array_merge($config, include($file0));
+		// load main config
+		$file = $directory.'_default.php';
+		if (is_file($file)) $config = array_merge($config, include($file));
+
+		$file = $directory.'_default_app.php';
+		if (is_file($file)) $config = array_merge($config, include($file));
 
 		// overwrite with server specific config
 		if (php_sapi_name() === 'cli') {
@@ -104,7 +107,11 @@ class Config extends Core\Base {
 		}
 
 		foreach ($config as $key => $value) {
-			$this->arraySet($this->data, $key, $value);
+			if ($subkey === null) {
+				$this->arraySet($this->data, $key, $value);
+			} else {
+				$this->arraySet($subkey . '.' . $this->data, $key, $value);
+			}
 		}
 
 		return $this->data;

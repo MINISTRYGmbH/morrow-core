@@ -27,7 +27,7 @@ namespace Morrow;
 // Because this file is in the Core namespace we have to use a temporary namespace 
 define('PUBLIC_PATH', getcwd() . '/');
 define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
-define('APP_PATH', PUBLIC_PATH . '../app/');
+define('APP_PATH', realpath(PUBLIC_PATH . '../app/') . '/');
 define('STORAGE_PATH', APP_PATH . 'storage/');
 
 // define the path to vendor dir
@@ -215,7 +215,7 @@ class Bootstrap {
 		Factory::prepare('Navigation', Factory::load('Language')->getTree(), $alias);
 		Factory::prepare('Pagesession', 'pagesession.' . $alias, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
-		Factory::prepare('Security', new Factory('Session'), $this->view, $this->input, $this->url);
+		Factory::prepare('Security', new Factory('Session'), new Factory('View'), $this->input, $this->url);
 
 		/* define page params
 		********************************************************************************************/
@@ -226,12 +226,13 @@ class Bootstrap {
 		$this->page->set('path.relative_with_query', $fullpath);
 		$this->page->set('path.absolute', $base_href . $path);
 		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
-		$this->view->setContent('page', $this->page->get());
+		$this->view->setContent('page', Factory::load('Page')->get());
 
-		$frontcontroller = new FrontController($alias, APP_PATH, true);
+		$frontcontroller = new FrontController;
+		$data = $frontcontroller->execute('\\app\\', ucfirst($alias), true);
 
-		$headers	= $frontcontroller['headers'];
-		$handle		= $frontcontroller['content'];
+		$headers	= $data['headers'];
+		$handle		= $data['content'];
 		
 		// output headers
 		foreach ($headers as $h) header($h);

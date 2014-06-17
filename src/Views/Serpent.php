@@ -44,6 +44,12 @@ use Morrow\Factory;
 class Serpent extends AbstractView {
 	/**
 	 * a
+	 * @var string $template_path
+	 */
+	public $template_path	= '';
+
+	/**
+	 * a
 	 * @var string $template
 	 */
 	public $template		= '';
@@ -83,7 +89,6 @@ class Serpent extends AbstractView {
 	 * @hidden
 	 */
 	public function __construct() {
-		$this->page		= Factory::load('Page');
 		$this->language	= Factory::load('Language');
 	}
 
@@ -95,11 +100,6 @@ class Serpent extends AbstractView {
 	 * @hidden
 	 */
 	public function getOutput($content, $handle) {
-		// get default template
-		if (empty($this->template)) {
-			$this->template = $this->page->get('alias');
-		}
-		
 		// assign template and frame_template to page
 		$content['page']['template'] = $this->template;
 
@@ -133,7 +133,7 @@ class Serpent extends AbstractView {
 		
 		// handle resources
 		$_engine->addResource('file',
-			new \McSodbrenner\Serpent\ResourceFile(APP_PATH .'templates/', $this->template_suffix, $this->language->get())
+			new \McSodbrenner\Serpent\ResourceFile($this->template_path, $this->template_suffix, $this->language->get())
 		);
 		
 		foreach ($this->resources as $resource) {
