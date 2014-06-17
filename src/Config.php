@@ -110,7 +110,7 @@ class Config extends Core\Base {
 			if ($subkey === null) {
 				$this->arraySet($this->data, $key, $value);
 			} else {
-				$this->arraySet($subkey . '.' . $this->data, $key, $value);
+				$this->arraySet($this->data, $subkey . '.' . $key, $value);
 			}
 		}
 

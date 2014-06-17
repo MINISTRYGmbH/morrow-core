@@ -29,40 +29,13 @@ use Morrow\Debug;
 /**
  * The main class which defines the cycle of a request.
  */
-class Frontcontroller {
-	public function execute($namespace, $classname, $master) {
+class Features {
+	public function execute($namespace, $classname, $master = false) {
 
-		$root_path			= trim(str_replace('\\', '/', $namespace), '/') . '/';
-		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
-
-		/* load config
-		********************************************************************************************/
-		// add config of features to master config
-		if (!$master) {
-			$config_path	= strtolower(str_replace('/', '.', trim($root_path, '/')));
-			$config			= Factory::load('Config')->load($root_path_absolute . 'configs/', $config_path);
-		}
-
-		/* load view
-		********************************************************************************************/
-		$view = Factory::load($master ? 'View' : 'View:view-feature');
-		$view->setHandler('serpent');
-		$view->setProperty('template_path', $root_path_absolute . 'templates/');
-		$view->setProperty('template', $classname);
-		$view->setContent('page', Factory::load('Page')->get(), true);
-
-		/* load controller
-		********************************************************************************************/
-		$class		= $namespace . $classname;
-		$controller	= new $class;
-		$controller->run();
-
-		$view_data = $view->get();
-		if (!is_file($root_path_absolute . 'Features/features.php')) return $view_data;
 
 		/* load features
 		********************************************************************************************/
-		$features = include($root_path_absolute . 'Features/features.php');
+		$features = include($root_path_absolute . 'features/features.php');
 
 		// create DOM object
 		libxml_use_internal_errors(true);
@@ -87,7 +60,7 @@ class Frontcontroller {
 							$classname = preg_replace('~.+\\\\~', '', $class);
 
 							$frontcontroller = new Frontcontroller;
-							$data = $frontcontroller->execute($namespace, $classname, false);
+							$data = $frontcontroller->execute($namespace, $classname);
 
 							$fragment = $doc->createDocumentFragment();
 							$fragment->appendXML(stream_get_contents($data['content']));

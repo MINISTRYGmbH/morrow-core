@@ -202,7 +202,6 @@ class Bootstrap {
 		/* load classes we need anyway
 		********************************************************************************************/
 		$this->url	= Factory::load('Url', $this->language->get(), $lang['possible'], $fullpath, $basehref_depth);
-		$this->view	= Factory::load('View');
 		
 		/* prepare classes so the user has less to pass
 		********************************************************************************************/
@@ -226,7 +225,6 @@ class Bootstrap {
 		$this->page->set('path.relative_with_query', $fullpath);
 		$this->page->set('path.absolute', $base_href . $path);
 		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
-		$this->view->setContent('page', Factory::load('Page')->get());
 
 		$frontcontroller = new FrontController;
 		$data = $frontcontroller->execute('\\app\\', ucfirst($alias), true);
