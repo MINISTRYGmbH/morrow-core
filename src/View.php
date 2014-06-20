@@ -42,34 +42,22 @@ namespace Morrow;
 */
 class View {
 	/**
+	 * The instance of the handler (initialized after get())
+	 * @var	object $_handler
+	 */
+	protected $_handler = null;
+
+	/**
 	 * The name of the view handler that is currently selected.
 	 * @var	string $_handler_name
 	 */
 	protected $_handler_name = null;
 
 	/**
-	 * Contains all HTTP headers that should be set.
-	 * @var	array $_header
-	 */
-	protected $_header = array();
-
-	/**
 	 * Contains all variables that will be assigned to the view handler.
 	 * @var	array $_content
 	 */
 	protected $_content;
-
-	/**
-	 * The time when the cache should expire in a strtotime() format.
-	 * @var	string $_cachetime
-	 */
-	protected $_cachetime = null;
-
-	/**
-	 * Is true if an etag should be added to the HTTP headers.
-	 * @var	array $_cacheetag
-	 */
-	protected $_cacheetag = true;
 
 	/**
 	 * Contains all properties set for view handlers.
@@ -128,45 +116,29 @@ class View {
 	 */
 	public function get() {
 		// get the underlying display handler
-		$displayHandler = $this->_getDisplayHandler($this->_handler_name);
+		$classname = '\\Morrow\\Views\\' . $this->_handler_name;
+		$this->_handler = new $classname($this);
 
 		// overwrite default properties
 		$mimetype_changed = false;
 		if (isset($this->_properties[$this->_handler_name]))
 			foreach ($this->_properties[$this->_handler_name] as $key => $value) {
-				if (!isset($displayHandler->$key))
+				if (!isset($this->_handler->$key))
 					throw new \Exception(__CLASS__.': the property "'.$key.'" does not exist for handler "'.$this->_handler_name.'".');
-				$displayHandler->$key = $value;
+				$this->_handler->$key = $value;
 				if ($key === 'mimetype') $mimetype_changed = true;
 			}
 
 		// add charset and mimetype to the "page" array
-		$this->_content['page']['charset'] = $displayHandler->charset;
-		$this->_content['page']['mimetype'] = $displayHandler->mimetype;
-		
-		// set standard header lines (those headers will be cached)
-		// set download header
-		if (!empty($displayHandler->downloadable)) {
-			if (!$mimetype_changed) {
-				$displayHandler->mimetype = $this->getMimeType($displayHandler->downloadable);
-			}
-			$this->_header[] = 'Content-Disposition: attachment; filename='.basename($displayHandler->downloadable);
-			
-			// this is a workaround for ie
-			// see http://support.microsoft.com/kb/316431
-			$this->_header[] = 'Pragma: protected';
-			$this->_header[] = 'Cache-control: protected, must-revalidate';
-		}
-
-		// set content type
-		$this->_header[] = 'Content-Type: '.$displayHandler->mimetype.'; charset='.$displayHandler->charset;
+		$this->_content['page']['charset'] = $this->_handler->charset;
+		$this->_content['page']['mimetype'] = $this->_handler->mimetype;
 		
 		// output
 		// create stream handle for the output
 		$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
 
 		// get body stream
-		$handle = $displayHandler->getOutput($this->getContent(), $handle);
+		$handle = $this->_handler->getOutput($this->getContent(), $handle);
 		
 		// process Filters
 		if (isset($this->_filters[$this->_handler_name])) {
@@ -183,51 +155,19 @@ class View {
 			echo $content;
 		}
 
-		// use etag for content validation (only HTTP1.1)
-		rewind($handle);
-		$hash = hash_init('md5');
-		hash_update_stream($hash, $handle);
-		$hash = hash_final($hash);
-		
-		// add charset and mimetype to hash
-		// if we change one of those we also want to see the actual view
-		$hash = md5($hash . $displayHandler->charset . $displayHandler->mimetype);
-		
-		if ($this->_cacheetag) $this->_header[] = 'ETag: '.$hash; // HTTP 1.1
-		$this->_header[] = 'Vary:';
-		
-		if ($this->_cachetime === null) {
-			// no caching
-			if ($this->_cacheetag) $this->_header[] = 'Cache-Control: no-cache, must-revalidate';
-			else $this->_header[] = 'Cache-Control: no-store, no-cache, must-revalidate'; // to overwrite default php setting with "no-store"
-		} else {
-			// caching
-			$fileexpired = strtotime($this->_cachetime);
-			$filemaxage = $fileexpired-time();
-
-			// HTTP 1.0
-			$this->_header[] = 'Pragma: ';
-			$this->_header[] = 'Expires: '.gmdate("D, d M Y H:i:s", $fileexpired) ." GMT";
-
-			// HTTP 1.1
-			$this->_header[] = 'Cache-Control: public, max-age='.$filemaxage;
-		}
-
-		// check for etag
-		if (!isset($_SERVER['HTTP_CACHE_CONTROL']) || !preg_match('/max-age=0|no-cache/i', $_SERVER['HTTP_CACHE_CONTROL'])) // by-pass "not modified" on explicit reload
-			if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH'] == $hash) {
-				$this->_header[] = 'HTTP/1.1 304 Not Modified';
-				// create empty stream
-				$handle = fopen('php://temp/maxmemory:'.(1*1024), 'r+'); // 1kb
-			}
-
 		// rewind handle
 		rewind($handle);
 		
-		return array(
-			'headers' => $this->_header,
-			'content' => $handle,
-		);
+		return $handle;
+	}
+
+	/**
+	 * Returns the used display handler. For that reason a call just makes sense after get().
+	 *
+	 * @return	object	The used display handler.
+	 */
+	public function getDisplayHandler() {
+		return $this->_handler;
 	}
 
 	/**
@@ -255,33 +195,6 @@ class View {
 	}
 
 	/**
-	 * Returns an instance of a view handler for a given view name.
-	 *
-	 * @param	string	$handler_name	The name of the view handler to instantiate.
-	 * @return	object	The view handler.
-	 */
-	protected function _getDisplayHandler($handler_name) {
-		if ($handler_name == null) {
-			throw new \Exception(__CLASS__ . ': You did not set a view handler via $this->view->setHandler().');
-		}
-		
-		$classname = '\\Morrow\\Views\\' . $handler_name;
-		return new $classname($this);
-	}
-
-	/**
-	 * To set the caching time for the current page.
-	 *
-	 * @param	string	$cachetime	A string in the format of strtotime() to specify when the current page should expire (via Expires header).
-	 * @param	string	$etag	Set to false prevents Morrow to set an eTag header. That means the client cache cannot be unset until the Last-Modified header time expires.
-	 * @return	null
-	 */
-	public function setCache($cachetime, $etag = true) {
-		$this->_cachetime = $cachetime;
-		$this->_cacheetag = $etag;
-	}
-
-	/**
 	 * Sets a filter to be executed after content generation.
 	 * If you have not chosen a handler the default handler will be used. For example if you want globally define your settings for all handlers.  
 	 *
@@ -305,22 +218,6 @@ class View {
 	 */
 	public function setHandler($handler_name) {
 		$this->_handler_name = ucfirst(strtolower($handler_name));
-	}
-
-	/**
-	 * Sets an additional http header. 
-	 *
-	 * @param	string	$key	The name of the HTTP header.
-	 * @param	string	$value	The value of the HTTP header.
-	 * @return	null
-	 */
-	public function setHeader($key, $value = '') {
-		if (stripos($key, 'content-type') !== false) {
-			throw new \Exception(__CLASS__.': the content-type header should not be directly set. Use setProperty("mimetype", ...) and setProperty("charset", ...) instead.');
-		}
-
-		$header = $key . (!empty($value) ? ': '.$value : '');
-		$this->_header[] = $header;
 	}
 
 	/**

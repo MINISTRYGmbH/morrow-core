@@ -52,10 +52,10 @@ class Features {
 		}
 	}
 
-	public function run($view_data) {
+	public function run($handle) {
 		// create DOM object
 		libxml_use_internal_errors(true);
-		$content	= stream_get_contents($view_data['content']);
+		$content	= stream_get_contents($handle);
 		$doc		= new \DOMDocument();
 		// workaround to force DOMDocument to work with UTF-8
 		$doc->loadHtml('<?xml encoding="UTF-8">' . $content);
@@ -77,11 +77,11 @@ class Features {
 							$namespace = preg_replace('~[^\\\\]+$~', '', $class);
 							$classname = preg_replace('~.+\\\\~', '', $class);
 
-							$frontcontroller = new Core\Frontcontroller;
-							$data = $frontcontroller->run('\\app\\features\\' . $namespace, $classname, false);
+							$frontcontroller = new Frontcontroller;
+							$content = $frontcontroller->run('\\app\\features\\' . $namespace, $classname, false);
 
 							$fragment = $doc->createDocumentFragment();
-							$fragment->appendXML(stream_get_contents($data['content']));
+							$fragment->appendXML(stream_get_contents($content));
 							
 							if ($action === 'prepend') {
 								$node->insertBefore($fragment, $node->firstChild);
@@ -107,9 +107,8 @@ class Features {
 		}
 
 		$handle = fopen('php://memory', 'r+');
-		$view_data['content'] = $handle;
-		fwrite($view_data['content'], $doc->saveHtml());
+		fwrite($handle, $doc->saveHtml());
 
-		return $view_data;
+		return $handle;
 	}
 }
