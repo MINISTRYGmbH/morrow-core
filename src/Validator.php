@@ -155,8 +155,10 @@ namespace Morrow;
  * `url`         | `$schemes`              | array   | Returns `true` if the scheme of the url is one of the given, eg. `array('http', 'https')`.
  * `ip`          | `$flags = array()`      | array   | Returns `true` if the IP is valid. You can pass the following parameters to specify the requirements: `ipv4` (IP must be an IPV4 address), `ipv6` (IP must be an IPV6 address), `private` (IP can be a private address like 192.168.*) and `reserved` (IP can be a reserved address like 100.64.0.0/10). Default is `ipv4`.
  * `date`        | `$date_format`          | string  | Returns `true` if the date is valid and the date could be successfully checked against `$date_format` (in `\DateTime::createFromFormat` format).
- * `before`      | `$before`               | string  | Returns `true` if the date is before the given date. Both dates has to be passed in a format `strtotime` is able to read. 
- * `after`       | `$after`                | string  | Returns `true` if the date is after the given date. Both dates has to be passed in a format `strtotime` is able to read. 
+ * `before_date` | `$before`               | string  | Returns `true` if the date is before the given date. Both dates have to be passed in a format `strtotime` is able to read. 
+ * `after_date`  | `$after`                | string  | Returns `true` if the date is after the given date. Both dates have to be passed in a format `strtotime` is able to read. 
+ * `before_field`| `$compare_field`        | string  | Returns `true` if the date is before the date in the given field. Both dates have to be passed in a format `strtotime` is able to read. 
+ * `after_field` | `$compare_field`        | string  | Returns `true` if the date is after the date in the given field. Both dates have to be passed in a format `strtotime` is able to read. 
  */
 class Validator extends Core\Base {
 	/**
@@ -182,29 +184,31 @@ class Validator extends Core\Base {
 	 */
 	public function __construct() {
 		$this->_messages = array(
-			'required'	=> 'VALDIDATOR_REQUIRED',
-			'equal'		=> 'VALDIDATOR_EQUAL%s',
-			'same'		=> 'VALDIDATOR_SAME%s',
-			'array'		=> 'VALDIDATOR_ARRAY',
-			'number'	=> 'VALDIDATOR_NUMBER',
-			'numeric'	=> 'VALDIDATOR_NUMERIC',
-			'min'		=> 'VALDIDATOR_MIN%s',
-			'max'		=> 'VALDIDATOR_MAX%s',
-			'minlength'	=> 'VALDIDATOR_MINLENGTH%s',
-			'maxlength'	=> 'VALDIDATOR_MAXLENGTH%s',
-			'regex'		=> 'VALDIDATOR_REGEX',
-			'in'		=> 'VALDIDATOR_IN',
-			'in_keys'	=> 'VALDIDATOR_INKEYS',
-			'image'		=> 'VALDIDATOR_IMAGE',
-			'width'		=> 'VALDIDATOR_WIDTH%s',
-			'height'	=> 'VALDIDATOR_HEIGHT%s',
-			'email'		=> 'VALDIDATOR_EMAIL',
-			'url'		=> 'VALDIDATOR_URL',
-			'ip'		=> 'VALDIDATOR_IP',
-			'date'		=> 'VALDIDATOR_DATE%s',
-			'before'	=> 'VALDIDATOR_BEFORE%s',
-			'after'		=> 'VALDIDATOR_AFTER%s',
-			'upload'	=> 'VALDIDATOR_UPLOAD',
+			'required'		=> 'VALIDATOR_REQUIRED',
+			'equal'			=> 'VALIDATOR_EQUAL%s',
+			'same'			=> 'VALIDATOR_SAME%s',
+			'array'			=> 'VALIDATOR_ARRAY',
+			'number'		=> 'VALIDATOR_NUMBER',
+			'numeric'		=> 'VALIDATOR_NUMERIC',
+			'min'			=> 'VALIDATOR_MIN%s',
+			'max'			=> 'VALIDATOR_MAX%s',
+			'minlength'		=> 'VALIDATOR_MINLENGTH%s',
+			'maxlength'		=> 'VALIDATOR_MAXLENGTH%s',
+			'regex'			=> 'VALIDATOR_REGEX',
+			'in'			=> 'VALIDATOR_IN',
+			'in_keys'		=> 'VALIDATOR_INKEYS',
+			'image'			=> 'VALIDATOR_IMAGE',
+			'width'			=> 'VALIDATOR_WIDTH%s',
+			'height'		=> 'VALIDATOR_HEIGHT%s',
+			'email'			=> 'VALIDATOR_EMAIL',
+			'url'			=> 'VALIDATOR_URL',
+			'ip'			=> 'VALIDATOR_IP',
+			'date'			=> 'VALIDATOR_DATE%s',
+			'before_date'	=> 'VALIDATOR_BEFORE_DATE%s',
+			'after_date'	=> 'VALIDATOR_AFTER_DATE%s',
+			'before_field'	=> 'VALIDATOR_BEFORE_FIELD%s',
+			'after_field'	=> 'VALIDATOR_AFTER_FIELD%s',
+			'upload'		=> 'VALIDATOR_UPLOAD',
 		);
 	}
 
@@ -685,7 +689,7 @@ class Validator extends Core\Base {
 	 * @param	string	$before	The date (readable by `strtotime`) that has to be before `$value`.
 	 * @return 	booolean	The result of the validation.
 	 */
-	protected function _validator_before($input, $value, $before) {
+	protected function _validator_before_date($input, $value, $before) {
 		if (!is_string($value) && !is_integer($value)) return false;
 		$timestamp = is_string($value) ? strtotime($value) : $value;
 
@@ -703,7 +707,7 @@ class Validator extends Core\Base {
 	 * @param	string	$after	The date (readable by `strtotime`) that has to be after `$value`.
 	 * @return 	booolean	The result of the validation.
 	 */
-	protected function _validator_after($input, $value, $after) {
+	protected function _validator_after_date($input, $value, $after) {
 		if (!is_string($value) && !is_integer($value)) return false;
 		$timestamp = is_string($value) ? strtotime($value) : $value;
 
@@ -712,6 +716,30 @@ class Validator extends Core\Base {
 
 		if ($timestamp <= $timestamp2) return false;
 		return true;
+	}
+
+	/**
+	 * Look at the validator list.
+	 * @param	array	$input	All input parameters that were passed to `filter()`.
+	 * @param	mixed	$value	The input data to validate.
+	 * @param	string	$compare_field	The field to compare `$value` with.
+	 * @return 	booolean	The result of the validation.
+	 */
+	protected function _validator_before_field($input, $value, $compare_field) {
+		if (!is_string($value)) return false;
+		return (strtotime($input[$compare_field]) > strtotime($value));
+	}
+
+	/**
+	 * Look at the validator list.
+	 * @param	array	$input	All input parameters that were passed to `filter()`.
+	 * @param	mixed	$value	The input data to validate.
+	 * @param	string	$compare_field	The field to compare `$value` with.
+	 * @return 	booolean	The result of the validation.
+	 */
+	protected function _validator_after_field($input, $value, $compare_field) {
+		if (!is_string($value)) return false;
+		return (strtotime($value) > strtotime($input[$compare_field]));
 	}
 
 	/**
