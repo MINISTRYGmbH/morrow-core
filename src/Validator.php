@@ -134,7 +134,7 @@ namespace Morrow;
  * ---------     | ---------               | -----   | ------------
  * `composition` | `$name`                 | string  | Check against all fields which are defined for the given composition name added by `addComposition()`.
  * `invalidates` | `$field`                | string  | Use this if you want the error be appended to the errors of another field.
- * `required`    | `$fields = array()`     | array   | Defines the field as required. If you pass the optional associative array `$fields`, the field will only get required if all fields (keys) in the array have the stated values.
+ * `required`    | `$fields = array()`     | array   | Defines the field as required. Returns `false` if the value is NULL, "" or an empty array. If you pass the optional associative array `$fields`, the field will only get required if all fields (keys) in the array have the stated values.
  * `equal`       | `$compare_value`        | mixed   | Compares the field to a given value to compare.
  * `same`        | `$compare_field`        | string  | Compares the field to the value of a different field in the input array.
  * `array`       | `$validators = array()` |         | Returns `true` if the field is an array. If you pass `$validators` all values are checked against them. If just one value fails the `array` validator fails. Useful if you have a `<select>` with the attribute `multiple="multiple"`.
@@ -359,14 +359,18 @@ class Validator extends Core\Base {
 	protected function _validator_required($input, $value, $fields = array()) {
 		// check for values in fields to make this field required 
 		$required = true;
-		foreach ($fields as $key => $value) {
-			if (!isset($input[$key]) || $input[$key] != $value) {
+		foreach ($fields as $field_key => $field_value) {
+			if (!isset($input[$field_key]) || $input[$field_key] != $field_value) {
 				$required = false;
 				break;
 			}
 		}
 
-		if ($required) return !is_null($value) && !empty($value);
+		if ($required) {
+			if ($value === null || $value === '' || (is_array($value) && empty($value)) ) {
+				return false;
+			}
+		}
 		else return true;
 	}
 
