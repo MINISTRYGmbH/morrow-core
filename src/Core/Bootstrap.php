@@ -21,6 +21,20 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 
+namespace Morrow;
+
+// Define paths for the Morrow namespace
+// Because this file is in the Core namespace we have to use a temporary namespace 
+define('PUBLIC_PATH', getcwd() . '/');
+define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
+define('APP_PATH', realpath(PUBLIC_PATH . '../app/') . '/');
+define('STORAGE_PATH', APP_PATH . 'storage/');
+
+// define the path to vendor dir
+// change this if you have to projects which should use the same vendor folder
+define('VENDOR_PATH', PUBLIC_PATH - '../vendor/');
+
+
 namespace Morrow\Core;
 
 use Morrow\Factory;
@@ -28,7 +42,7 @@ use Morrow\Factory;
 /**
  * The main class which defines the cycle of a request.
  */
-class Frontcontroller {
+class Bootstrap {
 	/**
 	 * Will be set by the Constructor as default error handler, and throws an exception to normalize the handling of errors and exceptions.
 	 *
@@ -94,6 +108,12 @@ class Frontcontroller {
 		$this->config	= Factory::load('Config');
 		$config = $this->config->load(APP_PATH . 'configs/');
 
+		/* set timezone 
+		********************************************************************************************/
+		if (!date_default_timezone_set($config['locale']['timezone'])) {
+			throw new \Exception(__METHOD__.'<br>date_default_timezone_set() failed.');
+		}
+
 		/* extract important variables
 		********************************************************************************************/
 		// map cli parameters to $_GET
@@ -112,12 +132,6 @@ class Frontcontroller {
 		********************************************************************************************/
 		$this->input	= Factory::load('Input');
 		$this->page		= Factory::load('Page');
-
-		/* set timezone 
-		********************************************************************************************/
-		if (!date_default_timezone_set($config['locale']['timezone'])) {
-			throw new \Exception(__METHOD__.'<br>date_default_timezone_set() failed.');
-		}
 
 		/* load page class and set nodes
 		********************************************************************************************/
@@ -175,11 +189,11 @@ class Frontcontroller {
 		// set nodes in page class
 		$nodes = explode('/', $url);
 		$nodes = array_map('strtolower', $nodes);
-
+		
 		/* prepare some internal variables
 		********************************************************************************************/
 		$alias					= implode('_', $nodes);
-		$controller_file	= APP_PATH .'_default.php';
+		$controller_file		= APP_PATH .'_default.php';
 		$page_controller_file	= APP_PATH . $alias .'.php';
 		$path					= implode('/', $this->page->get('nodes'));
 		$query					= $this->input->getGet();
@@ -187,7 +201,6 @@ class Frontcontroller {
 		
 		/* load classes we need anyway
 		********************************************************************************************/
-		$this->view	= Factory::load('View');
 		$this->url	= Factory::load('Url', $this->language->get(), $lang['possible'], $fullpath, $basehref_depth);
 		
 		/* prepare classes so the user has less to pass
@@ -201,7 +214,7 @@ class Frontcontroller {
 		Factory::prepare('Navigation', Factory::load('Language')->getTree(), $alias);
 		Factory::prepare('Pagesession', 'pagesession.' . $alias, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
-		Factory::prepare('Security', new Factory('Session'), $this->view, $this->input, $this->url);
+		Factory::prepare('Security', new Factory('Session'), new Factory('View'), $this->input, $this->url);
 
 		/* define page params
 		********************************************************************************************/
@@ -213,32 +226,12 @@ class Frontcontroller {
 		$this->page->set('path.absolute', $base_href . $path);
 		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
 
-		/* load controller and render page
-		********************************************************************************************/
-		// include global controller class
-		include($controller_file);
-
-		// include page controller class
-		if (is_file($page_controller_file)) {
-			include($page_controller_file);
-			$controller = new \App\PageController();
-			if (method_exists($controller, 'setup')) $controller->setup();
-			$controller->run();
-			if (method_exists($controller, 'teardown')) $controller->teardown();
-		} else {
-			$controller = new \App\DefaultController();
-			if (method_exists($controller, 'setup')) $controller->setup();
-			if (method_exists($controller, 'teardown')) $controller->teardown();
-		}
-
-		// assign the content to the view
-		$this->view->setContent('page', $this->page->get());
-
-		$view		= $this->view->get();
-		$headers	= $view['headers'];
-		$handle		= $view['content'];
+		$frontcontroller	= new \Morrow\FrontController;
+		$handle				= $frontcontroller->run('\\app\\', ucfirst($alias), true);
 		
 		// output headers
+		$handler			= Factory::load('View')->getDisplayHandler();
+		$headers			= Factory::load('Headers')->get($handle, $handler->mimetype, $handler->charset);
 		foreach ($headers as $h) header($h);
 		
 		rewind($handle);
