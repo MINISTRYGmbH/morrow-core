@@ -29,10 +29,7 @@ define('PUBLIC_PATH', getcwd() . '/');
 define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
 define('APP_PATH', realpath(PUBLIC_PATH . '../app/') . '/');
 define('STORAGE_PATH', APP_PATH . 'storage/');
-
-// define the path to vendor dir
-// change this if you have to projects which should use the same vendor folder
-define('VENDOR_PATH', PUBLIC_PATH - '../vendor/');
+define('VENDOR_PATH', PUBLIC_PATH . '../vendor/');
 
 
 namespace Morrow\Core;

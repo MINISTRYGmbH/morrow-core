@@ -83,6 +83,7 @@ class Config extends Core\Base {
 	 * Loads config files in an array.
 	 * First it searches for a file _default.php then it tries to load the config for the current HOST and then for the Server IP address.
 	 * @param	string	$directory	The directory path where the config files are.
+	 * @param	string	$subkey	Set this subkey if you want all config parameters be created below this subkey.
 	 * @return	array	An array with the config.
 	 */
 	public function load($directory, $subkey = null) {
