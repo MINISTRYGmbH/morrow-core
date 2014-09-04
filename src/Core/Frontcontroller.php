@@ -21,7 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 
-namespace Morrow;
+namespace Morrow\Core;
 
 use Morrow\Factory;
 use Morrow\Debug;
@@ -59,13 +59,13 @@ class Frontcontroller {
 
 		$handle = $view->get();
 		
-		$features_path = $root_path_absolute . 'Features/features.php';
+		$features_path = $root_path_absolute . 'features/features.php';
 		if (!is_file($features_path)) return $handle;
 
 		/* load features
 		********************************************************************************************/
 		$alias		= Factory::load('Page')->get('alias');
-		$feature	= Factory::load('Features', $features_path, ucfirst($alias));
+		$feature	= Factory::load('Feature', $features_path, ucfirst($alias));
 		$handle	= $feature->run($handle);
 		return $handle;
 	}

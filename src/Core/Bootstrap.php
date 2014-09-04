@@ -223,12 +223,12 @@ class Bootstrap {
 		$this->page->set('path.absolute', $base_href . $path);
 		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
 
-		$frontcontroller	= new \Morrow\FrontController;
+		$frontcontroller	= new \Morrow\Core\FrontController;
 		$handle				= $frontcontroller->run('\\app\\', ucfirst($alias), true);
 		
 		// output headers
 		$handler			= Factory::load('View')->getDisplayHandler();
-		$headers			= Factory::load('Headers')->get($handle, $handler->mimetype, $handler->charset);
+		$headers			= Factory::load('Header')->get($handle, $handler->mimetype, $handler->charset);
 		foreach ($headers as $h) header($h);
 		
 		rewind($handle);

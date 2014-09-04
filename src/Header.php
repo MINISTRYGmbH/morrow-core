@@ -26,7 +26,54 @@ namespace Morrow;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class Headers {
+/**
+* Controls the HTTP header of the output.
+*
+* With this class you are able to set your own headers or overwrite headers which were set by the view handlers.
+* This class also controls the caching behaviour of the framework.
+* 
+* Examples
+* ---------
+*
+* ~~~{.php}
+* // ... Controller-Code
+*  
+* $this->header->setHeader('X-Foo', 'Bar');
+*  
+* // ... Controller-Code
+* ~~~
+*
+* Do not set the `Content-Type` header directly. Use `setProperty("mimetype", ...)` and `setProperty("charset", ...)` instead.
+*
+* ~~~{.php}
+* // ... Controller-Code
+*  
+* $this->header->setHeader('mimetype', 'text/plain');
+* $this->header->setHeader('charset', 'iso-8859-1');
+*  
+* // ... Controller-Code
+* ~~~
+*
+* The output of every view handler can be cached via HTTP headers. 
+* It works with Expiration HTTP headers as defined in RFC 2616.
+*
+* Morrow uses the `ETag` header by default.
+* That saves bandwidth, as a web server does not need to send a full response if the content has not changed.
+* You don't have to do anything to profit by it.
+*
+* If you need a harder caching it is possible to tell the browser how long it should not resend a request (via HTTP headers `Expires` (HTTP 1.0) and `Cache-Control` (HTTP 1.1)).
+* Because there is no HTTP request to the server you do not have control over the cache until the cache expires.
+*
+* In the following example the output will be cached for five seconds.
+*
+* ~~~{.php}
+* $this->header->setCache('+5 seconds');
+* ~~~
+*
+* The passed string defines the lifetime of the cache, given as a string `strtotime()` recognizes. 
+* 
+*/
+class Header {
 	/**
 	 * Contains all HTTP headers that should be set.
 	 * @var	array $_header
@@ -46,7 +93,7 @@ class Headers {
 	protected $_cacheetag = true;
 
 	/**
-	 * Sets an additional http header. 
+	 * Sets or overwrites an existing http header. 
 	 *
 	 * @param	string	$key	The name of the HTTP header.
 	 * @param	string	$value	The value of the HTTP header.
@@ -62,9 +109,9 @@ class Headers {
 	}
 
 	/**
-	 * To set the caching time for the current page.
+	 * Sets the caching time for the current page.
 	 *
-	 * @param	string	$cachetime	A string in the format of strtotime() to specify when the current page should expire (via Expires header).
+	 * @param	string	$cachetime	A string in the format of strtotime() to specify when the current page should expire.
 	 * @param	string	$etag	Set to false prevents Morrow to set an eTag header. That means the client cache cannot be unset until the Last-Modified header time expires.
 	 * @return	null
 	 */
@@ -74,7 +121,7 @@ class Headers {
 	}
 
 	/**
-	 * Receiver all headers for a given content.
+	 * Returns all headers for a given content. This is internally used by the \Morrow\Core\Bootstrap class.
 	 *
 	 * @param	object	$handle	The stream handle for the generated content.
 	 * @param	string	$mimetype	The mimetype that should be delivered with the HTTP headers.

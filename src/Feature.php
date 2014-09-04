@@ -29,7 +29,7 @@ use Morrow\Debug;
 /**
  * The main class which defines the cycle of a request.
  */
-class Features {
+class Feature {
 	protected $_data;
 	protected $_classname;
 
@@ -77,7 +77,7 @@ class Features {
 							$namespace = preg_replace('~[^\\\\]+$~', '', $class);
 							$classname = preg_replace('~.+\\\\~', '', $class);
 
-							$frontcontroller = new Frontcontroller;
+							$frontcontroller = new Core\Frontcontroller;
 							$content = $frontcontroller->run('\\app\\features\\' . $namespace, $classname, false);
 
 							$fragment = $doc->createDocumentFragment();
