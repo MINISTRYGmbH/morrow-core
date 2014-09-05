@@ -16,5 +16,6 @@ Advanced topics
 * [Extending](page/extending)
 * [Localization](page/localization) 
 * [Form handling](page/formhandling)
+* [Features](page/features)
 * [Security](page/security)
 * [CLI usage](page/cli)

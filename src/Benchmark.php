@@ -28,7 +28,7 @@ namespace Morrow;
 * Example
 * ---------
 *
-* ~~~
+* ~~~{.php}
 * // ... Controller code
 *  
 * $this->benchmark->start('Section 1');

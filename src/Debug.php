@@ -40,10 +40,7 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 * 
-* // set at the beginning of the DefaultController 
-* $this->debug->setAfterException(function(){
-*     $this->url->redirect('error/');	
-* });
+* Debug::dump($this->page->get());
 *  
 * // ... Controller code
 * ~~~ 
@@ -80,22 +77,17 @@ class Debug {
 	protected $errortypes;
 	
 	/**
-	 * Stores the actual count of sent http debug headers
-	 * @var int $x_debug_count
+	 * Stores the event object to trigger an exception
+	 * @var object $_event_object
 	 */
-	protected $x_debug_count = 0; 
+	protected $_event_object = null; 
 	
-	/**
-	 * Stores the closure function to execute after default exception handling
-	 * @var	function $_after_exception
-	 */
-	protected $_after_exception = null;
-
 	/**
 	 * Initializes the class. This is done internally.
 	 * @param	array	$config	All config parameters.
+	 * @param	object	$event_object	An instance of the \Morrow\Event class.
 	 */
-	public function __construct($config) {
+	public function __construct($config, $event_object) {
 		$this->_logfile	= $config['file']['path'];
 
 		// create save_path if it does not exist
@@ -119,6 +111,8 @@ class Debug {
 		$this->errortypes[4096]		= 'E_RECOVERABLE_ERROR';
 		$this->errortypes[8192]		= 'E_DEPRECATED';
 		$this->errortypes[16384]	= 'E_USER_DEPRECATED';
+
+		$this->_event_object = $event_object;
 	}
 
 	/**
@@ -253,14 +247,6 @@ class Debug {
 	}
 	
 	/**
-	 * Set the method which is executed after the default exception handling
-	 * @param	function	$after_exception	A closure to execute.
-	 */
-	public function setAfterException($after_exception) {
-		$this->_after_exception = $after_exception;
-	}
-
-	/**
 	 * This method is called when an exception occurs
 	 * @param  object $exception The incoming Exception object
 	 * @return null
@@ -310,11 +296,8 @@ class Debug {
 			$this->_errorhandler_file($errstr, $backtrace, $errordescription);
 		}
 
-		// "execute after exception" function
-		if ($this->_after_exception !== null) {
-			$call = $this->_after_exception;
-			$call($exception);
-		}
+		// trigger event/hook
+		$this->_event_object->trigger('core.after_exception', $exception);
 	}
 
 	/**

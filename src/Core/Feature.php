@@ -21,7 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 
-namespace Morrow;
+namespace Morrow\Core;
 
 use Morrow\Factory;
 use Morrow\Debug;
@@ -77,7 +77,7 @@ class Feature {
 							$namespace = preg_replace('~[^\\\\]+$~', '', $class);
 							$classname = preg_replace('~.+\\\\~', '', $class);
 
-							$frontcontroller = new Core\Frontcontroller;
+							$frontcontroller = new Frontcontroller;
 							$content = $frontcontroller->run('\\app\\features\\' . $namespace, $classname, false);
 
 							$fragment = $doc->createDocumentFragment();

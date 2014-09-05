@@ -65,7 +65,7 @@ class Frontcontroller {
 		/* load features
 		********************************************************************************************/
 		$alias		= Factory::load('Page')->get('alias');
-		$feature	= Factory::load('Feature', $features_path, ucfirst($alias));
+		$feature	= Factory::load('Core\Feature', $features_path, ucfirst($alias));
 		$handle	= $feature->run($handle);
 		return $handle;
 	}

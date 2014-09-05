@@ -204,7 +204,7 @@ class Bootstrap {
 		********************************************************************************************/
 		Factory::prepare('Cache', STORAGE_PATH .'codecache/');
 		Factory::prepare('Db', $config['db']);
-		Factory::prepare('Debug', $config['debug']);
+		Factory::prepare('Debug', $config['debug'], Factory::load('Event'));
 		Factory::prepare('Image', PUBLIC_STORAGE_PATH . 'thumbs/');
 		Factory::prepare('Log', $config['log']);
 		Factory::prepare('MessageQueue', $config['messagequeue'], $this->input);
@@ -212,6 +212,7 @@ class Bootstrap {
 		Factory::prepare('Pagesession', 'pagesession.' . $alias, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
 		Factory::prepare('Security', new Factory('Session'), new Factory('View'), $this->input, $this->url);
+		Factory::prepare('View', Factory::load('Event'));
 
 		/* define page params
 		********************************************************************************************/

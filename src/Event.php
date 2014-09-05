@@ -37,10 +37,10 @@ namespace Morrow;
 * 
 * Morrow itself throws the following events:
 * 
-* Event name | Passed as $data | Description
+* Event name | Passed as `$data` | Description
 * -----------| ----------- | -----------
-* core.after_exception | `object` The exception object | Is triggered when the global exception handler had processed an exception. Useful to redirect the user to an error page.
-* core.after_view_creation | `string` The created content | Is triggered when the view handler has created the content source. Useful if you want to modify the created content before it is delivered to the client/browser. Or to write the content to a static HTML file. Or to...
+* `core.after_exception` | `object` The exception object | This event is triggered when the global exception handler had processed an exception. Useful to redirect the user to an error page.
+* `core.after_view_creation` | `stream` The created content | This event is triggered when the \Morrow\View class has created the content source. Useful if you want to modify the created content before it is delivered to the client/browser. Or to write the content to a static HTML file. Or to...
 *
 * Example
 * -------
