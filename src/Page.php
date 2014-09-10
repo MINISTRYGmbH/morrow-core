@@ -46,19 +46,22 @@ namespace Morrow;
 * 
 * ### Result
 * ~~~
-* Array
+* $ => Array (5)
 * (
-*     [nodes] => Array
-*         (
-*             [0] => home
-*         )
-* 
-*     [base_href]       => http://example.com/
-*     [alias]           => home
-*     [controller]      => /var/www/project/main/_controllers/home.php
-*     [path]            => home/
-*     [fullpath]        => home/?foo=bar
-* )
+*     ['nodes'] => Array (1)
+*     (
+*         ['0'] = String(4) "Home"
+*     )
+*     ['base_href'] = String(27) "http://example.com/morrow/"
+*     ['alias'] = String(4) "home"
+*     ['url'] = String(4) "home"
+*     ['path'] => Array (4)
+*     (
+*         ['relative'] = String(4) "Home"
+*         ['relative_with_query'] = String(4) "Home"
+*         ['absolute'] = String(31) "http://example.com/morrow/Home"
+*         ['absolute_with_query'] = String(31) "http://example.com/morrow/Home"
+*     )
 * ~~~
 */
 class Page extends Core\Base {

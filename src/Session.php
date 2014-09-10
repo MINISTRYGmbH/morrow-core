@@ -23,7 +23,7 @@
 namespace Morrow;
 
 /**
-* A class for accessing the user session with methods for getting, setting and deleting content and is always initialized by Morrow.
+* A class for accessing the user session with methods for getting, setting and deleting content.
 *
 * Dot Syntax
 * ----------

@@ -128,7 +128,7 @@ class Event {
 	 * Returns all registered listeners. Useful for debugging.
 	 * @return array All registered events.
 	 */
-	public function getEvents() {
+	public function get() {
 		return $this->_events;
 	}
 }

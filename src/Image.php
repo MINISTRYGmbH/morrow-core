@@ -47,6 +47,7 @@ namespace Morrow;
 * // ... Controller code
 * ~~~ 
 * 
+* If you want to do some extraordinary changes to an image just create a new image object and pass the returned filename to `get()`.
 * ~~~{.php}
 * // ... Controller code
 *  

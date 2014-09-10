@@ -22,7 +22,55 @@
 
 namespace Morrow;
 
+/**
+* This class extends the widely adopted PHPMailer library (http://phpmailer.worxware.com/).
+*
+* You are able to change the behaviour of these methods with the following parameters you should set in your configuration files.
+* These are all parameters which you would change as public members with the PHPMailer class.
+* Take a look there for the description of the parameters.
+*
+* Type    | Keyname                | Default
+* -----   | ---------              | ---------
+* bool    | `mail.Mailer`          | `mail`
+* bool    | `mail.From`            | `test@example.com`
+* string  | `mail.FromName`        | `John Doe`
+* integer | `mail.WordWrap`        | `0`
+* string  | `mail.Encoding`        | `quoted-printable`
+* string  | `mail.CharSet`         | `utf-8`
+* boolean | `mail.SMTPAuth`        | `false`
+* string  | `mail.Username`        | ``
+* string  | `mail.password`        | ``
+* string  | `mail.Host`            | ``
+*
+* Example
+* -------
+* 
+* ~~~{.php}
+* // controller code
+* 
+* // create text version of the mail
+* $view = Factory::load('view:view_mail');
+* $view->setHandler('serpent');
+* $view->setProperty('template', 'mail/welcome');
+* $view->setContent('user', $user_data);
+* $body = $view->get();
+* 
+* // send mail
+* $this->load('Mail', $this->config->get('mail'));
+* $this->mail->Subject = 'Welcome new user';
+* $this->mail->Body    = stream_get_contents($body['content']);
+* $this->mail->AddAddress($user_data['email']);
+* $this->mail->Send(true);
+*
+* // controller code
+* ~~~
+*/
 class Mail extends \PHPMailer {
+	/**
+	 * Initializes the class.
+	 * @param  array $config A case insensitive string or an array of strings with event names.
+	 * @return null
+	 */
 	public function __construct($config) {
 		// set settings from config class
 		if (isset($config) && is_array($config))
@@ -31,7 +79,11 @@ class Mail extends \PHPMailer {
 			}
 	}
 	
-	// Mail-Template laden
+	/**
+	 * Registers a listener.
+	 * @param  boolean $confirm A case insensitive string or an array of strings with event names.
+	 * @return null
+	 */
 	public function Send($confirm = false) {
 		// if From was not set ...
 		if ($this->From == 'root@localhost') {

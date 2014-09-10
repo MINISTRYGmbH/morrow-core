@@ -22,9 +22,40 @@
 
 namespace Morrow\Core;
 
+/**
+* This class contains the functionality for working with the array dot syntax.
+* 
+* It is used by many classes in the framework.
+*/
 abstract class Base {
-	// often used, where to put?
-	// This function orders an array like in a sql query
+	/**
+	 * Orders an array like in a SQL query.
+	 * 
+	 * Usage example:
+	 *
+	 * ~~~{.php}
+	 * class Dummy extends \Morrow\Core\Base {
+	 * 	public function sort() {
+	 *		$data = array(
+	 *			0 => array(
+	 *				'title' => 'Foo',
+	 * 				'position' => 1,
+	 * 			),
+	 *			1 => array(
+	 * 				'title' => 'Bar',
+	 * 				'position' => 0,
+	 * 			),
+	 * 		);
+	 * 
+	 *	 	return $this->arrayOrderBy($data, 'position ASC, title ASC');
+	 * 	}
+	 * }
+	 * ~~~
+	 *
+	 * @param  array $data The multidimensional array that should get sorted.
+	 * @param  string $orderby An SQL like string to define the ordering.
+	 * @return array Returns the sorted array.
+	 */
 	public function arrayOrderBy($data, $orderby) {
 		// all the references are part of a workaround which only occurs with array_multisort and call_user_func_array in PHP >= 5.3
 		$asc = SORT_ASC; 
@@ -69,6 +100,35 @@ abstract class Base {
 		return $data;
 	}
 
+	/**
+	 * Returns a branch or a value of a multidimensional array tree by use of the dot syntax to define subnodes.
+	 * 
+	 * Usage example:
+	 *
+	 * ~~~{.php}
+	 * class Dummy extends \Morrow\Core\Base {
+	 * 	public function foo() {
+	 *		$data = array(
+	 *			0 => array(
+	 *				'title' => 'Foo',
+	 * 				'position' => 1,
+	 * 			),
+	 *			1 => array(
+	 * 				'title' => 'Bar',
+	 * 				'position' => 0,
+	 * 			),
+	 * 		);
+	 * 
+	 *	 	return $this->arrayGet($data, '1.title');
+	 * 	}
+	 * }
+	 * ~~~
+	 *
+	 * @param  array $array The input array which should be searched.
+	 * @param  string $identifier A string of array keys separated by dots.
+	 * @param  mixed $fallback Will be returned if the `$identifier` could not be found.
+	 * @return array Returns the subnode.
+	 */
 	public function arrayGet(array &$array, $identifier = '', $fallback = null) {
 		if (empty($identifier)) return $array;
 
@@ -91,6 +151,35 @@ abstract class Base {
 		else return $fallback;
 	}
 
+	/**
+	 * Sets a branch or a value of a multidimensional array tree by use of the dot syntax to define subnodes.
+	 * 
+	 * Usage example:
+	 *
+	 * ~~~{.php}
+	 * class Dummy extends \Morrow\Core\Base {
+	 * 	public function foo() {
+	 *		$data = array(
+	 *			0 => array(
+	 *				'title' => 'Foo',
+	 * 				'position' => 1,
+	 * 			),
+	 *			1 => array(
+	 * 				'title' => 'Bar',
+	 * 				'position' => 0,
+	 * 			),
+	 * 		);
+	 * 
+	 *	 	return $this->arraySet($data, '1.children', array(0 => array('title' => 'FooBar', 'position' => 0)));
+	 * 	}
+	 * }
+	 * ~~~
+	 *
+	 * @param  array $array The input array which should be extended.
+	 * @param  string $identifier A string of array keys separated by dots.
+	 * @param  mixed $value The data to be set.
+	 * @return null
+	 */
 	public function arraySet(array &$array, $identifier, $value) {
 		// create reference
 		$returner =& $array;
@@ -105,6 +194,34 @@ abstract class Base {
 		$returner = $value;
 	}
 
+	/**
+	 * Deletes a branch or a key of a multidimensional array tree by use of the dot syntax to define subnodes.
+	 * 
+	 * Usage example:
+	 *
+	 * ~~~{.php}
+	 * class Dummy extends \Morrow\Core\Base {
+	 * 	public function foo() {
+	 *		$data = array(
+	 *			0 => array(
+	 *				'title' => 'Foo',
+	 * 				'position' => 1,
+	 * 			),
+	 *			1 => array(
+	 * 				'title' => 'Bar',
+	 * 				'position' => 0,
+	 * 			),
+	 * 		);
+	 * 
+	 *	 	return $this->arrayDelete($data, '0.title');
+	 * 	}
+	 * }
+	 * ~~~
+	 *
+	 * @param  array $array The input array which should be extended.
+	 * @param  string $identifier A string of array keys separated by dots.
+	 * @return null
+	 */
 	public function arrayDelete(array &$array, $identifier) {
 		// create reference
 		$parts = explode('.', $identifier);
@@ -131,6 +248,29 @@ abstract class Base {
 		}
 	}
 
+	/**
+	 * Explodes an array with dotted keys to a normal array.
+	 * 
+	 * Usage example:
+	 *
+	 * ~~~{.php}
+	 * class Dummy extends \Morrow\Core\Base {
+	 * 	public function foo() {
+	 *		$data = array(
+	 *			'0.title' => 'Foo',
+	 * 			'0.position' => 1,
+	 * 			'1.title' => 'Bar',
+	 * 			'1.position' => 0,
+	 * 		);
+	 * 
+	 *	 	return $this->arrayExplode($data);
+	 * 	}
+	 * }
+	 * ~~~
+	 *
+	 * @param  array $array The input array that should be exploded.
+	 * @return null
+	 */
 	public function arrayExplode(array $array) {
 		$data = array();
 

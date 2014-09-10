@@ -37,7 +37,9 @@ namespace Morrow\Core;
 use Morrow\Factory;
 
 /**
- * The main class which defines the cycle of a request.
+ * This class is the entry point to the Morrow framework.
+ * 
+ * It does some necessary configuration like setting of the top level exception handler, preparing of classes, url routing ...
  */
 class Bootstrap {
 	/**
@@ -48,7 +50,6 @@ class Bootstrap {
 	 * @param	string $errfile The third parameter is optional, errfile, which contains the filename that the error was raised in, as a string.
 	 * @param	string $errline The fourth parameter is optional, errline, which contains the line number the error was raised at, as an integer.
 	 * @return	null
-	 * @hidden
 	 */
 	public function errorHandler($errno, $errstr, $errfile, $errline) {
 		// get actual error_reporting
@@ -67,7 +68,6 @@ class Bootstrap {
 	 * Will be set by the Constructor as global exception handler.
 	 * @param	object	$exception	The thrown exception.
 	 * @return null
-	 * @hidden
 	 */
 	public function exceptionHandler($exception) {
 		try {
@@ -84,7 +84,6 @@ class Bootstrap {
 
 	/**
 	 * This function contains the main application flow.
-	 * @hidden
 	 */
 	public function __construct() {
 		/* global settings
@@ -219,13 +218,14 @@ class Bootstrap {
 		$base_href = $this->url->getBaseHref();
 		$this->page->set('base_href', $base_href);
 		$this->page->set('alias', $alias);
+		$this->page->set('url', $url);
 		$this->page->set('path.relative', $path);
 		$this->page->set('path.relative_with_query', $fullpath);
 		$this->page->set('path.absolute', $base_href . $path);
 		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
 
 		$frontcontroller	= new \Morrow\Core\FrontController;
-		$handle				= $frontcontroller->run('\\app\\', ucfirst($alias), true);
+		$handle				= $frontcontroller->run('\\app\\' . ucfirst(strtolower($alias)), true);
 		
 		// output headers
 		$handler			= Factory::load('View')->getDisplayHandler();

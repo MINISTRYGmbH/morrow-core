@@ -27,87 +27,83 @@ use Morrow\Factory;
 use Morrow\Debug;
 
 /**
- * The main class which defines the cycle of a request.
+ * Handles the processing of the Features functionality.
  */
 class Feature {
-	protected $_data;
-	protected $_classname;
+	/**
+	 * Stores the configuration of the features.
+	 * @var array $_config
+	 */
+	protected $_config;
 
-	public function __construct($features_path, $classname) {
-		$this->_data		= include($features_path);
-		$this->_classname	= $classname;
+	/**
+	 * The currently requested URL.
+	 * @var array $_url
+	 */
+	protected $_url;
+
+	/**
+	 * Initializes the Feature class.
+	 *
+	 * @param  array $config The configuration array for the handling of the features.
+	 * @param  string $url The currently requested URL.
+	 * @return null
+	 */
+	public function __construct($config, $url) {
+		$this->_config		= $config;
+		$this->_url			= $url;
 	}
 
+	/**
+	 * Removes a feature from the processing queue. This is also possible while the queue is processed if you do that in a feature controller.
+	 *
+	 * @param  string $feature_name The name of the feature that should be removed.
+	 * @return null
+	 */
 	public function delete($feature_name) {
-		foreach ($this->_data as $controller_regex => $page_features) {
-			if (!preg_match('~^'.$controller_regex.'$~', $this->_classname)) continue;
+		foreach ($this->_config as $controller_regex => $page_features) {
+			if (!preg_match($controller_regex, $this->_url)) continue;
 
 			foreach ($page_features as $ii => $section_features) {
 				foreach ($section_features as $iii => $actions) {
 					if (strpos(current($actions), $feature_name . '\\') === 0) {
-						unset($this->_data[$controller_regex][$ii][$iii]);
+						unset($this->_config[$controller_regex][$ii][$iii]);
 					} 
 				}
 			}
 		}
 	}
 
+	/**
+	 * Processes the feature queue.
+	 * 
+	 * @param  stream $handle The stream containing the current content.
+	 * @return stream Return the modified content stream
+	 */
 	public function run($handle) {
 		// create DOM object
-		libxml_use_internal_errors(true);
 		$content	= stream_get_contents($handle);
-		$doc		= new \DOMDocument();
-		// workaround to force DOMDocument to work with UTF-8
-		$doc->loadHtml('<?xml encoding="UTF-8">' . $content);
-		libxml_use_internal_errors(false);
-		
-		$xpath = new \DOMXPath($doc);
+		$dom		= new \Morrow\DOM($content);
 
-		// we have to use $page_references as a reference here so it shows changes on this->_data if we have modified it with delete()
+		// we have to use $page_references as a reference here so it shows changes on this->_config if we have modified it with delete()
 		// http://nikic.github.io/2011/11/11/PHP-Internals-When-does-foreach-copy.html
-		foreach ($this->_data as $controller_regex => &$page_features) {
-			if (!preg_match('~^'.$controller_regex.'$~', $this->_classname)) continue;
+		foreach ($this->_config as $controller_regex => &$page_features) {
+			if (!preg_match($controller_regex, $this->_url)) continue;
 
 			foreach ($page_features as $xpath_query => $section_features) {
-				$nodelist = $xpath->query($xpath_query);
+				foreach ($section_features as $actions) {
+					foreach ($actions as $action => $class) {
+						$frontcontroller = new Frontcontroller;
+						$content = $frontcontroller->run($class, false, $dom);
 
-				foreach ($nodelist as $node) {
-					foreach ($section_features as $actions) {
-						foreach ($actions as $action => $class) {
-							$namespace = preg_replace('~[^\\\\]+$~', '', $class);
-							$classname = preg_replace('~.+\\\\~', '', $class);
-
-							$frontcontroller = new Frontcontroller;
-							$content = $frontcontroller->run('\\app\\features\\' . $namespace, $classname, false);
-
-							$fragment = $doc->createDocumentFragment();
-							$fragment->appendXML(stream_get_contents($content));
-							
-							if ($action === 'prepend') {
-								$node->insertBefore($fragment, $node->firstChild);
-							} elseif ($action === 'append') {
-								$node->appendChild($fragment);
-							} elseif ($action === 'before') {
-								$node->parentNode->insertBefore($fragment, $node);
-							} elseif ($action === 'after') {
-								$node->parentNode->appendChild($fragment);
-							}
-						}
+						$dom->$action($xpath_query, stream_get_contents($content));
 					}
 				}
 			}
 		}
 
-		// remove XML prolog
-		foreach ($doc->childNodes as $item) {
-			if ($item->nodeType == XML_PI_NODE) {
-				$doc->removeChild($item);
-				break;
-			}
-		}
-
 		$handle = fopen('php://memory', 'r+');
-		fwrite($handle, $doc->saveHtml());
+		fwrite($handle, $dom->get());
 
 		return $handle;
 	}

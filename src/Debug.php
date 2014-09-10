@@ -87,7 +87,7 @@ class Debug {
 	 * @param	array	$config	All config parameters.
 	 * @param	object	$event_object	An instance of the \Morrow\Event class.
 	 */
-	public function __construct($config, $event_object) {
+	public function __construct($config, $event_object = null) {
 		$this->_logfile	= $config['file']['path'];
 
 		// create save_path if it does not exist
@@ -297,7 +297,9 @@ class Debug {
 		}
 
 		// trigger event/hook
-		$this->_event_object->trigger('core.after_exception', $exception);
+		if ($this->_event_object !== null) {
+			$this->_event_object->trigger('core.after_exception', $exception);
+		}
 	}
 
 	/**

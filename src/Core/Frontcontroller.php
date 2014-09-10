@@ -27,14 +27,25 @@ use Morrow\Factory;
 use Morrow\Debug;
 
 /**
- * The main class which defines the cycle of a request.
+ * This class handles a MVC triade.
+ * 
+ * It is heavily used by the framework to allow every \Morrow\Core\Feature to be executed as single MVC triade.
  */
 class Frontcontroller {
-	public function run($namespace, $classname, $master) {
-
+	/**
+	 * Executes a MVC triade.
+	 * @param  string $class The controller class name which should be executed.
+	 * @param  boolean $master Is set to `true` if this is the top level triade.
+	 * @param  instance $dom An instance of the \Morrow\DOM class. It will be passed to the controller `run()`, so features are able to modify the generated HTML source.
+	 * @return stream Returns the generated content stream.
+	 */
+	public function run($class, $master, $dom = null) {
+		$namespace			= explode('\\', $class);
+		$classname			= array_pop($namespace);
+		$namespace			= implode('\\', $namespace);
 		$root_path			= trim(str_replace('\\', '/', $namespace), '/') . '/';
 		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
-
+		
 		/* load config
 		********************************************************************************************/
 		// add config of features to master config
@@ -53,9 +64,8 @@ class Frontcontroller {
 
 		/* load controller
 		********************************************************************************************/
-		$class		= $namespace . $classname;
 		$controller	= new $class;
-		$controller->run();
+		$controller->run($dom);
 
 		$handle = $view->get();
 		
@@ -64,9 +74,9 @@ class Frontcontroller {
 
 		/* load features
 		********************************************************************************************/
-		$alias		= Factory::load('Page')->get('alias');
-		$feature	= Factory::load('Core\Feature', $features_path, ucfirst($alias));
-		$handle	= $feature->run($handle);
+		$url		= Factory::load('Page')->get('url');
+		$feature	= Factory::load('Core\Feature', include($features_path), $url);
+		$handle		= $feature->run($handle);
 		return $handle;
 	}
 }
