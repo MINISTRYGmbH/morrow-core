@@ -74,8 +74,8 @@ class Frontcontroller {
 
 		/* load features
 		********************************************************************************************/
-		$url		= Factory::load('Page')->get('url');
-		$feature	= Factory::load('Core\Feature', include($features_path), $url);
+		$nodes		= Factory::load('Page')->get('nodes');
+		$feature	= Factory::load('Core\Feature', include($features_path), $nodes);
 		$handle		= $feature->run($handle);
 		return $handle;
 	}

@@ -77,12 +77,12 @@ class DOM extends \DOMDocument {
 	protected $_xpath;
 
 	/**
-	 * Creates an object of the HTML source so you are able to modify it.
+	 * Set the HTML source you want to work with.
 	 *
 	 * @param  string $html_string The HTML source to modify.
 	 * @return null
 	 */
-	public function __construct($html_string) {
+	public function set($html_string) {
 		$libxml_use_internal_errors = libxml_use_internal_errors(true);
 		// workaround to handle UTF-8
 		$this->loadHtml('<?xml encoding="UTF-8">' . $html_string);
@@ -180,6 +180,8 @@ class DOM extends \DOMDocument {
 	 * @return integer Returns how many existing elements were deleted.
 	 */
 	protected function _modify($action, $css_selector, $content) {
+		if (empty($content)) return 0;
+
 		$xpath_selector	= $this->_css_to_xpath_selector($css_selector);
 		$nodelist		= $this->_xpath->query($xpath_selector);
 		if ($nodelist->item(0) === null) return 0;

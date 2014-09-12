@@ -218,14 +218,12 @@ class Bootstrap {
 		$base_href = $this->url->getBaseHref();
 		$this->page->set('base_href', $base_href);
 		$this->page->set('alias', $alias);
-		$this->page->set('url', $url);
 		$this->page->set('path.relative', $path);
 		$this->page->set('path.relative_with_query', $fullpath);
 		$this->page->set('path.absolute', $base_href . $path);
 		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
 
-		$frontcontroller	= new \Morrow\Core\FrontController;
-		$handle				= $frontcontroller->run('\\app\\' . ucfirst(strtolower($alias)), true);
+		$handle	= (new \Morrow\Core\FrontController)->run('\\app\\' . ucfirst(strtolower($alias)), true);
 		
 		// output headers
 		$handler			= Factory::load('View')->getDisplayHandler();

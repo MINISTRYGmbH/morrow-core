@@ -37,21 +37,21 @@ class Feature {
 	protected $_config;
 
 	/**
-	 * The currently requested URL.
-	 * @var array $_url
+	 * The nodes of the currently requested URL.
+	 * @var array $_nodes
 	 */
-	protected $_url;
+	protected $_nodes;
 
 	/**
 	 * Initializes the Feature class.
 	 *
 	 * @param  array $config The configuration array for the handling of the features.
-	 * @param  string $url The currently requested URL.
+	 * @param  string $nodes The nodes of the currently requested URL.
 	 * @return null
 	 */
-	public function __construct($config, $url) {
+	public function __construct($config, $nodes) {
 		$this->_config		= $config;
-		$this->_url			= $url;
+		$this->_nodes		= implode('/', $nodes);
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Feature {
 	 */
 	public function delete($feature_name) {
 		foreach ($this->_config as $controller_regex => $page_features) {
-			if (!preg_match($controller_regex, $this->_url)) continue;
+			if (!preg_match($controller_regex, $this->_nodes)) continue;
 
 			foreach ($page_features as $ii => $section_features) {
 				foreach ($section_features as $iii => $actions) {
@@ -81,20 +81,22 @@ class Feature {
 	 * @return stream Return the modified content stream
 	 */
 	public function run($handle) {
-		// create DOM object
-		$content	= stream_get_contents($handle);
-		$dom		= new \Morrow\DOM($content);
-
 		// we have to use $page_references as a reference here so it shows changes on this->_config if we have modified it with delete()
 		// http://nikic.github.io/2011/11/11/PHP-Internals-When-does-foreach-copy.html
 		foreach ($this->_config as $controller_regex => &$page_features) {
-			if (!preg_match($controller_regex, $this->_url)) continue;
+			if (!preg_match($controller_regex, $this->_nodes)) continue;
 
 			foreach ($page_features as $xpath_query => $section_features) {
 				foreach ($section_features as $actions) {
 					foreach ($actions as $action => $class) {
-						$frontcontroller = new Frontcontroller;
-						$content = $frontcontroller->run($class, false, $dom);
+						// only create DOM object if we really have to change the content
+						if (!isset($dom)) {
+							$content	= stream_get_contents($handle);
+							$dom		= new \Morrow\DOM;
+							$dom->set($content);
+						}
+						
+						$content	= (new Frontcontroller)->run($class, false, $dom);
 
 						$dom->$action($xpath_query, stream_get_contents($content));
 					}
@@ -102,8 +104,11 @@ class Feature {
 			}
 		}
 
-		$handle = fopen('php://memory', 'r+');
-		fwrite($handle, $dom->get());
+		// $dom just exists when a feature was executed
+		if (isset($dom)) {
+			$handle = fopen('php://memory', 'r+');
+			fwrite($handle, $dom->get());
+		}
 
 		return $handle;
 	}
