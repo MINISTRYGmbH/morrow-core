@@ -88,7 +88,6 @@ class Feature {
 
 			foreach ($page_features as $xpath_query => $section_features) {
 				foreach ($section_features as $actions) {
-					foreach ($actions as $action => $class) {
 						// only create DOM object if we really have to change the content
 						if (!isset($dom)) {
 							$content	= stream_get_contents($handle);
@@ -96,10 +95,9 @@ class Feature {
 							$dom->set($content);
 						}
 						
-						$content	= (new Frontcontroller)->run($class, false, $dom);
+						$content = (new Frontcontroller)->run($actions['class'], false, $dom);
 
-						$dom->$action($xpath_query, stream_get_contents($content));
-					}
+						$dom->{$actions['action']}($xpath_query, stream_get_contents($content));
 				}
 			}
 		}

@@ -88,9 +88,14 @@ class Form {
 	 * @return	string	The HTML string.
 	 */
 	public function label($name, $value, $attributes = array()) {
+		if (isset($attributes['for'])) {
+			$attributes['id'] = $attributes['for'];
+		}
+
 		list($attributes) = $this->_prepare($name, $attributes);
-		
+
 		$attributes['for'] = $attributes['id'];
+
 		unset($attributes['id']);
 		unset($attributes['name']);
 		$attributes = $this->_arrayToAttributesString($attributes);

@@ -1,7 +1,7 @@
-Features
-============
+Modularity with Bricks
+======================
 
-"Features" is the most exciting feature in the Morrow framework.
+Bricks are the most exciting feature in the Morrow framework.
 If you use a agile method like [Scrum](http://en.wikipedia.org/wiki/Scrum_(software_development)), [Extreme Programming](http://en.wikipedia.org/wiki/Extreme_programming) or [Feature-driven development](http://en.wikipedia.org/wiki/Feature-driven_development) to develop your software you will know that features are well separated from each other in your Feature list.
 But your code in an MVC environment is nevertheless a little bit messy because all the code for one webpage which contains many different features is at least squeezed into one controller and one template.
 
@@ -10,11 +10,11 @@ In a typical MVC scenario you will have to remove some controllers, modify some 
 And then you hope that you did not remove an important variable of the controller and everything works.
 Now, sometimes it does.
 
-Morrow introduces "Feature" constructs you build corresponding to your Feature list.
+Morrow introduces Bricks you build corresponding to your Feature list.
 If you want to add a feature you can do that without interfering other features.
 If you later want to remove a feature you can do that in seconds. Without any side effects.
 
-> "Features" will keep your codebase clean and reusable.
+> Bricks will keep your codebase clean and reusable.
 
 
 Give me some useful examples for useful "Features"
@@ -23,7 +23,7 @@ Give me some useful examples for useful "Features"
   * Those which are not essential for you website or can simply reused like comment systems, social share buttons, tracking codes ...
   * Code optimizations like minifying the HTML, summarize JS `<script>` tags and CSS `<link>` tags. Put your "Feature" at the end of the `features.php` to get executed at the end so you get the finally rendered HTML.
   * It is also possible to completely build your website with "Features". So you can recombine your "Features" to build new pages.
-  * Access control. If you have build your website completely with "Features" you are able to remove features from the current page while the "Feature" processing queue is running.
+  * Access control. If you have build your website completely with "Features" you are able to remove other of your "Features" from the current page while the "Feature" processing queue is running.
   * There will be a lot more ...
   
 
@@ -65,7 +65,7 @@ So the first key (in the example `~^home$i~`) of the array is a regular expressi
 
 The second key is a CSS selector (in the example `#canvas`) that defines one or many HTML DOM elements we want to modify. It is also possible to use XPATH 1.0 selectors. For its usage take a look a \Morrow\DOM which is used internally at this point.
 
-At least we define in which way the DOM elements should be modified. Yo can use `prepend`, `append`, `after` and `before`.
+At least we define in which way the DOM elements should be modified. You can use `prepend`, `append`, `after` and `before`.
 Here an overview of the positions:
 
 ~~~{.php}
@@ -83,7 +83,7 @@ Here an overview of the positions:
 **Important:** All features are processed in the order of their occurence in this file.
 
 
-Every Feature is an MVC triade
+Every Feature is an MVC triad
 ------------------------------
 
 As stated before, every "Feature" is an MVC construct, a little independent world. So in every "Feature" folder you could find `configs/`, `models/`, `public/` and `templates/` folders.

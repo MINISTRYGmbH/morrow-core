@@ -223,7 +223,7 @@ class Bootstrap {
 		$this->page->set('path.absolute', $base_href . $path);
 		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
 
-		$handle	= (new \Morrow\Core\FrontController)->run('\\app\\' . ucfirst(strtolower($alias)), true);
+		$handle	= (new \Morrow\Core\FrontController)->run('\\app\\' . ucfirst(strtolower($alias)));
 		
 		// output headers
 		$handler			= Factory::load('View')->getDisplayHandler();

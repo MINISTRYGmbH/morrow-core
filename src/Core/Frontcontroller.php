@@ -39,7 +39,7 @@ class Frontcontroller {
 	 * @param  instance $dom An instance of the \Morrow\DOM class. It will be passed to the controller `run()`, so features are able to modify the generated HTML source.
 	 * @return stream Returns the generated content stream.
 	 */
-	public function run($class, $master, $dom = null) {
+	public function run($class, $master = true, $dom = null) {
 		$namespace			= explode('\\', $class);
 		$classname			= array_pop($namespace);
 		$namespace			= implode('\\', $namespace);
@@ -51,7 +51,7 @@ class Frontcontroller {
 		// add config of features to master config
 		if (!$master) {
 			$config_path	= strtolower(str_replace('/', '.', trim($root_path, '/')));
-			$config			= Factory::load('Config')->load($root_path_absolute . 'configs/', $config_path);
+			$config			= Factory::load($master ? 'Config': 'Config:config-feature')->load($root_path_absolute . 'configs/', $config_path);
 		}
 
 		/* load view
