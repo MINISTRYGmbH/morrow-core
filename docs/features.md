@@ -1,8 +1,8 @@
-Modularity with Bricks
+Modularity with Features
 ======================
 
-Bricks are the most exciting feature in the Morrow framework.
-If you use a agile method like [Scrum](http://en.wikipedia.org/wiki/Scrum_(software_development)), [Extreme Programming](http://en.wikipedia.org/wiki/Extreme_programming) or [Feature-driven development](http://en.wikipedia.org/wiki/Feature-driven_development) to develop your software you will know that features are well separated from each other in your Feature list.
+The feature "Features" is the most exciting feature in the Morrow framework. OK, seriously, it is very nice.
+If you are familiar with agile methods likes [Scrum](http://en.wikipedia.org/wiki/Scrum_(software_development)), [Extreme Programming](http://en.wikipedia.org/wiki/Extreme_programming) or [Feature-driven development](http://en.wikipedia.org/wiki/Feature-driven_development) to develop your software you will know that features are well separated from each other in your Feature list.
 But your code in an MVC environment is nevertheless a little bit messy because all the code for one webpage which contains many different features is at least squeezed into one controller and one template.
 
 Imagine you have built a CMS and you want to disable the adding of pages.
@@ -10,11 +10,11 @@ In a typical MVC scenario you will have to remove some controllers, modify some 
 And then you hope that you did not remove an important variable of the controller and everything works.
 Now, sometimes it does.
 
-Morrow introduces Bricks you build corresponding to your Feature list.
+Morrow introduces "Features" you build corresponding to your Feature list.
 If you want to add a feature you can do that without interfering other features.
 If you later want to remove a feature you can do that in seconds. Without any side effects.
 
-> Bricks will keep your codebase clean and reusable.
+> "Features" will keep your codebase clean and reusable.
 
 
 Give me some useful examples for useful "Features"
@@ -24,6 +24,7 @@ Give me some useful examples for useful "Features"
   * Code optimizations like minifying the HTML, summarize JS `<script>` tags and CSS `<link>` tags. Put your "Feature" at the end of the `features.php` to get executed at the end so you get the finally rendered HTML.
   * It is also possible to completely build your website with "Features". So you can recombine your "Features" to build new pages.
   * Access control. If you have build your website completely with "Features" you are able to remove other of your "Features" from the current page while the "Feature" processing queue is running.
+  * A/B Tests. Just write a A/B test feature controller that removes the feature you do not need at the moment.
   * There will be a lot more ...
   
 
@@ -45,14 +46,25 @@ This is an example your file could look like:
 ~~~{.php}
 <?php
 
-return array(
-	'~^home$~i' => array(
-		'#canvas' => array(
-			array('append' => '\\app\\features\\Time\\Simple'),
-			array(...),
-		),
-	),
-);
+$features = [
+	'~^(home)?$~i' => [
+		'#canvas' => [
+			[
+				'action' => 'append',
+				'class' => '\\app\\features\\Time\\Simple',
+				'config' => ['format' => '%Y-%m-%d']
+			],
+			...
+		],
+	],
+];
+
+
+foreach ($features as $regex => $feature) {
+	// ... modify here
+}
+
+return $features;
 
 ?>
 ~~~
@@ -65,8 +77,8 @@ So the first key (in the example `~^home$i~`) of the array is a regular expressi
 
 The second key is a CSS selector (in the example `#canvas`) that defines one or many HTML DOM elements we want to modify. It is also possible to use XPATH 1.0 selectors. For its usage take a look a \Morrow\DOM which is used internally at this point.
 
-At least we define in which way the DOM elements should be modified. You can use `prepend`, `append`, `after` and `before`.
-Here an overview of the positions:
+The second key contains an array of arrays, where each array defines one "Feature". As `action` you can use `prepend`, `append`, `after` and `before` to define where the result of the Feature triad should be written to.
+Here is an overview of the positions:
 
 ~~~{.php}
 [before]
@@ -79,6 +91,12 @@ Here an overview of the positions:
 </div>
 [after]
 ~~~
+
+As `class` you define the class of the Feature that should be executed.
+In the example there could exist a second Feature controller with the name "Extended" that output a more complicated display of a clock.
+To access this controller you would write `\\app\\features\\Time\\Extended`.
+
+The third key `config` is optional and overwrites configuration parameters of the config that may exist in the Features `config/` folder.
 
 **Important:** All features are processed in the order of their occurence in this file.
 
@@ -121,9 +139,9 @@ use Morrow\Debug;
 class Simple extends _Default {
 	public function run($dom) {
 		$time	= new Models\Time;
-		$format	= $this->config->get('app.features.time.format');
+		$format	= Factory::load('Config:feature')->get('format');
 
-		$view = Factory::load('View:view-feature');
+		$view = Factory::load('View:feature');
 		$view->setContent('time', $time->get());
 		$view->setContent('format', $format);
 	}
@@ -139,8 +157,8 @@ Yes, it looks very similar to the usually used controllers in Morrow. There are 
   This instance contains the current state of the HTML.
   So you are able to modify the DOM with the methods \Morrow\DOM provides.
   This is useful if your feature have to do many modifications to the DOM. For example if you want to change all paths of images, scripts, link-rels and so on to CDN paths.
-* The config of you feature is embedded into the main config and is accessible by `app.features.[FEATURE-NAME]`.
-* The instance of the view for your feature is accessible by `View:view-feature` instead of `View`.
+* The instance of the config for your feature is accessible by `Config:feature` instead of `Config`.
+* The instance of the view for your feature is accessible by `View:feature` instead of `View`.
 * You can also use public folders for images, scripts and so on that should be public accessible.
 Just use a path like this:
 `features/Time/public/default.js`

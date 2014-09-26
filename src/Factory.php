@@ -26,14 +26,14 @@ namespace Morrow;
 /**
  * This class handles instances of classes (e.g. Singletons) and is heavily used by the Morrow framework internally.
  * 
- * The first parameter you always pass is an instance identifier which consists of a class name (case sensitive) and an instance name (case insensitive and optional) divided by a colon.
+ * The first parameter you always pass is an instance identifier which consists of a class name and an optional instance name divided by a colon.
  * All following parameters will be passed to the constructor of the class.
  *
  * Handling multiple instances
  * ---------------------------
  * 
  * ~~~{.php}
- * // inits the class "Dummy" with the internal instance name "dummy" (left out because it is optional)
+ * // inits the class "Dummy" with the internal instance name "_morrow_default" (left out because it is optional)
  * // Usually used for instantiating a Singleton.
  * $first_instance  = Factory::load('Dummy');
  *
@@ -223,23 +223,21 @@ class Factory {
 			$classname = '\\Morrow\\' . $classname;
 		}
 
-		//create the instancename we need to get possible parameters from prepare
-		$instancename = (isset($instance_identifier[1])) ? $instance_identifier[1] : substr(strrchr($classname, '\\'), 1);
-		if ($instancename == false) $instancename = $classname;
-		$instancename = strtolower($instancename);
+		// set the instancename we need to get possible parameters from prepare
+		$instancename = (isset($instance_identifier[1])) ? $instance_identifier[1] : '_morrow_default';
 
 		// if there were no constructor parameters passed look for prepared parameters
 		if (count($factory_args) === 0) {
-			if (isset(self::$_params[$instancename])) {
-				$classname = self::$_params[$instancename]['classname'];
-				$factory_args = self::$_params[$instancename]['args'];
+			if (isset(self::$_params[$classname][$instancename])) {
+				$classname = self::$_params[$classname][$instancename]['classname'];
+				$factory_args = self::$_params[$classname][$instancename]['args'];
 			} else {
 				$factory_args = array();
 			}
 		}
 		
 		// if the instance was already instantiated return it, otherwise create it
-		$instance =& self::$_instances[$instancename];
+		$instance =& self::$_instances[$classname][$instancename];
 		
 		if (isset($instance)) {
 			if ($instance instanceof $classname) return $instance;
@@ -286,12 +284,10 @@ class Factory {
 		}
 
 		// use the instancename or the last part of the classname for saving the args
-		$instancename = (isset($params[1])) ? $params[1] : substr(strrchr($classname, '\\'), 1);
-		if ($instancename == false) $instancename = $classname;
-		$instancename = strtolower($instancename);
+		$instancename = (isset($params[1])) ? $params[1] : '_morrow_default';
 		
 		// save params for later
-		self::$_params[$instancename] = array(
+		self::$_params[$classname][$instancename] = array(
 			'classname'	=> $classname,
 			'args'		=> array_slice($args, 1),
 		);

@@ -80,6 +80,15 @@ class Config extends Core\Base {
 	}
 	
 	/**
+	 * Removes all config parameters.
+	 * 
+	 * @return null
+	 */
+	public function clear() {
+		$this->data = array();
+	}
+
+	/**
 	 * Loads config files in an array.
 	 * First it searches for a file _default.php then it tries to load the config for the current HOST and then for the Server IP address.
 	 * @param	string	$directory	The directory path where the config files are.

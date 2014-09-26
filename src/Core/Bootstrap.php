@@ -211,7 +211,6 @@ class Bootstrap {
 		Factory::prepare('Pagesession', 'pagesession.' . $alias, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
 		Factory::prepare('Security', new Factory('Session'), new Factory('View'), $this->input, $this->url);
-		Factory::prepare('View', Factory::load('Event'));
 
 		/* define page params
 		********************************************************************************************/

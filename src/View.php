@@ -72,14 +72,6 @@ class View {
 	protected $_filters = array();
 
 	/**
-	 * Initializes the class. This is done internally.
-	 * @param	object	$event_object	An instance of the \Morrow\Event class.
-	 */
-	public function __construct($event_object = null) {
-		$this->_event_object = $event_object;
-	}
-
-	/**
 	 * Assigns content variables to the actual view handler.
 	 * If $key is not set, it will be automatically set to "content". 
 	 *
@@ -166,14 +158,6 @@ class View {
 		// rewind handle
 		rewind($handle);
 
-		// trigger event/hook
-		if ($this->_event_object !== null) {
-			$this->_event_object->trigger('core.after_view_creation', $handle);
-		}
-
-		// rewind handle
-		rewind($handle);
-		
 		return $handle;
 	}
 

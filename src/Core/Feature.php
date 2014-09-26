@@ -95,7 +95,10 @@ class Feature {
 							$dom->set($content);
 						}
 						
-						$content = (new Frontcontroller)->run($actions['class'], false, $dom);
+						// pass config in features.php to the feature config
+						$config = isset($actions['config']) ? $actions['config'] : array();
+
+						$content = (new Frontcontroller)->run($actions['class'], $config, false, $dom);
 
 						$dom->{$actions['action']}($xpath_query, stream_get_contents($content));
 				}

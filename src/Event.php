@@ -113,7 +113,7 @@ class Event {
 	 */
 	public function trigger($event, $data = null) {
 		$event = strtolower(trim($event));
-		if (!isset($this->_events[$event])) return false;
+		if (!isset($this->_events[$event])) return $data;
 
 		foreach ($this->_events[$event] as $callback) {
 			// we don't want to affect the data if someone forgets to return the original data in his callback. 
