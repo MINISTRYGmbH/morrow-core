@@ -27,19 +27,9 @@ use Morrow\Factory;
 /**
  * With this view handler it is possible to output with plain PHP.
  * 
- * This handler uses the Serpent Template Engine which improves PHP a little bit to have more comfort when writing templates.
+ * This handler uses the [Serpent Template Engine](https://github.com/McSodbrenner/serpent-php-template-engine) which improves PHP a little bit to have more comfort when writing templates.
  * 
  * All public members of a view handler are changeable in the Controller by `\Morrow\View->setProperty($member, $value)`;
- *
- * Example
- * --------
- * 
- * ~~~{.php}
- * // ... Controller code
- * 
- *
- * // ... Controller code
- * ~~~
  */
 class Serpent extends AbstractView {
 	/**

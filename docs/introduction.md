@@ -1,10 +1,14 @@
-Introduction
+Welcome to Morrow
 =============================
 
-This framework gives you the power to handle 95% of your website jobs very efficiently and is based on the principles of the Model-View-Controller architecture (MVC). The goal of the MVC pattern is to provide for a flexible program design, that among other advantanges allows for changing and extending code easily and at the same time it promotes reusability. Additionally, larger applications profit from the reduction of complexity and the clear and orderly structure of the architecture.
+This framework gives you the power to handle 95% of your website jobs very efficiently and is based on the principles of the hierarchical Model-View-Controller architecture (HMVC).
+It is built on the principle "Build what you have needed not what you probably could need". So you won't find any class in this framework which ist not in daily use.
+
+Furthermore it is oriented to a typical hosted environment where you usually not have things such message queue systems as RabbitMQ or some other software for special cases.
+So it it adapted to web agencies daily business and not to companies that maintain single websites.
 
 Features
---------
+---------
 
 We decided not to write a big feature list with the absolutely out-standing features (every framework has), but we want you to keep two things in mind:
 
@@ -15,10 +19,11 @@ We decided not to write a big feature list with the absolutely out-standing feat
 
 OK, some people simply need a feature list. Now, here is a list which shows what Morrow distinguishes from other frameworks:
 
+* HMVC powered
+* Composer powered
 * Main focus on performance, security and low level requirements
 * i18n and l10n integration
 * View handlers for: XML, JSON, JSONP, CSV, Excel and Flash LoadVars files
 * Granular adjustable caching
 * Extensive form validation 
-* Composer powered
 * Well documented

@@ -49,7 +49,7 @@ namespace Morrow;
 * // controller code
 * 
 * // create text version of the mail
-* $view = Factory::load('view:view_mail');
+* $view = Factory::load('view:mail');
 * $view->setHandler('serpent');
 * $view->setProperty('template', 'mail/welcome');
 * $view->setContent('user', $user_data);

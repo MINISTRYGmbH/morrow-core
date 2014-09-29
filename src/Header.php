@@ -93,6 +93,17 @@ class Header {
 	protected $_cacheetag = true;
 
 	/**
+	 * Sets a header (`X-UA-Compatible: IE=edge,chrome=1`) for the Internet Explorer to force the browser to use its best rendering engine. 
+	 *
+	 * @return	null
+	 */
+	public function __construct() {
+		if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false)) {
+			$this->_header[] = 'X-UA-Compatible: IE=edge,chrome=1';
+		}
+	}
+
+	/**
 	 * Sets or overwrites an existing http header. 
 	 *
 	 * @param	string	$key	The name of the HTTP header.

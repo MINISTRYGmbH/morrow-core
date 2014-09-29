@@ -37,7 +37,7 @@ This folder e.g. `app/languages/de/` must contain these three files:
 
 **app/languages/[lang]/i18n.php**
 
-    ...
+This file is created and maintained automatically for all languages that are not the default language.
 
 **app/languages/[lang]/l10n.php**
 
@@ -60,11 +60,17 @@ return array(
 
 **app/languages/[lang]/tree.php**
 
-    ...
+For an explanation of this file take a look at the \Morrow\Navigation class.
 
 
+The workflow
+-------------
 
-
+Throughout the framework you will use the method `Factory::load('language')->_('YOUR TEXT')` (or `~~:_('YOUR TEXT')~` in templates) to define text you want to have multilingual.
+In parenthesis you write your text in the default language.
+If you request a page in a language that is not the default language the language class will try to find the translation for the text in its `i18n.php` file.
+If it cannot find the translation a crawler will search all calls to a method with an underscore within the whole framework (*.php and *.htm files) and will add unknown found texts to the `i18n.php` file.
+Now you can translate them.
 
 Language Dependent Templates
 ----------------------------

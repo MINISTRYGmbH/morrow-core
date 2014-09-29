@@ -31,7 +31,7 @@ Array
         ['1'] = String(11) "environment"
     )
     ['base_href'] = String(31) "http://example.com/docs/"
-    ['alias'] = String(4) "page_environment"
+    ['alias'] = String(4) "Page_environment"
     ['path'] => Array (4)
     (
         ['relative'] = String(16) "page/environment"
@@ -46,11 +46,11 @@ In the controller you have access to the page array by the \Morrow\Page class.
 
 ~~~{.php} 
 <?php
-namespace App;
+namespace app;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class PageController extends DefaultController {
+class Foobar extends _Default {
     public function run() {
         // Dump the contents of the page class
         Debug::dump($this->page->get());

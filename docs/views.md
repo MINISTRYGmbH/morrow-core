@@ -9,11 +9,11 @@ Example
 
 ~~~{.php}
 <?php
-namespace App;
+namespace app;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class PageController extends DefaultController {
+class Foobar extends _Default {
     public function run() {
         // auto initialize and use the benchmark class
         $this->load('benchmark:bm');
@@ -57,11 +57,11 @@ The following example for example replaces all occurences of `#TIME#` with an ac
 
 ~~~{.php} 
 <?php
-namespace App;
+namespace app;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class PageController extends DefaultController {
+class Foobar extends _Default {
     public function run() {
         $this->view->setFilter('generic', array('str_replace', '#TIME#', time(), ':CONTENT') );
  

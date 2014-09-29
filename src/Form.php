@@ -25,17 +25,7 @@ namespace Morrow;
 /**
  * The Form class provides several methods to output the HTML of form elements.
  * 
- * It works together with the validator class.
- * 
- * Examples
- * --------
- * 
- * ~~~{.php}
- * // ... Controller code
- * 
- *
- * // ... Controller code
- * ~~~
+ * It works together with the validator class. On more help on how to use this class take a look at the topic [Form handling](page/formhandling).
  */
 class Form {
 	/**

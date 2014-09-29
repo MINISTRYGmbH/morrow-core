@@ -9,23 +9,28 @@ Here an example:
 **URL:** `http://example.com/products/hard-stuff/funky-stuff/cool-funky-product`
 
 Morrow takes the given URL and creates an internal identifier (`alias`).
-It is the same as the URL path but with underscores instead of slashes. So the URL above will get the following alias:
+It is the same as the URL path but slashes are changed to underscores, hyphens are removed and first character is uppercase. So the URL above will get the following alias:
 
-**Alias:** `products_hard-stuff_funky-stuff_cool-funky-product`
+**Alias:** `Products_hardstuff_funkystuff_coolfunkyproduct`
+
+  > Important: You shouldn't use underscores in your URL to prevent ambiguities.
+
 
 The framework will now try to load and execute the following controller
 
-**Controller:** `app/products_hard-stuff_funky-stuff_cool-funky-product.php`
+**Controller:** `app/Products_hardstuff_funkystuff_coolfunkyproduct.php`
 
 and to use the template (if you have set Serpent as your default view handler)
 
-**Template:** `app/templates/products_hard-stuff_funky-stuff_cool-funky-product.htm`
+**Template:** `app/templates/Products_hardstuff_funkystuff_coolfunkyproduct.htm`
+
+As you can see you don't have to setup routes as in other frameworks because they are predefined.
 
 
 ### URL nodes are case insensitive
 
 `products/cool-funky-product/` loads the same controller as `Products/Cool-Funky-Product`.
-So you have to take care of using the same notation website wide because search engines respect different notations and could find duplicate content.
+So you have to take care of using the same notation website wide because search engines respect different notations and could rate your pages as duplicate content.
 
 
 ### Write your page requests without a trailing slash
@@ -51,7 +56,7 @@ Just use URL Routing and call the action in your default controller by hand.
 );
 ~~~
 
-**app/\_default.php**
+**app/\_Default.php**
 ~~~{.php}
 // init "application url design"
 $controller = $this->input->get('routed.controller');

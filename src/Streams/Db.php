@@ -47,7 +47,7 @@ namespace Morrow\Streams;
 * 
 * // Initialize the stream handler
 * $this->prepare('Db', $this->config->get('db'));
-* Factory::load('Streams\Db:streamdb_files', 'db', $this->db, 'files');
+* Factory::load('Streams\Db:files', 'db', $this->db, 'files');
 * 
 * // Write a file
 * file_put_contents('db://foo.txt', 'bar');
@@ -64,14 +64,12 @@ namespace Morrow\Streams;
 *  
 * // You have to init the stream wrapper before working with the session
 * $this->prepare('Db', $this->config->get('db'));
-* Factory::load('Streams\Db:streamdb_sessions', 'dbs', $this->db, 'sessions');
+* Factory::load('Streams\Db:sessions', 'dbs', $this->db, 'sessions');
 * 
 * // ... now work with the session
 * 
 * // ... Controller code
 * ~~~
-*
-* @SuppressWarnings(PHPMD.UnusedFormalParameter)
 */
 class Db {
 	/**

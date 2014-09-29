@@ -1,7 +1,7 @@
 Installation
 ============
 
-The requirements for the Morrow PHP Framework are just an Apache Webserver with the mod_rewrite extension enabled and PHP >= 5.3.8.
+The requirements for the Morrow PHP Framework are just an Apache Webserver with the mod_rewrite extension enabled and PHP >= 5.4.
 You must also have [Composer](http://getcomposer.org/) installed.
 If you don't have experience in using Composer, take a look at [Composer - Getting started](http://getcomposer.org/doc/00-intro.md).
 
@@ -24,8 +24,9 @@ Now you should have the following folder structure:
 
 * `app/` The App folder you are mostly working in
 	* `configs/` Configuration files of the framework
+	* `features/` Contains [Feature MVC triads](page/features)
 	* `languages/` Configuration and translations for the used languages
-	* `libraries/` Your own (helper) classes, PSR-0 compatible
+	* `libraries/` Your own (helper) classes, PSR-0 compatible libraries
 	* `models/` Your models for the project
 	* `storage/` Temporary files for the project (also log files and error logs)
 	* `templates/` Templates for (X)HTML output

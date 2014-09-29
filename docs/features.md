@@ -1,7 +1,7 @@
 Modularity with Features
 ======================
 
-The feature "Features" is the most exciting feature in the Morrow framework. OK, seriously, it is very nice.
+The feature *Features* is the most exciting feature in the Morrow framework. OK, seriously, it is very nice.
 If you are familiar with agile methods likes [Scrum](http://en.wikipedia.org/wiki/Scrum_(software_development)), [Extreme Programming](http://en.wikipedia.org/wiki/Extreme_programming) or [Feature-driven development](http://en.wikipedia.org/wiki/Feature-driven_development) to develop your software you will know that features are well separated from each other in your Feature list.
 But your code in an MVC environment is nevertheless a little bit messy because all the code for one webpage which contains many different features is at least squeezed into one controller and one template.
 
@@ -10,37 +10,37 @@ In a typical MVC scenario you will have to remove some controllers, modify some 
 And then you hope that you did not remove an important variable of the controller and everything works.
 Now, sometimes it does.
 
-Morrow introduces "Features" you build corresponding to your Feature list.
+Morrow introduces *Features* you build corresponding to your Feature list.
 If you want to add a feature you can do that without interfering other features.
 If you later want to remove a feature you can do that in seconds. Without any side effects.
 
-> "Features" will keep your codebase clean and reusable.
+> *Features* will keep your codebase clean and reusable.
 
 
-Give me some useful examples for useful "Features"
+Give me some useful examples for useful *Features*
 ------------------------------------------------
 
   * Those which are not essential for you website or can simply reused like comment systems, social share buttons, tracking codes ...
-  * Code optimizations like minifying the HTML, summarize JS `<script>` tags and CSS `<link>` tags. Put your "Feature" at the end of the `features.php` to get executed at the end so you get the finally rendered HTML.
-  * It is also possible to completely build your website with "Features". So you can recombine your "Features" to build new pages.
-  * Access control. If you have build your website completely with "Features" you are able to remove other of your "Features" from the current page while the "Feature" processing queue is running.
+  * Code optimizations like minifying the HTML, summarize JS `<script>` tags and CSS `<link>` tags. Put your *Feature* at the end of the `features.php` to get executed at the end so you get the finally rendered HTML.
+  * It is also possible to completely build your website with *Features*. So you can recombine your *Features* to build new pages.
+  * Access control. If you have build your website completely with *Features* you are able to remove other of your *Features* from the current page while the *Feature* processing queue is running.
   * A/B Tests. Just write a A/B test feature controller that removes the feature you do not need at the moment.
   * There will be a lot more ...
   
 
 How does it work?
 ----------------
-Every "Feature" in Morrow is its own MVC construct which should at least be fully independent from other features.
+Every *Feature* in Morrow is its own MVC construct which should at least be fully independent from other features.
 Think of widgets, but in Morrow you will not include the widget in the template and trigger this way the execution of controllers, models and templates.
 It is more like in jQuery where you append functionality to specific HTML DOM elements. So you are also able to extend an existing project without touching the original codebase.
 
-All "Features" are in the folder `app/features/`.
+All *Features* are in the folder `app/features/`.
 
 
 The registration file `app/features/features.php`
 -----------------------------------
 
-This file controls which "Feature" is executed on which page.
+This file controls which *Feature* is executed on which page.
 This is an example your file could look like:
 
 ~~~{.php}
@@ -69,15 +69,21 @@ return $features;
 ?>
 ~~~
 
-In this example we execute the controller `Simple` from the "Feature" folder `app/features/Time/`.
-You will find this "Feature" as an example in the `features/` folder.
+In this example we execute the controller `Simple` from the *Feature* folder `app/features/Time/`.
+You will find this *Feature* as an example in the `features/` folder.
 The response will be appended to the ID `canvas` of the HTML source, but only if the word `home` is present on the URL path.
 
-So the first key (in the example `~^home$i~`) of the array is a regular expression that defines on which pages which "Features" should be executed.
+So the first key (in the example `~^home$i~`) of the array is a regular expression that defines on which pages which *Features* should be executed.
+Use the `foreach` loop at the end of the definition to modify the rules in special cases.
+Useful if you have a rule like `~.*~` but there is one page where you want the feature not to be processed.
+A regular expression to exclude e.g. 10 of 1000 pages would be a litte complicated.
 
-The second key is a CSS selector (in the example `#canvas`) that defines one or many HTML DOM elements we want to modify. It is also possible to use XPATH 1.0 selectors. For its usage take a look a \Morrow\DOM which is used internally at this point.
+The second key is a CSS selector (in the example `#canvas`) that defines one or many HTML DOM elements we want to modify.
+It is also possible to use XPATH 1.0 selectors. For its usage take a look a \Morrow\DOM which is used internally at this point.
+Some features do not need to return HTML code, so it wouldn't matter which selector you use. In such a case leave the selector empty.
 
-The second key contains an array of arrays, where each array defines one "Feature". As `action` you can use `prepend`, `append`, `after` and `before` to define where the result of the Feature triad should be written to.
+The second key contains an array of arrays, where each array defines one *Feature*.
+As `action` you can use `prepend`, `append`, `after` and `before` to define where the result of the Feature should be written to.
 Here is an overview of the positions:
 
 ~~~{.php}
@@ -104,7 +110,7 @@ The third key `config` is optional and overwrites configuration parameters of th
 Every Feature is an MVC triad
 ------------------------------
 
-As stated before, every "Feature" is an MVC construct, a little independent world. So in every "Feature" folder you could find `configs/`, `models/`, `public/` and `templates/` folders.
+As stated before, every *Feature* is an MVC construct, a little independent world. So in every *Feature* folder you could find `configs/`, `models/`, `public/` and `templates/` folders.
 The folder structure for the example looks like this:
 
 ~~~
@@ -164,3 +170,10 @@ Just use a path like this:
 `features/Time/public/default.js`
 
 Now take a look at folder `app/features/Time/` and learn how to build a simple feature.
+
+
+Best practices
+---------------
+
+ * Do not write *Features* that interact with other *Features*. If you do this, you cannot securely remove a *Feature* anymore without breaking your application.
+ * If you work with date or time, use `Factory::load('\DateTime');` to get the current date and time. This way you can modify the date as described in [Debugging](page/debugging).

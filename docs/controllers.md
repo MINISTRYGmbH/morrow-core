@@ -11,42 +11,43 @@ All controllers are located in the folder `app/` and have the following name:
 The controller inheritance
 ---------------------------
 
-The principle is very simple. A page specific controller (PageController) extends a site wide controller (DefaultController).
+The principle is very simple. A page specific controller extends an optional site wide default controller.
 
-### The DefaultController
+### The default controller
 
-This default controller is loaded if your PageController extends the DefaultController, and is under full control of the user. The file has to be called `app/_default.php` and there has to be a method `setup()` which is automatically called. So your origin DefaultController looks like that:
+This default controller is loaded if your page specific controller extends the default controller, and is under full control of the user. 
+The file should be called `app/_Default.php` by convention. So your origin _Default looks like that:
 
 **app/_default.php**
 
 ~~~{.php}
 <?php
-namespace App;
+namespace app;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class DefaultController extends Factory {
-	public function setup() {
-		// set a default view handler
-		$this->view->setHandler('serpent');
+class _Default extends Factory {
+	public function __construct() {
+		// define actions you want to execute on every request
+		// ...
 	}
 }
 ?>
 ~~~
 
-### The PageController
+### The page specific controller
 
-At least your URL specific controller gets loaded. It extends the DefaultController and has to contain a method `run()` which is automatically called. It looks like this:
+At least your URL specific controller gets loaded. It extends the default controller and has to contain a method `run()` which is automatically called. It looks like this:
 
-**app/products_hard-stuff_funky-stuff_cool-funky-product.php**
+**app/Products_hardstuff_funkystuff_coolfunkyproduct.php**
 
 ~~~{.php}
 <?php
-namespace App;
+namespace app;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class PageController extends DefaultController {
+class Products_hardstuff_funkystuff_coolfunkyproduct extends _Default {
 	public function run() {
 	}
 }
@@ -60,7 +61,7 @@ Many classes are provided per default with Morrow. To use them you just have to 
 
 If you want to initialize a class under a different instance name or you want to pass arguments to the constructor of a class you have to use the method `prepare()` which is provided by the extending of the \Morrow\Factory class. For more documentation on this take a look at the \Morrow\Factory class.
 
-All classes you access by a member name are loaded on demand (see Lazy loading). So it's possible to init the database class in the GlobalController with `prepare()` although database access is not needed in all pages.
+All classes you access by a member name are loaded on demand (see Lazy loading). So it's possible to init the database class in the default controller with `prepare()` although database access is not needed at all pages.
 
 ### Example
 
@@ -68,11 +69,11 @@ All classes you access by a member name are loaded on demand (see Lazy loading).
 
 ~~~{.php}
 <?php
-namespace App;
+namespace app;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class PageController extends DefaultController {
+class Products_hardstuff_funkystuff_coolfunkyproduct extends _Default {
 	public function run() {
 		// auto initialize and use the benchmark class
 		$this->benchmark->start('Section 1');
@@ -90,11 +91,11 @@ class PageController extends DefaultController {
 
 ~~~{.php}
 <?php
-namespace App;
+namespace app;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class PageController extends DefaultController {
+class Products_hardstuff_funkystuff_coolfunkyproduct extends _Default {
 	public function run() {
 		// load the benchmark class under a different instance name
 		$this->prepare('Benchmark:bm');

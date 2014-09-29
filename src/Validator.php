@@ -61,7 +61,7 @@ namespace Morrow;
  * ));
   * 
  * // optional: we want always the same validator rules for a username
- * // so do this in the DefaultController
+ * // so do this in the default controller
  * $this->validator->addComposition('username', array(
  * 	'regex'			=> '/[a-z0-9-_]{8,}/i',
  * ));

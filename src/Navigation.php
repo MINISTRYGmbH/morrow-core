@@ -48,7 +48,7 @@ namespace Morrow;
  * );
  * ~~~
  * 
- * DefaultController
+ * Default controller
  * ~~~{.php}
  * // ... Controller code
  *

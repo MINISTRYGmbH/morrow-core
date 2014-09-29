@@ -1,7 +1,7 @@
 URL Routing
 =============================
 
-URL Routing is a nice thing if you want to internally redirect aliases to other aliases as the framework would normally use.
+URL Routing is a nice thing if you want to internally redirect URLs to other aliases as the framework would normally use.
 This is very useful if you want to build speaking or just clean URLs.
 
 Configuration

@@ -67,13 +67,13 @@ namespace Morrow;
  * ~~~
  *
  * A typical real life example would be the initialization of a database connection.
- * You would define the connection in the DefaultController but use it in the PageController.
+ * You would define the connection in the default controller but use it in the PageController.
  *
  * ~~~{.php}
- * // in the GlobalController
+ * // in the default controller
  * Factory::prepare('Db', Factory::load('Config')->get('db'));
  *
- * // in the PageController
+ * // in the page specific controller
  * $query = Factory::load('Db')->result("
  *     SELECT * FROM table
  * ");
@@ -110,7 +110,7 @@ namespace Morrow;
  * ----------------------
  *
  * You can extend this class to gain handling advantages.
- * The Morrow DefaultController extends the Factory by default so the following examples will work in Morrow controller files.
+ * The Morrow default controller extends the Factory by default so the following examples will work in Morrow controller files.
  *
  * If you access a not defined class member it will be understood as you want to use the class with the same name. 
  * So it will get instantiated and returned. This way you can use a method of a class and instantiating it in one line.
@@ -118,15 +118,13 @@ namespace Morrow;
  * ~~~{.php}
  * <?php
  *
- * namespace Morrow;
+ * namespace app;
+ * use Morrow\Factory;
+ * use Morrow\Debug;
  *
- * class PageController extends DefaultController { // the DefaultController extends the Factory
+ * class Foobar extends _Default { // the default controller extends the Factory
  * 		public function run() {
- *     		// Controller code
- *
  * 			$result = $this->dummy->get();
- * 			
- * 			// Controller code
  * 		}
  * }
  * ~~~

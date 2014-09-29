@@ -11,6 +11,7 @@ For extending these files and folders in your projects folder (e.g. `main/`) are
 * `vendor/` Maintained by Composer. Don't change anything here manually.
 * `app/libraries/` The PSR-0 controlled folder to load your own classes (e.g. helper classes), to load Non-Composer-Libraries or to hotfix Composer loaded libraries.
 
+
 Working with Composer libraries
 -------------------------------
 We assume that you know what Composer and Packagist is and how to work with it.
@@ -33,6 +34,8 @@ $content = Factory::load('\Michelf\MarkdownExtra')->defaultTransform($content);
 ~~~
 
 Just take care of the starting slash in front of the foreign class because you are in the namespace `App`.
+
+You will find an excellent list of other useful PHP libraries at [https://github.com/ziadoz/awesome-php](https://github.com/ziadoz/awesome-php).
 
 
 Working with Non-Composer-Libraries

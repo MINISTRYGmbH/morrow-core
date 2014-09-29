@@ -141,7 +141,7 @@ class Bootstrap {
 		$lang['possible']		= $config['languages'];
 		$lang['language_path']	= APP_PATH .'languages/';
 		$lang['search_paths']	= array(
-			APP_PATH			.'templates/*',
+			APP_PATH			.'*.htm',
 			APP_PATH			.'*.php'
 		);
 		$this->language = Factory::load('Language', $lang);
@@ -188,8 +188,7 @@ class Bootstrap {
 		
 		/* prepare some internal variables
 		********************************************************************************************/
-		$alias					= implode('_', $nodes);
-		$controller_file		= APP_PATH .'_default.php';
+		$alias					= str_replace('-', '', implode('_', $nodes));
 		$page_controller_file	= APP_PATH . $alias .'.php';
 		$path					= implode('/', $this->page->get('nodes'));
 		$query					= $this->input->getGet();

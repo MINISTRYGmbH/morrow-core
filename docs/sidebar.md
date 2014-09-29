@@ -6,6 +6,7 @@ General topics
 * [Controllers](page/controllers)
 * [Views](page/views)
 * [Environment information](page/environment)
+* [Extending](page/extending)
 
 Advanced topics
 
@@ -13,7 +14,6 @@ Advanced topics
 * [Debugging](page/debugging)
 * [URL routing](page/urlrouting)
 * [Caching](page/caching)
-* [Extending](page/extending)
 * [Localization](page/localization) 
 * [Form handling](page/formhandling)
 * [Features](page/features)
