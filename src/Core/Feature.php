@@ -27,19 +27,20 @@ use Morrow\Factory;
 use Morrow\Debug;
 
 /**
- * This class handles a MVC triade.
+ * This class handles a MVC triad.
  * 
- * It is heavily used by the framework to allow every \Morrow\Core\Feature to be executed as single MVC triade.
+ * It is heavily used by the framework to allow every \Morrow\Core\Features to be executed as single MVC triad.
  */
 class Feature {
 	/**
-	 * Executes a MVC triade.
+	 * Executes a MVC triad.
 	 * @param  string $class The controller class name which should be executed.
-	 * @param  boolean $master Is set to `true` if this is the top level triade.
+	 * @param  array $config_overwrite Overwrites single config parameters of a feature.
+	 * @param  boolean $master Is set to `true` if this is the top level triad.
 	 * @param  instance $dom An instance of the \Morrow\DOM class. It will be passed to the controller `run()`, so features are able to modify the generated HTML source.
 	 * @return stream Returns the generated content stream.
 	 */
-	public function run($class, $config_overwrite = array(), $master = false, $dom = null, $config = null) {
+	public function run($class, $config_overwrite = array(), $master = false, $dom = null) {
 		$namespace			= explode('\\', $class);
 		$classname			= array_pop($namespace);
 		$namespace			= implode('\\', $namespace);
