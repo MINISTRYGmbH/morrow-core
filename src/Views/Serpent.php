@@ -113,6 +113,7 @@ class Serpent extends AbstractView {
 			'endstrip'		=> 'ob_end_flush',
 			'loremipsum'	=> '\\Morrow\\Views\\Serpent::loremipsum',
 			'_'				=> '\\Morrow\\Factory::load("Language")->_',
+			'feature'		=> 'stream_get_contents(\\Morrow\\Factory::load("Core\\Feature")->run',
 		);
 		// add user mappings
 		foreach ($this->mappings as $key => $value) {

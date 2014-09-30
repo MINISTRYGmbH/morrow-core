@@ -21,75 +21,217 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 
+namespace Morrow;
+
+// Define paths for the Morrow namespace
+// Because this file is in the Core namespace we have to use a temporary namespace 
+define('PUBLIC_PATH', getcwd() . '/');
+define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
+define('APP_PATH', realpath(PUBLIC_PATH . '../app/') . '/');
+define('STORAGE_PATH', APP_PATH . 'storage/');
+define('VENDOR_PATH', PUBLIC_PATH . '../vendor/');
+
+
 namespace Morrow\Core;
 
 use Morrow\Factory;
-use Morrow\Debug;
 
 /**
- * This class handles a MVC triade.
+ * This class is the entry point to the Morrow framework.
  * 
- * It is heavily used by the framework to allow every \Morrow\Core\Feature to be executed as single MVC triade.
+ * It does some necessary configuration like setting of the top level exception handler, preparing of classes, url routing ...
  */
 class Frontcontroller {
 	/**
-	 * Executes a MVC triade.
-	 * @param  string $class The controller class name which should be executed.
-	 * @param  boolean $master Is set to `true` if this is the top level triade.
-	 * @param  instance $dom An instance of the \Morrow\DOM class. It will be passed to the controller `run()`, so features are able to modify the generated HTML source.
-	 * @return stream Returns the generated content stream.
+	 * Will be set by the Constructor as default error handler, and throws an exception to normalize the handling of errors and exceptions.
+	 *
+	 * @param	int $errno Contains the level of the error raised, as an integer.
+	 * @param	string $errstr Contains the error message, as a string.
+	 * @param	string $errfile The third parameter is optional, errfile, which contains the filename that the error was raised in, as a string.
+	 * @param	string $errline The fourth parameter is optional, errline, which contains the line number the error was raised at, as an integer.
+	 * @return	null
 	 */
-	public function run($class, $config_overwrite = array(), $master = true, $dom = null, $config = null) {
-		$namespace			= explode('\\', $class);
-		$classname			= array_pop($namespace);
-		$namespace			= implode('\\', $namespace);
-		$root_path			= trim(str_replace('\\', '/', $namespace), '/') . '/';
-		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
-		
-		/* load config
-		********************************************************************************************/
-		// add config of features to master config
-		if (!$master) {
-			$config			= Factory::load($master ? 'Config': 'Config:feature');
-			$config->clear();
-			$config->load($root_path_absolute . 'configs/');
+	public function errorHandler($errno, $errstr, $errfile, $errline) {
+		// get actual error_reporting
+		$error_reporting = error_reporting();
 
-			foreach ($config_overwrite as $key => $value) {
-				$config->set($key, $value);
+		// request for @ error-control operator
+		if ($error_reporting == 0) return;
+
+		// return if error should not get processed
+		if (($errno & $error_reporting) === 0) return;
+
+		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+	}
+
+	/**
+	 * Will be set by the Constructor as global exception handler.
+	 * @param	object	$exception	The thrown exception.
+	 * @return null
+	 */
+	public function exceptionHandler($exception) {
+		try {
+			// load errorhandler
+			$debug = Factory::load('Debug');
+			$debug->errorhandler($exception);
+		} catch (\Exception $e) {
+			echo "<pre>$exception</pre>\n\n";
+
+			// useful if the \Exception handler itself contains errors
+			echo "<pre>The Debug class threw an exception:\n$e</pre>";
+		}
+	}
+
+	/**
+	 * This function contains the main application flow.
+	 */
+	public function __construct() {
+		/* global settings
+		********************************************************************************************/
+		// compress the output
+		if (!ob_start("ob_gzhandler")) ob_start();
+
+		// include E_STRICT in error_reporting
+		error_reporting(E_ALL | E_STRICT);
+
+		/* declare errorhandler (needs config class)
+		********************************************************************************************/
+		set_error_handler(array($this, 'errorHandler'));
+		set_exception_handler(array($this, 'exceptionHandler'));
+
+		/* load all config files
+		********************************************************************************************/
+		$this->config	= Factory::load('Config');
+		$config = $this->config->load(APP_PATH . 'configs/');
+
+		/* set timezone 
+		********************************************************************************************/
+		if (!date_default_timezone_set($config['locale']['timezone'])) {
+			throw new \Exception(__METHOD__.'<br>date_default_timezone_set() failed.');
+		}
+
+		/* extract important variables
+		********************************************************************************************/
+		// map cli parameters to $_GET
+		if (php_sapi_name() === 'cli') {
+			global $argc, $argv;
+			if (isset($argv[2])) parse_str($argv[2], $_GET);
+			$_GET['morrow_path_info'] = isset($argv[1]) ? $argv[1] : '';
+		}
+
+		$morrow_path_info	= $_GET['morrow_path_info'];
+		$basehref_depth		= isset($_GET['morrow_basehref_depth']) ? $_GET['morrow_basehref_depth'] : 0;
+		unset($_GET['morrow_path_info']);
+		unset($_GET['morrow_basehref_depth']);
+
+		/* load some necessary classes
+		********************************************************************************************/
+		$this->input	= Factory::load('Input');
+		$this->page		= Factory::load('Page');
+
+		/* load page class and set nodes
+		********************************************************************************************/
+		$url		= $morrow_path_info;
+		$url		= (preg_match('~[a-z0-9\-/]~i', $url)) ? trim($url, '/') : '';
+		$nodes		= explode('/', $url);
+		$this->page->set('nodes', $nodes);
+
+		/* load languageClass and define alias
+		********************************************************************************************/
+		$lang['possible']		= $config['languages'];
+		$lang['language_path']	= APP_PATH .'languages/';
+		$lang['search_paths']	= array(
+			APP_PATH			.'*.htm',
+			APP_PATH			.'*.php'
+		);
+		$this->language = Factory::load('Language', $lang);
+
+		// language via path
+		if (isset($nodes[0]) && $this->language->isValid($nodes[0])) {
+			$input_lang_nodes = array_shift($nodes);
+			$this->page->set('nodes', $nodes);
+		}
+		
+		// language via input
+		$lang['actual'] = $this->input->get('language');
+
+		if ($lang['actual'] === null && isset($input_lang_nodes)) {
+			$lang['actual'] = $input_lang_nodes;
+		}
+
+		if ($lang['actual'] !== null) $this->language->set($lang['actual']);
+
+		/* url routing
+		********************************************************************************************/
+		$routes	= $config['routing'];
+		$url	= implode('/', $this->page->get('nodes'));
+
+		// iterate all rules
+		foreach ($routes as $rule => $new_url) {
+			$rule		= trim($rule, '/');
+			$new_url	= trim($new_url, '/');
+			$regex		= '=^'.$rule.'$=';
+
+			// rebuild route to a preg pattern
+			if (preg_match($regex, $url, $matches)) {
+				$url = preg_replace($regex, $new_url, $url);
+				unset($matches[0]);
+				foreach ($matches as $key => $value) {
+					$this->input->set('routed.' . $key, $value);	
+				}
 			}
 		}
 
-		/* load view
-		********************************************************************************************/
-		$view = Factory::load($master ? 'View' : 'View:feature');
-		$view->setHandler('serpent');
-		$view->setProperty('template_path', $root_path_absolute . 'templates/');
-		$view->setProperty('template', $classname);
-		$view->setContent('page', Factory::load('Page')->get(), true);
-
-		/* load controller
-		********************************************************************************************/
-		$controller	= new $class;
-		$controller->run($dom);
-
-		$handle = $view->get();
+		// set nodes in page class
+		$nodes = explode('/', $url);
+		$nodes = array_map('strtolower', $nodes);
 		
-		/* load features
+		/* prepare some internal variables
 		********************************************************************************************/
-		$features_path	= $root_path_absolute . 'features/features.php';
-		if (is_file($features_path)) {
-			$nodes		= Factory::load('Page')->get('nodes');
-			$feature	= Factory::load('Core\Feature', include($features_path), $nodes);
-			$handle		= $feature->run($handle);
-		}
-
-		/* trigger an event so others are able to modify the generated content at the end
+		$alias					= str_replace('-', '', implode('_', $nodes));
+		$page_controller_file	= APP_PATH . $alias .'.php';
+		$path					= implode('/', $this->page->get('nodes'));
+		$query					= $this->input->getGet();
+		$fullpath				= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
+		
+		/* load classes we need anyway
 		********************************************************************************************/
-		if ($master) {
-			$handle = Factory::load('Event')->trigger('core.after_view_creation', $handle);
-		}
+		$this->url	= Factory::load('Url', $this->language->get(), $lang['possible'], $fullpath, $basehref_depth);
+		
+		/* prepare classes so the user has less to pass
+		********************************************************************************************/
+		Factory::prepare('Cache', STORAGE_PATH .'codecache/');
+		Factory::prepare('Db', $config['db']);
+		Factory::prepare('Debug', $config['debug'], Factory::load('Event'));
+		Factory::prepare('Image', PUBLIC_STORAGE_PATH . 'thumbs/');
+		Factory::prepare('Log', $config['log']);
+		Factory::prepare('MessageQueue', $config['messagequeue'], $this->input);
+		Factory::prepare('Navigation', Factory::load('Language')->getTree(), $alias);
+		Factory::prepare('Pagesession', 'pagesession.' . $alias, $config['session']);
+		Factory::prepare('Session', 'main', $config['session']);
+		Factory::prepare('Security', new Factory('Session'), new Factory('View'), $this->input, $this->url);
 
+		/* define page params
+		********************************************************************************************/
+		$base_href = $this->url->getBaseHref();
+		$this->page->set('base_href', $base_href);
+		$this->page->set('alias', $alias);
+		$this->page->set('path.relative', $path);
+		$this->page->set('path.relative_with_query', $fullpath);
+		$this->page->set('path.absolute', $base_href . $path);
+		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
 
-		return $handle;
+		$handle	= (new \Morrow\Core\Feature)->run('\\app\\' . ucfirst(strtolower($alias)), array(), true);
+		
+		// output headers
+		$handler			= Factory::load('View')->getDisplayHandler();
+		$headers			= Factory::load('Header')->get($handle, $handler->mimetype, $handler->charset);
+		foreach ($headers as $h) header($h);
+		
+		rewind($handle);
+		fpassthru($handle);
+		fclose($handle);
+
+		ob_end_flush();
 	}
 }

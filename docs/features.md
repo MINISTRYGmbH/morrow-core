@@ -172,6 +172,40 @@ Just use a path like this:
 Now take a look at folder `app/features/Time/` and learn how to build a simple feature.
 
 
+Call a Feature manually
+-------------------------------
+
+It's also possible to call a *Feature* in a controller, a template or whereever you need it.
+
+**Keep in mind:** If you call a Feature manually you don't get the DOM passed to the *Feature* because the DOM doesn't exist at that time.
+
+
+**Controller code**
+
+In this example we pass the rendered HTML of the Feature `Foo\\Bar` to the main template as variable `$widget`.
+We also pass an array to the *Feature* to overwrite the configuration variable `foo` of the *Feature*.
+
+~~~{.php}
+<?php
+
+$handle = Factory::load('Core\Feature')->run('\\app\\features\\Foo\\Bar', array('foo' => 'bar'));
+$this->view->setContent('widget', stream_get_contents($handle));
+
+?>
+~~~
+
+**Template code**
+
+In this example we just render the HTML of the *Feature* where we have included this snippet.
+This is what you probably think of by the word "widget".
+
+~~~{.php}
+<div>
+	~~:feature('\\app\\features\\Time\\Simple')~
+</div>
+~~~
+
+
 Best practices
 ---------------
 

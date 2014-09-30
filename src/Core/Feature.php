@@ -27,89 +27,68 @@ use Morrow\Factory;
 use Morrow\Debug;
 
 /**
- * Handles the processing of the Features functionality.
+ * This class handles a MVC triade.
+ * 
+ * It is heavily used by the framework to allow every \Morrow\Core\Feature to be executed as single MVC triade.
  */
 class Feature {
 	/**
-	 * Stores the configuration of the features.
-	 * @var array $_config
+	 * Executes a MVC triade.
+	 * @param  string $class The controller class name which should be executed.
+	 * @param  boolean $master Is set to `true` if this is the top level triade.
+	 * @param  instance $dom An instance of the \Morrow\DOM class. It will be passed to the controller `run()`, so features are able to modify the generated HTML source.
+	 * @return stream Returns the generated content stream.
 	 */
-	protected $_config;
+	public function run($class, $config_overwrite = array(), $master = false, $dom = null, $config = null) {
+		$namespace			= explode('\\', $class);
+		$classname			= array_pop($namespace);
+		$namespace			= implode('\\', $namespace);
+		$root_path			= trim(str_replace('\\', '/', $namespace), '/') . '/';
+		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
+		
+		/* load config
+		********************************************************************************************/
+		// add config of features to master config
+		if (!$master) {
+			$config			= Factory::load($master ? 'Config': 'Config:feature');
+			$config->clear();
+			$config->load($root_path_absolute . 'configs/');
 
-	/**
-	 * The nodes of the currently requested URL.
-	 * @var array $_nodes
-	 */
-	protected $_nodes;
-
-	/**
-	 * Initializes the Feature class.
-	 *
-	 * @param  array $config The configuration array for the handling of the features.
-	 * @param  string $nodes The nodes of the currently requested URL.
-	 * @return null
-	 */
-	public function __construct($config, $nodes) {
-		$this->_config		= $config;
-		$this->_nodes		= implode('/', $nodes);
-	}
-
-	/**
-	 * Removes a feature from the processing queue. This is also possible while the queue is processed if you do that in a feature controller.
-	 *
-	 * @param  string $feature_name The name of the feature that should be removed.
-	 * @return null
-	 */
-	public function delete($feature_name) {
-		foreach ($this->_config as $controller_regex => $page_features) {
-			if (!preg_match($controller_regex, $this->_nodes)) continue;
-
-			foreach ($page_features as $ii => $section_features) {
-				foreach ($section_features as $iii => $actions) {
-					if (strpos(current($actions), $feature_name . '\\') === 0) {
-						unset($this->_config[$controller_regex][$ii][$iii]);
-					} 
-				}
-			}
-		}
-	}
-
-	/**
-	 * Processes the feature queue.
-	 * 
-	 * @param  stream $handle The stream containing the current content.
-	 * @return stream Return the modified content stream
-	 */
-	public function run($handle) {
-		// we have to use $page_references as a reference here so it shows changes on this->_config if we have modified it with delete()
-		// http://nikic.github.io/2011/11/11/PHP-Internals-When-does-foreach-copy.html
-		foreach ($this->_config as $controller_regex => &$page_features) {
-			if (!preg_match($controller_regex, $this->_nodes)) continue;
-
-			foreach ($page_features as $xpath_query => $section_features) {
-				foreach ($section_features as $actions) {
-						// only create DOM object if we really have to change the content
-						if (!isset($dom)) {
-							$content	= stream_get_contents($handle);
-							$dom		= new \Morrow\DOM;
-							$dom->set($content);
-						}
-						
-						// pass config in features.php to the feature config
-						$config = isset($actions['config']) ? $actions['config'] : array();
-
-						$content = (new Frontcontroller)->run($actions['class'], $config, false, $dom);
-
-						$dom->{$actions['action']}($xpath_query, stream_get_contents($content));
-				}
+			foreach ($config_overwrite as $key => $value) {
+				$config->set($key, $value);
 			}
 		}
 
-		// $dom just exists when a feature was executed
-		if (isset($dom)) {
-			$handle = fopen('php://memory', 'r+');
-			fwrite($handle, $dom->get());
+		/* load view
+		********************************************************************************************/
+		$view = Factory::load($master ? 'View' : 'View:feature');
+		$view->setHandler('serpent');
+		$view->setProperty('template_path', $root_path_absolute . 'templates/');
+		$view->setProperty('template', $classname);
+		$view->setContent('page', Factory::load('Page')->get(), true);
+
+		/* load controller
+		********************************************************************************************/
+		$controller	= new $class;
+		$controller->run($dom);
+
+		$handle = $view->get();
+		
+		/* load features
+		********************************************************************************************/
+		$features_path	= $root_path_absolute . 'features/features.php';
+		if (is_file($features_path)) {
+			$nodes		= Factory::load('Page')->get('nodes');
+			$feature	= Factory::load('Core\Features', include($features_path), $nodes);
+			$handle		= $feature->run($handle);
 		}
+
+		/* trigger an event so others are able to modify the generated content at the end
+		********************************************************************************************/
+		if ($master) {
+			$handle = Factory::load('Event')->trigger('core.after_view_creation', $handle);
+		}
+
 
 		return $handle;
 	}
