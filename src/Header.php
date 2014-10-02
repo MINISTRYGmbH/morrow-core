@@ -111,7 +111,7 @@ class Header {
 	 * @return	null
 	 */
 	public function setHeader($key, $value = '') {
-		if (stripos($key, 'content-type') !== false) {
+		if (stripos($key, 'content-type') === 0) {
 			throw new \Exception(__CLASS__.': the content-type header should not be directly set. Use setProperty("mimetype", ...) and setProperty("charset", ...) instead.');
 		}
 

@@ -210,4 +210,5 @@ Best practices
 ---------------
 
  * Do not write *Features* that interact with other *Features*. If you do this, you cannot securely remove a *Feature* anymore without breaking your application.
+ * Avoid inline javascript or stylesheets to allow the usage of CSP headers by the \Morrow\Security class.
  * If you work with date or time, use `Factory::load('\DateTime');` to get the current date and time. This way you can modify the date as described in [Debugging](page/debugging).

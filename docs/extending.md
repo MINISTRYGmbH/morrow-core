@@ -33,7 +33,7 @@ $content = Factory::load('\Michelf\MarkdownExtra')->defaultTransform($content);
 // ... Controller code
 ~~~
 
-Just take care of the starting slash in front of the foreign class because you are in the namespace `App`.
+Just take care of the starting slash in front of the foreign class because you are in the namespace `app`.
 
 You will find an excellent list of other useful PHP libraries at [https://github.com/ziadoz/awesome-php](https://github.com/ziadoz/awesome-php).
 
@@ -83,7 +83,7 @@ In a default installation your `composer.json` should now look like this:
 ~~~
     "autoload": {
         "psr-4": {
-            "App\\Models\\": "app/models/",
+            "app\\": "app/"
     	    "Morrow\\": "app/libraries/Morrow/"
         }
     }

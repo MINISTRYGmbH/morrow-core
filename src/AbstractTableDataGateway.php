@@ -36,12 +36,12 @@ use Morrow\Factory;
 * Example
 * ---------
 *
-* First you have to define your model, e.g. **App/Models/Products.php**
+* First you have to define your model, e.g. **app/models/Products.php**
 * 
 * ~~~{.php}
 * <?php
 * 
-* namespace App\Models;
+* namespace app\models;
 * use Morrow\Factory;
 *
 * class Products extends \Morrow\AbstractTableDataGateway {
@@ -73,7 +73,7 @@ use Morrow\Factory;
 * ~~~{.php}
 * <?php
 * 
-* namespace App\Models;
+* namespace app\models;
 * use Morrow\Factory;
 *
 * class Base extends \Morrow\AbstractTableDataGateway {
@@ -89,7 +89,7 @@ use Morrow\Factory;
 * ~~~{.php}
 * <?php
 * 
-* namespace App\Models;
+* namespace app\models;
 * 
 * class Products extends Base {
 * 	protected $_allowed_insert_fields	= array('title', 'description');
@@ -108,7 +108,7 @@ use Morrow\Factory;
 * ~~~{.php}
 * // ... Controller code
 *  
-* $products = new Models\Products;
+* $products = new models\Products;
 *
 * // insert some data
 * $data = array(

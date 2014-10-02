@@ -25,50 +25,35 @@ namespace Morrow;
 
 /**
  * Adds a little bit of security to your app or webpage.
- *
- * Example
- * -------
- *
- * ~~~{.php}
- * // Controller code
- *
- * // add CSP security rules
- * // all rules which are identical to default-src can be left out.
- * $this->security->setCsp(array(
- *     'default-src'	=> "'self'",
- *     //'script-src'	=> "'self'",
- *     //'img-src'		=> "'self'",
- *     'style-src'		=> "'self' http://fonts.googleapis.com",
- *     //'media-src'	=> "'self'",
- *     //'object-src'	=> "'self'",
- *     //'frame-src'	=> "'self'",
- *     'font-src'		=> "'self' http://themes.googleusercontent.com",
- * ));
- *
- * // Do not allow to show this site in a frameset (prevents clickjacking)
- * $this->security->setFrameOptions('DENY');
- * ~~~
+ * 
+ * For more information on the security handling in the Morrow framework take a look at the [Security page](page/security).
  */
 class Security {
 	/**
 	 * Adds a little bit of security to your app or webpage.
 	 *
-	 * @param	object	$session	An instance of the session class.
-	 * @param	object	$view	An instance of the session class.
-	 * @param	object	$input	An instance of the input class.
+	 * @param	array	$config	The configuration for this class.
+	 * @param	object	$header	An instance of the header class.
 	 * @param	object	$url	An instance of the url class.
+	 * @param	string	$input_csrf_token	The csrf token that came from the client
 	 */
-	public function __construct($session, $view, $input, $url) {
-		$this->session	= $session;
-		$this->view		= $view;
-		$this->input	= $input;
-		$this->url		= $url;
+	public function __construct($config, $header, $url, $input_csrf_token) {
+		$this->config			= $config;
+		$this->header			= $header;
+		$this->url				= $url;
+		$this->input_csrf_token	= $input_csrf_token;
+		$this->csrf_token		= md5(uniqid(rand(), true));
 
 		// hide PHP version
 		header_remove("X-Powered-By");
 
-		// set new token
-		if (is_null($session->get('csrf_token'))) $session->set('csrf_token', md5(uniqid(rand(), true)));
+		// set headers
+		$this->_setCsp($config['csp']);
+		
+		$this->header->setHeader('X-Frame-Options', $config['frame_options']);
+
+		// prevent MIME type sniffing
+		$this->header->setHeader('X-Content-Type-Options', $config['content_type_options']);
 	}
 
 	/**
@@ -80,7 +65,7 @@ class Security {
 	 * @param	array	$options	The options as associative array. Use the rule name as key and the option as value.
 	 * @return  `null`
 	 */
-	public function setCsp($options) {
+	protected function _setCsp($options) {
 		$csp_gecko	= '';
 		$csp		= '';
 
@@ -97,33 +82,15 @@ class Security {
 			}
 		}
 
-		$this->view->setHeader('Content-Security-Policy', $csp);
+		$this->header->setHeader('Content-Security-Policy', $csp);
 	}
 	
-	/**
-	 * Sets whether or not a browser should be allowed to render the page in a frame or iframe.
-	 * This can be used to avoid clickjacking attacks, by ensuring that their content is not embedded into other sites.
-	 *
-	 * The following options are possible:
-	 *
-	 * Value | Description
-	 * ------|-------------
-	 * `DENY` | The page cannot be displayed in a frame, regardless of the site attempting to do so.
-	 * `SAMEORIGIN` | The page can only be displayed in a frame on the same origin as the page itself.
-	 * `ALLOW-FROM` _uri_ | The page can only be displayed in a frame on the specified origin.
-	 * 
-	 * @param	string	$option	The option as described
-	 */
-	public function setFrameOptions($option) {
-		$this->view->setHeader('X-Frame-Options', $option);
-	}
-
 	/**
 	 * Gets the CSRF token for the current user.
 	 * @return	`string`
 	 */
 	public function getCSRFToken() {
-		return $this->session->get('csrf_token');
+		return $this->csrf_token;
 	}
 	
 	/**
@@ -139,7 +106,7 @@ class Security {
 	 * @return	string	The created URL.
 	 */
 	public function createCSRFUrl($path = '', $query = array(), $absolute = false, $separator = '&amp;') {
-		$query['csrf_token'] = $this->session->get('csrf_token');
+		$query['csrf_token'] = $this->csrf_token;
 		return $this->url->create($path, $query, $absolute, $separator);
 	}
 
@@ -148,7 +115,7 @@ class Security {
 	 * @return	boolean	Returns `true` if a valid token was sent otherwise `false`.
 	 */
 	public function checkCSRFToken() {
-		if ($this->input->get('csrf_token') != $this->session->get('csrf_token')) {
+		if ($this->input_csrf_token != $this->csrf_token) {
 			return false;
 		}
 		return true;

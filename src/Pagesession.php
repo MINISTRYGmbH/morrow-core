@@ -47,4 +47,5 @@ namespace Morrow;
 * // ... Controller code
 * ~~~
 */
-class PageSession extends Session {}
+class PageSession extends Session {
+}

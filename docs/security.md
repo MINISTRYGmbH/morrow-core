@@ -7,7 +7,7 @@ So this is a little guide to assist you in building safe applications.
 
 Explicit public folder
 ----------------------
-If possible you should change the document root to the `public` folder in your `App` folder.
+If possible you should change the document root to the `public` folder in your `app` folder.
 This way it is not possible to call other files than those public files.
 
 **Be careful:** If you have made changes to the uppermost `.htaccess` file, you have to copy them to the `.htaccess` file in the public folder.
@@ -30,7 +30,7 @@ That prevents Javascript to access the session cookie and makes XSS attacks on t
 If you have an application or a page which only relies on HTTPS you should add the `secure` flag to the session cookie parameters so the cookie will only be sent over secure connections.
 To do this, you just have to set the corresponding parameter in
 
-**App/configs/_default.php**
+**app/configs/_default_app.php**
 ~~~{.php}
 'session.cookie_secure'		=> true,
 ~~~
@@ -43,41 +43,22 @@ The string `Foobar` becomes `<!XSS!>Foobar<!/XSS!>`.
 
 So if you use a variable in a template you first have to declare its intended use, otherwise you will get an Exception.
 You have to wrap the variable in one of two template functions which will remove the `<!XSS!>` tags.
+That way you cannot forget to think about XSS when you build applications.
 
-* Use `:raw()` if you know that the input cannot contain a XSS attack.
+* Use `:raw()` if you know that the input cannot contain an XSS attack.
 * Use `:escape()`  to escape user input.
 
 **template.htm**
 ~~~{.php}
 /* Throws an Exception */
 ~~$page.base_href~
-~~~
 
-~~~{.php}
 /* Works */
 ~~:escape($page.base_href)~
 ~~:raw($page.base_href)~
 ~~~
 
-That way you cannot forget to think about XSS when you build applications.
-
 *More on <https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)>*
-
-
-Clickjacking
-----------------------
-If you know that your site won't ever be in a frame or you want so specify who is allowed to show your site in an iframe you should set the X-Frame-Options header to prevent Clickjacking.
-
-In Morrow this is done via `\Morrow\Security->setFrameOptions()`. Take a look there for more information.
-
-The followings prevents your page from ever been iframed:
-
-**DefaultController**
-~~~{.php}
-$this->security->setFrameOptions('DENY');
-~~~
-
-*More on <https://www.owasp.org/index.php/Clickjacking>*
 
 
 CSP (Content Security Policy)
@@ -85,20 +66,19 @@ CSP (Content Security Policy)
 The Content Security Policy (CSP) is an added layer of security that prevents XSS and data injection attacks.
 With CSP you can control which resources are allowed to load from where.
 
-In Morrow this is done via `\Morrow\Security->setCSP()`. Take a look there for more information.
+In Morrow the CSP HTTP headers are set by default. You can modify the rules in your
 
-**DefaultController**
+**_configs/_default_app.php**
 ~~~{.php}
-$this->security->setCsp(array(
-	'default-src'	=> "'self'",
-	//'script-src'	=> "'self'",
-	//'img-src'		=> "'self'",
-	'style-src'		=> "'self' http://fonts.googleapis.com",
-	//'media-src'	=> "'self'",
-	//'object-src'	=> "'self'",
-	//'frame-src'	=> "'self'",
-	'font-src'		=> "'self' http://themes.googleusercontent.com",
-));
+// security
+	'security.csp.default-src'		=> "'self'",
+	// 'security.csp.script-src'	=> "'self'",
+	// 'security.csp.img-src'		=> "'self'",
+	'security.csp.style-src'		=> "'self' 'unsafe-inline'",
+	// 'security.csp.media-src'		=> "'self'",
+	// 'security.csp.object-src'	=> "'self'",
+	// 'security.csp.frame-src'		=> "'self'",
+	// 'security.csp.font-src'		=> "'self'",
 ~~~
 
 *More on <https://www.owasp.org/index.php/Content_Security_Policy>*
@@ -138,3 +118,41 @@ In a template just use the mapping `:securl()` instead of `:url()` to create sec
 But do not forget to check the validity of the token in your controller.
 
 *More on <https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)>*
+
+
+Clickjacking
+----------------------
+If you know that your site won't ever be in a frame or you want so specify who is allowed to show your site in an iframe you should set the X-Frame-Options header to prevent Clickjacking.
+
+In Morrow the `X-Frame-Options` header is set by default. You can modify the value in your
+
+**_configs/_default_app.php**
+~~~{.php}
+// security
+	'security.frame_options'		=> "DENY", // (DENY|SAMEORIGIN|ALLOW-FROM uri)
+~~~
+
+*More on <https://www.owasp.org/index.php/Clickjacking>*
+
+
+MIME Type Sniffing
+------------------
+
+The only defined value, `nosniff`, prevents Internet Explorer and Google Chrome from MIME-sniffing a response away from the declared content-type.
+This also applies to Google Chrome, when downloading extensions.
+This reduces exposure to drive-by download attacks and sites serving user uploaded content that, by clever naming, could be treated by MSIE as executable or dynamic HTML files.
+If you want to specify who is allowed to show your site in an iframe you should set the X-Frame-Options header to prevent Clickjacking.
+
+In Morrow the `X-Content-Type-Options` header is set to `nosniff` by default. You can modify the value in your
+
+**_configs/_default_app.php**
+~~~{.php}
+// security
+	'security.content_type_options'	=> "nosniff",
+~~~
+
+Set the value to an empty string to disable this security related header. But you really shouldn`t do this. Try first to configure your webserver to output correct MIME types.
+
+*More on <https://www.owasp.org/index.php/List_of_useful_HTTP_headers>*
+
+

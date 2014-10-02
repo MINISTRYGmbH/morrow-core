@@ -101,13 +101,12 @@ class Frontcontroller {
 
 		/* load all config files
 		********************************************************************************************/
-		$this->config	= Factory::load('Config');
-		$config = $this->config->load(APP_PATH . 'configs/');
+		$config = Factory::load('Config')->load(APP_PATH . 'configs/');
 
 		/* set timezone 
 		********************************************************************************************/
 		if (!date_default_timezone_set($config['locale']['timezone'])) {
-			throw new \Exception(__METHOD__.'<br>date_default_timezone_set() failed.');
+			throw new \Exception(__METHOD__.'<br>date_default_timezone_set() failed. Timezone not valid.');
 		}
 
 		/* extract important variables
@@ -126,45 +125,35 @@ class Frontcontroller {
 
 		/* load some necessary classes
 		********************************************************************************************/
-		$this->input	= Factory::load('Input');
-		$this->page		= Factory::load('Page');
+		$input	= Factory::load('Input');
+		$page	= Factory::load('Page');
 
-		/* load page class and set nodes
+		/* set nodes
 		********************************************************************************************/
-		$url		= $morrow_path_info;
-		$url		= (preg_match('~[a-z0-9\-/]~i', $url)) ? trim($url, '/') : '';
-		$nodes		= explode('/', $url);
-		$this->page->set('nodes', $nodes);
+		$url	= (preg_match('~[a-z0-9\-/]~i', $morrow_path_info)) ? trim($morrow_path_info, '/') : '';
+		$nodes	= explode('/', $url);
 
 		/* load languageClass and define alias
 		********************************************************************************************/
-		$lang['possible']		= $config['languages'];
-		$lang['language_path']	= APP_PATH .'languages/';
-		$lang['search_paths']	= array(
-			APP_PATH			.'*.htm',
-			APP_PATH			.'*.php'
-		);
-		$this->language = Factory::load('Language', $lang);
+		$language = Factory::load('Language', $config['languages']);
 
 		// language via path
-		if (isset($nodes[0]) && $this->language->isValid($nodes[0])) {
+		if (isset($nodes[0]) && $language->isValid($nodes[0])) {
 			$input_lang_nodes = array_shift($nodes);
-			$this->page->set('nodes', $nodes);
 		}
 		
 		// language via input
-		$lang['actual'] = $this->input->get('language');
+		$actual = $input->get('language');
 
-		if ($lang['actual'] === null && isset($input_lang_nodes)) {
-			$lang['actual'] = $input_lang_nodes;
+		if ($actual === null && isset($input_lang_nodes)) {
+			$actual = $input_lang_nodes;
 		}
 
-		if ($lang['actual'] !== null) $this->language->set($lang['actual']);
+		if ($actual !== null) $language->set($actual);
 
 		/* url routing
 		********************************************************************************************/
 		$routes	= $config['routing'];
-		$url	= implode('/', $this->page->get('nodes'));
 
 		// iterate all rules
 		foreach ($routes as $rule => $new_url) {
@@ -174,58 +163,62 @@ class Frontcontroller {
 
 			// rebuild route to a preg pattern
 			if (preg_match($regex, $url, $matches)) {
-				$url = preg_replace($regex, $new_url, $url);
+				$url = trim(preg_replace($regex, $new_url, $url), '/');
 				unset($matches[0]);
 				foreach ($matches as $key => $value) {
-					$this->input->set('routed.' . $key, $value);	
+					$input->set('routed.' . $key, $value);	
 				}
 			}
 		}
 
 		// set nodes in page class
-		$nodes = explode('/', $url);
-		$nodes = array_map('strtolower', $nodes);
-		
+		$routed_nodes = explode('/', $url);
+		$routed_nodes = array_map('strtolower', $routed_nodes);
+				
 		/* prepare some internal variables
 		********************************************************************************************/
-		$alias					= str_replace('-', '', implode('_', $nodes));
-		$page_controller_file	= APP_PATH . $alias .'.php';
-		$path					= implode('/', $this->page->get('nodes'));
-		$query					= $this->input->getGet();
-		$fullpath				= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
-		
-		/* load classes we need anyway
-		********************************************************************************************/
-		$this->url	= Factory::load('Url', $this->language->get(), $lang['possible'], $fullpath, $basehref_depth);
+		$alias		= str_replace('-', '', implode('_', $routed_nodes));
+		$path		= implode('/', $nodes);
+		$query		= $input->getGet();
+		$fullpath	= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
 		
 		/* prepare classes so the user has less to pass
 		********************************************************************************************/
-		Factory::prepare('Cache', STORAGE_PATH .'codecache/');
+		Factory::prepare('Cache', $config['cache']['save_path']);
 		Factory::prepare('Db', $config['db']);
-		Factory::prepare('Debug', $config['debug'], Factory::load('Event'));
-		Factory::prepare('Image', PUBLIC_STORAGE_PATH . 'thumbs/');
+		Factory::prepare('Debug', $config['debug'], new Factory('Event'));
+		Factory::prepare('Image', $config['image']['save_path']);
 		Factory::prepare('Log', $config['log']);
-		Factory::prepare('MessageQueue', $config['messagequeue'], $this->input);
+		Factory::prepare('MessageQueue', $config['messagequeue'], $input);
 		Factory::prepare('Navigation', Factory::load('Language')->getTree(), $alias);
 		Factory::prepare('Pagesession', 'pagesession.' . $alias, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
-		Factory::prepare('Security', new Factory('Session'), new Factory('View'), $this->input, $this->url);
 
+		/* load classes we need anyway
+		********************************************************************************************/
+		$url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath, $basehref_depth);
+		$header		= Factory::load('Header');
+		$view		= Factory::load('View');
+		$security	= Factory::load('Security', $config['security'], $header, $url, $input->get('csrf_token'));
+		
 		/* define page params
 		********************************************************************************************/
-		$base_href = $this->url->getBaseHref();
-		$this->page->set('base_href', $base_href);
-		$this->page->set('alias', $alias);
-		$this->page->set('path.relative', $path);
-		$this->page->set('path.relative_with_query', $fullpath);
-		$this->page->set('path.absolute', $base_href . $path);
-		$this->page->set('path.absolute_with_query', $base_href . $fullpath);
+		$base_href = $url->getBaseHref();
+		$page->set('nodes', $nodes);
+		$page->set('base_href', $base_href);
+		$page->set('alias', $alias);
+		$page->set('path.relative', $path);
+		$page->set('path.relative_with_query', $fullpath);
+		$page->set('path.absolute', $base_href . $path);
+		$page->set('path.absolute_with_query', $base_href . $fullpath);
 
+		/* process MVC
+		********************************************************************************************/
 		$handle	= (new \Morrow\Core\Feature)->run('\\app\\' . ucfirst(strtolower($alias)), array(), true);
 		
 		// output headers
-		$handler			= Factory::load('View')->getDisplayHandler();
-		$headers			= Factory::load('Header')->get($handle, $handler->mimetype, $handler->charset);
+		$handler	= $view->getDisplayHandler();
+		$headers	= $header->get($handle, $handler->mimetype, $handler->charset);
 		foreach ($headers as $h) header($h);
 		
 		rewind($handle);
