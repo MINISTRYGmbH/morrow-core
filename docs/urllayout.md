@@ -4,32 +4,33 @@ URL Layout
 We think the URL is an important hierarchical navigation element for the user of a website.
 It is like a breadcrumb (also for search engines like Google) and that we decided to design our URL layout.
 
-Here an example:
-
-**URL:** `http://example.com/products/hard-stuff/funky-stuff/cool-funky-product`
-
 Morrow takes the given URL and creates an internal identifier (`alias`).
-It is the same as the URL path but slashes are changed to underscores, hyphens are removed and first character is uppercase. So the URL above will get the following alias:
+It is the same as the URL path but the alias is written lowercase and slashes are changed to underscores.
 
-**Alias:** `Products_hardstuff_funkystuff_coolfunkyproduct`
+  > Important: Because slashes are converted to underscores you shouldn't use underscores in your URL to prevent ambiguities.
 
-  > Important: You shouldn't use underscores in your URL to prevent ambiguities.
+**URL:** `http://example.com/products/cool-funky-product`  
+becomes to  
+**Alias:** `products_cool-funky-product`
 
+ 
+The `alias` is used for many things in the framework.
+Just the controller name and the template name are a little bit changed to get a valid filename for the controller so it can be autoloaded by Composer.
+It will uppercase the first character and will remove all characters that are not valid in a PHP class name (valid are `0-9`, `a-z` and `_`).
 
-The framework will now try to load and execute the following controller
+So the framework will try to load and execute the following controller
 
-**Controller:** `app/Products_hardstuff_funkystuff_coolfunkyproduct.php`
-
-and to use the template (if you have set Serpent as your default view handler)
-
-**Template:** `app/templates/Products_hardstuff_funkystuff_coolfunkyproduct.htm`
+**Controller:** `app/Products_coolfunkyproduct.php`  
+and to use the template (if you have set Serpent as your default view handler)  
+**Template:** `app/templates/Products_coolfunkyproduct.htm`
 
 As you can see you don't have to setup routes as in other frameworks because they are predefined.
+Of course it is possible to change these automapped routes by using [URL routing](page/urlrouting).
 
 
 ### URL nodes are case insensitive
 
-`products/cool-funky-product/` loads the same controller as `Products/Cool-Funky-Product`.
+As you have seen above `products/cool-funky-product/` loads the same controller as `Products/Cool-Funky-Product`.
 So you have to take care of using the same notation website wide because search engines respect different notations and could rate your pages as duplicate content.
 
 

@@ -132,6 +132,7 @@ class Frontcontroller {
 		********************************************************************************************/
 		$url	= (preg_match('~[a-z0-9\-/]~i', $morrow_path_info)) ? trim($morrow_path_info, '/') : '';
 		$nodes	= explode('/', $url);
+		$alias	= implode('_', $nodes);
 
 		/* load languageClass and define alias
 		********************************************************************************************/
@@ -177,10 +178,11 @@ class Frontcontroller {
 				
 		/* prepare some internal variables
 		********************************************************************************************/
-		$alias		= str_replace('-', '', implode('_', $routed_nodes));
-		$path		= implode('/', $nodes);
-		$query		= $input->getGet();
-		$fullpath	= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
+		$routed_alias		= implode('_', $routed_nodes);
+		$controller_name	= preg_replace('/[^a-z0-9_]/i', '', ucfirst($routed_alias));
+		$path				= implode('/', $nodes);
+		$query				= $input->getGet();
+		$fullpath			= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
 		
 		/* prepare classes so the user has less to pass
 		********************************************************************************************/
@@ -205,8 +207,11 @@ class Frontcontroller {
 		********************************************************************************************/
 		$base_href = $url->getBaseHref();
 		$page->set('nodes', $nodes);
-		$page->set('base_href', $base_href);
 		$page->set('alias', $alias);
+		$page->set('routed.nodes', $routed_nodes);
+		$page->set('routed.alias', $routed_alias);
+		$page->set('controller_name', $controller_name);
+		$page->set('base_href', $base_href);
 		$page->set('path.relative', $path);
 		$page->set('path.relative_with_query', $fullpath);
 		$page->set('path.absolute', $base_href . $path);
@@ -214,7 +219,7 @@ class Frontcontroller {
 
 		/* process MVC
 		********************************************************************************************/
-		$handle	= (new \Morrow\Core\Feature)->run('\\app\\' . ucfirst(strtolower($alias)), array(), true);
+		$handle	= (new \Morrow\Core\Feature)->run('\\app\\' . $controller_name, array(), true);
 		
 		// output headers
 		$handler	= $view->getDisplayHandler();

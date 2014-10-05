@@ -17,27 +17,27 @@ As in these constants all classes expect folder paths to have a trailing slash.
 The Page class
 --------------
 
-The \Morrow\Page class is provided by the framework and gives you info we think could be very helpful on generating templates.
+The \Morrow\Page class is provided by the framework and gives you information we think could be very helpful on working with the framework.
 Its output is automatically passed to the view handler.
 
 Here is the content of the current page:
 
 ~~~
-Array
+$ => Array (4)
 (
     ['nodes'] => Array (2)
     (
         ['0'] = String(4) "page"
         ['1'] = String(11) "environment"
     )
-    ['base_href'] = String(31) "http://example.com/docs/"
-    ['alias'] = String(4) "Page_environment"
+    ['base_href'] = String(32) "http://192.168.1.12/morrow/docs/"
+    ['alias'] = String(4) "page"
     ['path'] => Array (4)
     (
         ['relative'] = String(16) "page/environment"
         ['relative_with_query'] = String(16) "page/environment"
-        ['absolute'] = String(47) "http://example.com/morrow/trunk/docs/page/environment"
-        ['absolute_with_query'] = String(47) "http://example.com/morrow/trunk/docs/page/environment"
+        ['absolute'] = String(48) "http://192.168.1.12/morrow/docs/page/environment"
+        ['absolute_with_query'] = String(48) "http://192.168.1.12/morrow/docs/page/environment"
     )
 )
 ~~~
