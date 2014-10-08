@@ -74,6 +74,7 @@ You will find this *Feature* as an example in the `features/` folder.
 The response will be appended to the ID `canvas` of the HTML source, but only if the word `home` is present on the URL path.
 
 So the first key (in the example `~^home$i~`) of the array is a regular expression that defines on which pages which *Features* should be executed.
+You have to match the alias of the page.
 Use the `foreach` loop at the end of the definition to modify the rules in special cases.
 Useful if you have a rule like `~.*~` but there is one page where you want the feature not to be processed.
 A regular expression to exclude e.g. 10 of 1000 pages would be a litte complicated.

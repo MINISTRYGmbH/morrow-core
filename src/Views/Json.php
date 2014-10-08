@@ -22,19 +22,17 @@
 
 namespace Morrow\Views;
 
+use Morrow\Factory;
+
 /**
  * With this view handler it is possible to generate valid JSON responses.
  * 
  * The most accentuated difference to XML is the more compact representation of data structures what results in less traffic overhead. For more information on JSON, visit [http://www.json.org](http://www.json.org).
  *
- * All public members of a view handler are changeable in the Controller by `\Morrow\View->setProperty($member, $value)`;
- *
  * Example
  * --------
  * 
  * ~~~{.php}
- * // ... Controller code
- * 
  * $data['frame']['section 1']['headline']  = 'Example';
  * $data['frame']['section 2']['copy']      = 'Example text';
  * $data['frame'][0]['headline']            = 'Example';
@@ -43,28 +41,22 @@ namespace Morrow\Views;
  * $data['frame'][':section2']['param_key'] = 'param_value';
  * $content['content'] = $data;
  *  
- * $this->view->setHandler('Json');
- * $this->view->setContent('content', $data);
- *
- * // ... Controller code
+ * $view = Factory::load('Views\Json');
+ * $view->setContent('content', $data);
+ * return $view;
  * ~~~
  */
 class Json extends AbstractView {
 	/**
-	 * Changes the standard mimetype of the view handler. Possible values are `text/html`, `application/xml` and so on.
-	 * @var string $mimetype
-	 */
-	public $mimetype	= 'application/json';
-
-	/**
 	 * You always have to define this method.
-	 * @param   array $content Parameters that were passed to \Morrow\View->setContent().
-	 * @param   handle $handle  The stream handle you have to write your created content to.
 	 * @return  string  Should return the rendered content.
 	 * @hidden
 	 */
-	public function getOutput($content, $handle) {
-		fwrite($handle, json_encode($content['content']));
+	public function getOutput() {
+		// create stream handle for the output
+		$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+
+		fwrite($handle, json_encode($this->_content['content']));
 		return $handle;
 	}
 }

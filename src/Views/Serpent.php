@@ -28,10 +28,14 @@ use Morrow\Factory;
  * With this view handler it is possible to output with plain PHP.
  * 
  * This handler uses the [Serpent Template Engine](https://github.com/McSodbrenner/serpent-php-template-engine) which improves PHP a little bit to have more comfort when writing templates.
- * 
- * All public members of a view handler are changeable in the Controller by `\Morrow\View->setProperty($member, $value)`;
  */
 class Serpent extends AbstractView {
+	/**
+	 * Set to true if your view handler returns HTML. This flag allows to use Morrows Features.
+	 * @var	boolean $is_returning_html
+	 */
+	public $is_returning_html = true;
+
 	/**
 	 * a
 	 * @var string $template_path
@@ -75,11 +79,11 @@ class Serpent extends AbstractView {
 	public static $cycles = array();
 
 	/**
-	 * Initializes classes for the use in getOutput().
-	 * @hidden
+	 * Passes page content to the template
 	 */
 	public function __construct() {
-		$this->language	= Factory::load('Language');
+		$page = Factory::load('Page');
+		$this->setContent('page', $page->get(), true);
 	}
 
 	/**
@@ -89,15 +93,15 @@ class Serpent extends AbstractView {
 	 * @return  string  Should return the rendered content.
 	 * @hidden
 	 */
-	public function getOutput($content, $handle) {
+	public function getOutput() {
 		// assign template and frame_template to page
-		$content['page']['template'] = $this->template;
+		$this->_content['page']['template'] = $this->template;
 
 		$compile_dir = STORAGE_PATH .'serpent_templates_compiled/';
 		if (!is_dir($compile_dir)) mkdir($compile_dir); // create temp dir if it does not exist
 		
 		// init serpent
-		$_engine = new \McSodbrenner\Serpent\Serpent($compile_dir, $this->charset, $this->force_compile);
+		$_engine = new \McSodbrenner\Serpent\Serpent($compile_dir, 'utf-8', $this->force_compile);
 		
 		// handle mappings
 		$mappings = array(
@@ -124,15 +128,18 @@ class Serpent extends AbstractView {
 		
 		// handle resources
 		$_engine->addResource('file',
-			new \McSodbrenner\Serpent\ResourceFile($this->template_path, $this->template_suffix, $this->language->get())
+			new \McSodbrenner\Serpent\ResourceFile($this->template_path, $this->template_suffix, Factory::load('Language')->get())
 		);
 		
 		foreach ($this->resources as $resource) {
 			call_user_func_array(array($_engine, 'addResource'), $resource);
 		}
 		
+		// create stream handle for the output
+		$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+
 		// write source to stream
-		$_engine->pass($content);
+		$_engine->pass($this->_content);
 		fwrite($handle, $_engine->render($this->template));
 		
 		return $handle;

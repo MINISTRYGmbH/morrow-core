@@ -46,6 +46,7 @@ class Feature {
 		$namespace			= implode('\\', $namespace);
 		$root_path			= trim(str_replace('\\', '/', $namespace), '/') . '/';
 		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
+		$page				= Factory::load('Page')->get();
 		
 		/* load config
 		********************************************************************************************/
@@ -62,25 +63,37 @@ class Feature {
 
 		/* load view
 		********************************************************************************************/
-		$view = Factory::load($master ? 'View' : 'View:feature');
-		$view->setHandler('serpent');
-		$view->setProperty('template_path', $root_path_absolute . 'templates/');
-		$view->setProperty('template', $classname);
-		$view->setContent('page', Factory::load('Page')->get(), true);
+		$view = Factory::load($master ? 'Views\Serpent' : 'Views\Serpent:feature');
+		$view->template_path	= $root_path_absolute . 'templates/';
+		$view->template			= $classname;
 
 		/* load controller
 		********************************************************************************************/
+		// A missing controller will result in an empty page
 		$controller	= new $class;
-		$controller->run($dom);
 
-		$handle = $view->get();
+		if (isset($controller)) {
+			$view				= $controller->run($dom);
+			$is_returning_html	= false;
+
+			if (is_resource($view) && get_resource_type($view) == 'stream') {
+				$handle = $view;
+			} elseif (is_subclass_of($view, '\Morrow\Views\AbstractView')) {
+				$handle				= $view->getOutput();
+				$is_returning_html	= $view->is_returning_html;
+			} elseif (is_string($view)) {
+				$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+				fwrite($handle, $view);
+			} else {
+				throw new \Exception(__CLASS__.': The return value of a controller has to of type "stream", "string" or has to be a child of \Morrow\Views\AbstractView.');
+			}
+		}
 		
 		/* load features
 		********************************************************************************************/
 		$features_path	= $root_path_absolute . 'features/features.php';
-		if (is_file($features_path)) {
-			$nodes		= Factory::load('Page')->get('nodes');
-			$feature	= Factory::load('Core\Features', include($features_path), $nodes);
+		if ($is_returning_html && is_file($features_path)) {
+			$feature	= Factory::load('Core\Features', include($features_path), $page['alias']);
 			$handle		= $feature->run($handle);
 		}
 
@@ -90,7 +103,7 @@ class Feature {
 			$handle = Factory::load('Event')->trigger('core.after_view_creation', $handle);
 		}
 
-
+		rewind($handle);
 		return $handle;
 	}
 }

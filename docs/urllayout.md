@@ -71,6 +71,6 @@ if (!is_null($action)) {
     call_user_func_array( array($this, $action), $params);
 
     // set default template
-    $this->view->setProperty('template', $controller . '_' . $action, 'serpent');
+    $this->view->template = $controller . '_' . $action;
 }
 ~~~

@@ -31,8 +31,6 @@ namespace Morrow\Views;
  *   * **Attributes:** add attributes by prefixing the target tag with a colon.
  *   * **Numeric indices:** Numeric Indices will be prefixed by "entry" to generate a valid tag.
  *
- * All public members of a view handler are changeable in the Controller by `\Morrow\View->setProperty($member, $value)`;
- *
  * Example
  * --------
  * 
@@ -51,8 +49,9 @@ namespace Morrow\Views;
  * $data['frame']['section2']['copy1']      = 'This is a "<a>-link</a>';
  * $data['frame'][':section2']['param_key'] = 'param_value';
  *  
- * $this->view->setHandler('Xml');
- * $this->view->setContent('content', $data);
+ * $view = Factory::load('Views\Xml');
+ * $view->setContent('content', $data);
+ * return $view;
  *
  * // ... Controller code
  * ~~~
@@ -60,47 +59,42 @@ namespace Morrow\Views;
 class Xml extends AbstractView {
 	/**
 	 * Changes the standard mimetype of the view handler. Possible values are `text/html`, `application/xml` and so on.
-	 * @var string $mimetype
+	 * @var string $numeric_prefix
 	 */
-	public $mimetype	= 'application/xml';
-	
-	/**
-	 * Changes the standard mimetype of the view handler. Possible values are `text/html`, `application/xml` and so on.
-	 * @var string $mimetype
-	 */
-	public $numeric_prefix	= 'entry';
+	public $numeric_prefix = 'entry';
 
 	/**
 	 * The parameter used to create equal named tags. All characters behind this parameter will get stripped.
-	 * @var string $strip_tag
+	 * @var string $_strip_tag
 	 */
-	public $strip_tag		= ' ';
+	public $strip_tag = ' ';
 
 	/**
 	 * The parameter used to create attributes. Prefix the target node with this parameter.
-	 * @var string $attribute_tag
+	 * @var string $_attribute_tag
 	 */
-	public $attribute_tag	= ':';
+	public $attribute_tag = ':';
 
 	/**
 	 * You always have to define this method.
-	 * @param   array $content Parameters that were passed to \Morrow\View->setContent().
-	 * @param   handle $handle  The stream handle you have to write your created content to.
 	 * @return  string  Should return the rendered content.
 	 * @hidden
 	 */
-	public function getOutput($content, $handle) {
-		fwrite($handle, '<?xml version="1.0" encoding="'.$this->charset.'"?>');
+	public function getOutput() {
+		// create stream handle for the output
+		$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+
+		fwrite($handle, '<?xml version="1.0"?>');
 		
 		// count subkeys. if there is more than one we have to generate an auto container
 		// we have to take care of attributes
 		$count = 0;
-		foreach ($content['content'] as $key => $item) {
+		foreach ($this->_content['content'] as $key => $item) {
 			if ($key{0} != ':') $count++;
 		}
 		
-		if ($count != 1) $content['content'] = array('auto-container' => $content['content']);
-		fwrite($handle, $this -> _outputXML($content['content']));
+		if ($count != 1) $this->_content['content'] = array('auto-container' => $this->_content['content']);
+		fwrite($handle, $this -> _outputXML($this->_content['content']));
 		return $handle;
 	}
 

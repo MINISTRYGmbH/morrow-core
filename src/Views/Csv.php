@@ -22,10 +22,10 @@
 
 namespace Morrow\Views;
 
+use Morrow\Factory;
+
 /**
  * With this view handler it is possible to generate and output CSV (comma separated values) files.
- *
- * All public members of a view handler are changeable in the Controller by `\Morrow\View->setProperty($member, $value)`;
  *
  * Example
  * --------
@@ -42,19 +42,14 @@ namespace Morrow\Views;
  * $data[1]['intro']      = 'Very short text.';
  * $data[1]['text']       = "And a long text.";
  *  
- * $this->view->setHandler('Csv');
- * $this->view->setContent('content', $data);
+ * $view = Factory::load('Views\Csv');
+ * $view->setContent('content', $data);
+ * return $view;
  *
  * // ... Controller code
  * ~~~
  */
 class Csv extends AbstractView {
-	/**
-	 * Changes the standard mimetype of the view handler. Possible values are `text/html`, `application/xml` and so on.
-	 * @var string $mimetype
-	 */
-	public $mimetype	= 'text/csv';
-
 	/**
 	 * Fields get separated with this string.
 	 * @var string $mimetype
@@ -81,13 +76,14 @@ class Csv extends AbstractView {
 	
 	/**
 	 * You always have to define this method.
-	 * @param   array $content Parameters that were passed to \Morrow\View->setContent().
-	 * @param   handle $handle  The stream handle you have to write your created content to.
 	 * @return  string  Should return the rendered content.
 	 * @hidden
 	 */
-	public function getOutput($content, $handle) {
-		foreach ($content['content'] as $nr => $row) {
+	public function getOutput() {
+		// create stream handle for the output
+		$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+
+		foreach ($this->_content['content'] as $nr => $row) {
 			// use first row for headlines
 			if ($nr == 0 && $this->table_header === true) {
 				fwrite($handle, $this -> _createRow(array_keys($row)));

@@ -51,7 +51,7 @@ namespace Morrow;
 * // create text version of the mail
 * $view = Factory::load('view:mail');
 * $view->setHandler('serpent');
-* $view->setProperty('template', 'mail/welcome');
+* $view->template = 'mail/welcome';
 * $view->setContent('user', $user_data);
 * $body = $view->get();
 * 

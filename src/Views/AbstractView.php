@@ -22,33 +22,44 @@
 
 namespace Morrow\Views;
 
+use Morrow\Factory;
+use Morrow\Debug;
+
 /**
  * You should extend this abstract class if you are writing your own filter.
  */
 abstract class AbstractView {
 	/**
-	 * Changes the standard mimetype of the view handler. Possible values are `text/html`, `application/xml` and so on.
-	 * @var string $mimetype
+	 * Contains all variables that will be assigned to the view handler.
+	 * @var	array $_content
 	 */
-	public $mimetype		= 'text/html';
+	protected $_content;
 
 	/**
-	 * Changes the standard charset of the view handler. Possible values are `utf-8`, `iso-8859-1` and so on.
-	 * @var string $charset
+	 * Set to true if your view handler returns HTML. This flag allows to use Morrows Features.
+	 * @var	boolean $is_returning_html
 	 */
-	public $charset			= 'utf-8';
+	public $is_returning_html = false;
 
 	/**
-	 * Changes the http header so that the output is offered as a download. `$downloadable` defines the filename which is presented to the user. The mimetype will be automatically determined via file extension. It you specify a different mimetype, that will be used.
-	 * @var string $downloadable
+	 * Assigns content variables to the actual view handler.
+	 * If $key is not set, it will be automatically set to "content". 
+	 *
+	 * @param	mixed	$value	Variable of any type which will be accessable with key name $key.
+	 * @param	string	$key	The variable you can use in the view handler to access the variable.
+	 * @param	boolean	$overwrite	Set to true if you want to overwrite an existing value. Otherwise you will get an Exception.
+	 * @return	null
 	 */
-	public $downloadable	= '';
+	public function setContent($key, $value, $overwrite = false) {
+		if (isset($this->_content[$key]) && !$overwrite) {
+			throw new \Exception(__CLASS__.': the key "'.$key.' is already set.');
+		}
+		else $this->_content[$key] = $value;
+	}
 
 	/**
 	 * You always have to define this method.
-	 * @param   mixed $content Parameters that were passed to \Morrow\View->setContent().
-	 * @param   handle $handle  The stream handle you have to write your created content to.
-	 * @return  string  Should return the rendered content.
+	 * @return  stream  Should return the rendered content.
 	 */
-	abstract public function getOutput($content, $handle);
+	abstract public function getOutput();
 }

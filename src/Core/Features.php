@@ -37,10 +37,10 @@ class Features {
 	protected $_config;
 
 	/**
-	 * The nodes of the currently requested URL.
-	 * @var array $_nodes
+	 * The alias of the currently requested URL.
+	 * @var array $_alias
 	 */
-	protected $_nodes;
+	protected $_alias;
 
 	/**
 	 * Initializes the Feature class.
@@ -49,9 +49,9 @@ class Features {
 	 * @param  string $nodes The nodes of the currently requested URL.
 	 * @return null
 	 */
-	public function __construct($config, $nodes) {
+	public function __construct($config, $alias) {
 		$this->_config		= $config;
-		$this->_nodes		= implode('/', $nodes);
+		$this->_alias		= $alias;
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Features {
 	 */
 	public function delete($feature_name) {
 		foreach ($this->_config as $controller_regex => $page_features) {
-			if (!preg_match($controller_regex, $this->_nodes)) continue;
+			if (!preg_match($controller_regex, $this->_alias)) continue;
 
 			foreach ($page_features as $ii => $section_features) {
 				foreach ($section_features as $iii => $actions) {
@@ -84,23 +84,26 @@ class Features {
 		// we have to use $page_references as a reference here so it shows changes on this->_config if we have modified it with delete()
 		// http://nikic.github.io/2011/11/11/PHP-Internals-When-does-foreach-copy.html
 		foreach ($this->_config as $controller_regex => &$page_features) {
-			if (!preg_match($controller_regex, $this->_nodes)) continue;
+			if (!preg_match($controller_regex, $this->_alias)) continue;
 
 			foreach ($page_features as $xpath_query => $section_features) {
 				foreach ($section_features as $actions) {
 						// only create DOM object if we really have to change the content
 						if (!isset($dom)) {
+							rewind($handle);
 							$content	= stream_get_contents($handle);
 							$dom		= new \Morrow\DOM;
 							$dom->set($content);
 						}
-						
 						// pass config in features.php to the feature config
 						$config = isset($actions['config']) ? $actions['config'] : array();
 
-						$content = (new Feature)->run($actions['class'], $config, false, $dom);
+						// execute MVC triad
+						$handle = (new Feature)->run($actions['class'], $config, false, $dom);
 
-						$dom->{$actions['action']}($xpath_query, stream_get_contents($content));
+						// inject into DOM
+						$dom->{$actions['action']}($xpath_query, stream_get_contents($handle));
+						fclose($handle);
 				}
 			}
 		}

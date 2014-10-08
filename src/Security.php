@@ -50,10 +50,10 @@ class Security {
 		// set headers
 		$this->_setCsp($config['csp']);
 		
-		$this->header->setHeader('X-Frame-Options', $config['frame_options']);
+		$this->header->set("X-Frame-Options: {$config['frame_options']}");
 
 		// prevent MIME type sniffing
-		$this->header->setHeader('X-Content-Type-Options', $config['content_type_options']);
+		$this->header->set("X-Content-Type-Options: {$config['content_type_options']}");
 	}
 
 	/**
@@ -82,7 +82,7 @@ class Security {
 			}
 		}
 
-		$this->header->setHeader('Content-Security-Policy', $csp);
+		$this->header->set("Content-Security-Policy: {$csp}");
 	}
 	
 	/**

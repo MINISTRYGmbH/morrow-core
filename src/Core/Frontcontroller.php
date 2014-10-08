@@ -200,7 +200,6 @@ class Frontcontroller {
 		********************************************************************************************/
 		$url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath, $basehref_depth);
 		$header		= Factory::load('Header');
-		$view		= Factory::load('View');
 		$security	= Factory::load('Security', $config['security'], $header, $url, $input->get('csrf_token'));
 		
 		/* define page params
@@ -219,11 +218,15 @@ class Frontcontroller {
 
 		/* process MVC
 		********************************************************************************************/
+		// we register this autoloader that throws an Exception if a class cannot be found
+		spl_autoload_register(function($class) {
+			throw new \Exception("$class not found");
+		});
+
 		$handle	= (new \Morrow\Core\Feature)->run('\\app\\' . $controller_name, array(), true);
 		
 		// output headers
-		$handler	= $view->getDisplayHandler();
-		$headers	= $header->get($handle, $handler->mimetype, $handler->charset);
+		$headers	= $header->getAll($handle);
 		foreach ($headers as $h) header($h);
 		
 		rewind($handle);

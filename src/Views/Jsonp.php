@@ -27,8 +27,6 @@ namespace Morrow\Views;
  * 
  * JSONP is a common technique used in Javascript to request data from a server in a different domain. This is usually prohibited by web browsers because of the same-origin policy.
  *
- * All public members of a view handler are changeable in the Controller by `\Morrow\View->setProperty($member, $value)`;
- *
  * Example
  * --------
  * 
@@ -43,37 +41,33 @@ namespace Morrow\Views;
  * $data['frame'][':section2']['param_key'] = 'param_value';
  * $content['content'] = $data;
  *  
- * $this->view->setHandler('Jsonp');
- * $this->view->setContent('content', $data);
+ * $view = Factory::load('Views\Json');
+ * $view->setContent('content', $data);
+ * return $view;
  *
  * // ... Controller code
  * ~~~
  */
 class Jsonp extends AbstractView {
 	/**
-	 * Changes the standard mimetype of the view handler. Possible values are `text/html`, `application/xml` and so on.
-	 * @var string $mimetype
-	 */
-	public $mimetype = 'application/javascript';
-
-	/**
-	 * The name of the callback function that get passed the result as parameter. Default is `$_REQUEST['callback']` what it makes compatible with jQuery without a change.
+	 * The name of the _callback function that get passed the result as parameter. Default is `$_REQUEST['callback']` what it makes compatible with jQuery without a change.
 	 * @var string $callback
 	 */
 	public $callback;
 
 	/**
 	 * You always have to define this method.
-	 * @param   array $content Parameters that were passed to \Morrow\View->setContent().
-	 * @param   handle $handle  The stream handle you have to write your created content to.
 	 * @return  string  Should return the rendered content.
 	 * @hidden
 	 */
-	public function getOutput($content, $handle) {
+	public function getOutput() {
+		// create stream handle for the output
+		$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+
 		if (is_null($this->callback)) $this->callback = $_REQUEST['callback'];
 
 		fwrite($handle, $this->callback . '(');
-		fwrite($handle, json_encode($content['content']));
+		fwrite($handle, json_encode($this->_content['content']));
 		fwrite($handle, ');');
 		return $handle;
 	}
