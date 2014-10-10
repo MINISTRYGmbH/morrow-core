@@ -65,7 +65,9 @@ class Feature {
 		********************************************************************************************/
 		$view = Factory::load('Views\Serpent');
 		$view->template_path	= $root_path_absolute . 'templates/';
-		$view->template			= $classname;
+		
+		// generate template name
+		$view->template = call_user_func(Factory::load('Config')->get('router.template'), $class);
 
 		/* load controller
 		********************************************************************************************/
