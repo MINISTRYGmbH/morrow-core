@@ -9,7 +9,7 @@ Format
 You just have to follow this format in your shell:
 
 ~~~{.bash}
-[php] [index.php] [alias] [parameters]
+[php] [index.php] [path] [parameters]
 ~~~
 
 
@@ -17,7 +17,7 @@ Pattern | Description
 --------| ------------
 `php` | The path to your php interpreter.
 `index.php` | The path to the index.php in `app/public/`.
-`alias` | The page alias you want to call. If you have a page you would usually call by `http://domain.com/home/` you would pass `home/` or `home` here.
+`path` | The page path you want to call. If you have a page you would usually call by `http://domain.com/home/` you would pass `home/` or `home` here.
 `parameters` | Pass the parameters you want to use via the Input class in query string format.
 
 

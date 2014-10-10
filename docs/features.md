@@ -47,7 +47,7 @@ This is an example your file could look like:
 <?php
 
 $features = [
-	'~^(home)?$~i' => [
+	'~^home$~i' => [
 		'#canvas' => [
 			[
 				'action' => 'append',
@@ -71,9 +71,9 @@ return $features;
 
 In this example we execute the controller `Simple` from the *Feature* folder `app/features/Time/`.
 You will find this *Feature* as an example in the `features/` folder.
-The response will be appended to the ID `canvas` of the HTML source, but only if the word `home` is present on the URL path.
+The response will be appended to the ID `canvas` of the HTML source, but only if the word `home` is the only node in the URL path.
 
-So the first key (in the example `~^home$i~`) of the array is a regular expression that defines on which pages which *Features* should be executed.
+So the first key (in the example `~^home$~i`) of the array is a regular expression that defines on which pages which *Features* should be executed.
 You have to match the alias of the page.
 Use the `foreach` loop at the end of the definition to modify the rules in special cases.
 Useful if you have a rule like `~.*~` but there is one page where you want the feature not to be processed.
@@ -145,14 +145,16 @@ use Morrow\Debug;
 
 class Simple extends _Default {
 	public function run($dom) {
-		$time	= new Models\Time;
-		$format	= Factory::load('Config:feature')->get('format');
+		$time		= new Models\Time;
 
-		$view = Factory::load('View:feature');
-		$view->setContent('time', $time->get());
-		$view->setContent('format', $format);
+		$seconds	= Factory::load('Config:feature')->get('seconds');
+		$view		= Factory::load('Views\Serpent');
+		$view->setContent('seconds', $seconds);
+
+		$dom->append('body', '<script src="features/Time/public/default.js" />');
+
+		return $view;
 	}
-}
 
 ?>
 ~~~
@@ -165,8 +167,7 @@ Yes, it looks very similar to the usually used controllers in Morrow. There are 
   So you are able to modify the DOM with the methods \Morrow\DOM provides.
   This is useful if your feature have to do many modifications to the DOM. For example if you want to change all paths of images, scripts, link-rels and so on to CDN paths.
 * The instance of the config for your feature is accessible by `Config:feature` instead of `Config`.
-* The instance of the view for your feature is accessible by `View:feature` instead of `View`.
-* You can also use public folders for images, scripts and so on that should be public accessible.
+* You can also use the public folder of a feature for images, scripts and so on.
 Just use a path like this:
 `features/Time/public/default.js`
 

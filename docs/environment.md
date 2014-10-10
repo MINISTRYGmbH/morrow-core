@@ -30,8 +30,8 @@ $ => Array (4)
         ['0'] = String(4) "page"
         ['1'] = String(11) "environment"
     )
+    ['controller'] = String(9) "\app\Page"
     ['base_href'] = String(32) "http://192.168.1.12/morrow/docs/"
-    ['alias'] = String(4) "page"
     ['path'] => Array (4)
     (
         ['relative'] = String(16) "page/environment"

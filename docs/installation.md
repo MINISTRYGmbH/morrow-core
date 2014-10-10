@@ -29,7 +29,7 @@ Now you should have the following folder structure:
 	* `libraries/` Your own (helper) classes, PSR-0 compatible libraries
 	* `models/` Your models for the project
 	* `storage/` Temporary files for the project (also log files and error logs)
-	* `templates/` Templates for (X)HTML output
+	* `templates/` Templates for HTML output
 * `public/` All data that is accessible by HTTP
 * `vendor/` Composer handled libraries
 

@@ -88,8 +88,6 @@ class Serpent extends AbstractView {
 
 	/**
 	 * You always have to define this method.
-	 * @param   array $content Parameters that were passed to \Morrow\View->setContent().
-	 * @param   handle $handle  The stream handle you have to write your created content to.
 	 * @return  string  Should return the rendered content.
 	 * @hidden
 	 */

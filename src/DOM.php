@@ -26,7 +26,7 @@ namespace Morrow;
 * This class allows to simply modify an HTML source.
 * 
 * It allows the use of CSS Selectors so it should be really simple to specify an HTML element.
-* Kepp in mind that your HTML markup has to be valid otherwise you will get errors.
+* Keep in mind that your HTML markup has to be valid otherwise you will get errors.
 *
 * Example
 * -------

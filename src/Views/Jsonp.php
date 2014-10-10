@@ -41,7 +41,8 @@ namespace Morrow\Views;
  * $data['frame'][':section2']['param_key'] = 'param_value';
  * $content['content'] = $data;
  *  
- * $view = Factory::load('Views\Json');
+ * $view = Factory::load('Views\Jsonp');
+ * $view->callback = 'jsonp_callback';
  * $view->setContent('content', $data);
  * return $view;
  *
@@ -50,7 +51,7 @@ namespace Morrow\Views;
  */
 class Jsonp extends AbstractView {
 	/**
-	 * The name of the _callback function that get passed the result as parameter. Default is `$_REQUEST['callback']` what it makes compatible with jQuery without a change.
+	 * The name of the callback function that get passed the result as parameter. Default is `$_REQUEST['callback']` what it makes compatible with jQuery without a change.
 	 * @var string $callback
 	 */
 	public $callback;

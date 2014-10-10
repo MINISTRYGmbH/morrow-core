@@ -2,8 +2,6 @@ Controllers
 ==========
 
 The controller is the central point where you do all your work.
-In the previous article you have seen how the alias is created and how the controller path is derived from it.
-
 All controllers are located in the folder `app/` and are the only files there.
 
 The controller inheritance
@@ -35,7 +33,7 @@ class _Default extends Factory {
 
 ### The page specific controller
 
-At least your URL specific controller gets loaded. It extends the default controller and has to contain a method `run()` which is automatically called. It looks like this:
+At least your URL specific controller gets loaded. It can (and will most of the time) extend the default controller and has to contain a method `run()` which is automatically called. It looks like this:
 
 **app/Products_coolfunkyproduct.php**
 
@@ -45,7 +43,7 @@ namespace app;
 use Morrow\Factory;
 use Morrow\Debug;
 
-class Products_coolfunkyproduct extends _Default {
+class Products_categories_coolfunkyproduct extends _Default {
 	public function run() {
 	}
 }

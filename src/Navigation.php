@@ -28,7 +28,7 @@ namespace Morrow;
  * The navigation data has to follow a strict scheme but can be passed from different sources.
  * The default way is to store the data in an array in `APP_PATH . "/languages/LANGUAGE/tree.php"`.
  * 
- * Because aliases can exist in more than one navigation branch (f.e. meta and main) you have to specify the branch you want to work with. 
+ * Because paths can exist in more than one navigation branch (f.e. meta and main) you have to specify the branch you want to work with. 
  *
  * Example
  * -------
@@ -39,8 +39,8 @@ namespace Morrow;
  * 	'main' => array(
  * 		'home'	=> 'Homepage',
  * 		'products' => array('title' => 'Products', 'foo' => 'bar'),
- * 		'products_boxes' => 'Boxes',
- * 		'products_things' => 'Things',
+ * 		'products/boxes' => 'Boxes',
+ * 		'products/things' => 'Things',
  * 	),
  * 	'meta' => array(
  * 		'imprint'	=> 'Imprint',
@@ -118,9 +118,9 @@ class Navigation {
 
 	/**
 	 * Stores the currently active node.
-	 * @var	string $_active_id
+	 * @var	string $_active_path
 	 */
-	protected $_active_id = null;
+	protected $_active_path = null;
 	
 	/**
 	 * Creates the internal structure with the given data. Usually you don't have to call it yourself.
@@ -150,31 +150,28 @@ class Navigation {
 		
 		foreach ($data as $branch => $tree) {
 			// first create the flat tree
-			foreach ($tree as $id => $node) {
+			foreach ($tree as $path => $node) {
 				// its ok just to pass a string as title
 				if (is_string($node)) $node = array('title' => $node);
 				
 				if (!isset($node['title']) or empty($node['title'])) {
-					throw new \Exception(__CLASS__ . "': You have to define a title for id '{$id}'.");
+					throw new \Exception(__CLASS__ . "': You have to define a title for path '{$path}'.");
 				}
 				
 				// add other information
 				$node['active'] = false;
 				
-				// set alias if not already set (maybe data came from db)
-				if (!isset($node['alias'])) $node['alias'] = $id;
-				
-				$parts = explode('_', $node['alias']);
-				$node['path'] = implode('/', $parts) . '/';
-				$node['node'] = array_pop($parts);
-				$node['parent'] = implode('_', $parts);
+				$node['path']	= $path;
+				$parts			= explode('/', $node['path']);
+				$node['node']	= array_pop($parts);
+				$node['parent']	= implode('_', $parts);
 				
 				// add to nodes collection
-				$this->_nodes[$node['alias']] = $node;
+				$this->_nodes[$node['path']] = $node;
 
 				// add to nested tree
 				if (empty($node['parent'])) {
-					$this->_tree[$branch][$id] =& $this->_nodes[$id];
+					$this->_tree[$branch][$path] =& $this->_nodes[$path];
 				}
 			}
 		}
@@ -182,10 +179,10 @@ class Navigation {
 		$nodes =& $this->_nodes;
 		
 		// now create the references in between
-		foreach ($nodes as $id => $node) {
+		foreach ($nodes as $path => $node) {
 			// add as child to parent
 			if (isset($nodes[$node['parent']])) {
-				$nodes[$node['parent']]['children'][$id] =& $nodes[$id];
+				$nodes[$node['parent']]['children'][$path] =& $nodes[$path];
 			}
 		}
 	}
@@ -193,17 +190,17 @@ class Navigation {
 	/**
 	 * Adds nodes to the current tree.
 	 *
-	 * @param	string	$id	The node to set active.
-	 * @return	array	The set node or throws an Exception if the `$id` is not known.
+	 * @param	string	$path	The node to set active.
+	 * @return	array	The set node or throws an Exception if the `$path` is not known.
 	 */
-	public function setActive($id) {
-		if (!isset($this->_nodes[$id])) {
-			throw new \Exception(__METHOD__.': id "'.$id.'" does not exist.');
+	public function setActive($path) {
+		if (!isset($this->_nodes[$path])) {
+			throw new \Exception(__METHOD__.': path "'.$path.'" does not exist.');
 			return;
 		}
 		
-		// set active id to retrieve the breadcrumb
-		$this->_active_id = $id;
+		// set active path to retrieve the breadcrumb
+		$this->_active_path = $path;
 		
 		// set all nodes to inactive
 		foreach ($this->_nodes as $key => $item) {
@@ -211,7 +208,7 @@ class Navigation {
 		}
 		
 		// set actual node to active
-		$actual =& $this->_nodes[$id];
+		$actual =& $this->_nodes[$path];
 		$actual['active'] = true;
 		
 		// loop to the top and set to active
@@ -221,7 +218,7 @@ class Navigation {
 		}
 		
 		// return actual node
-		return $this->_nodes[$id];
+		return $this->_nodes[$path];
 	}
 
 	/**
@@ -230,37 +227,37 @@ class Navigation {
 	 * @return	array	The currently active node.
 	 */
 	public function getActive() {
-		return $this->get($this->_active_id);
+		return $this->get($this->_active_path);
 	}
 
 	/**
-	 * Gets the tree below the passed node id.
+	 * Gets the tree below the passed node path.
 	 *
-	 * @param	string	$id  A node id.
-	 * @return	array The full tree or a subtree if `$id` was passed.
+	 * @param	string	$path  A node path.
+	 * @return	array The full tree or a subtree if `$path` was passed.
 	 */
-	public function get($id = null) {
+	public function get($path = null) {
 		// return full tree
-		if (is_null($id)) return $this->_tree;
+		if (is_null($path)) return $this->_tree;
 
-		if (!isset($this->_nodes[$id])) {
-			throw new \Exception(__METHOD__.': id "'.$id.'" does not exist.');
+		if (!isset($this->_nodes[$path])) {
+			throw new \Exception(__METHOD__.': path "'.$path.'" does not exist.');
 			return;
 		}
-		return $this->_nodes[$id];
+		return $this->_nodes[$path];
 	}
 
 	/**
 	 * Find a specific node.
 	 *
-	 * @param	string	$field The field to search for like "title", "path", "alias" and so on.
-	 * @param	string	$id The search string.
+	 * @param	string	$field The field to search for like "title", "path" and so on.
+	 * @param	string	$path The search string.
 	 * @return	array The subtree with the found node and its children.
 	 */
-	public function find($field, $id) {
+	public function find($field, $path) {
 		// return node by user defined field
 		foreach ($this->_nodes as $node) {
-			if (isset($node[$field]) && $node[$field] == $id) return $node;
+			if (isset($node[$field]) && $node[$field] == $path) return $node;
 		}
 		return null;
 	}
@@ -274,13 +271,13 @@ class Navigation {
 		$breadcrumb = array();
 		
 		// handle not set active node
-		if (!isset($this->_nodes[$this->_active_id])) {
+		if (!isset($this->_nodes[$this->_active_path])) {
 			throw new \Exception(__METHOD__.': you did not set an active node so you cannot retrieve a breadcrumb.');
 			return;
 		}
 		
 		// get actual node
-		$actual = $this->_nodes[$this->_active_id];
+		$actual = $this->_nodes[$this->_active_path];
 		array_unshift($breadcrumb, $actual);
 		
 		// loop to the top

@@ -133,10 +133,9 @@ class Header {
 	}
 
 	/**
-	 * Sets filename. That results in a browser downloading the result.
+	 * Sets a filename. That results in a browser downloading the result.
 	 *
-	 * @param	string	$cachetime	A string in the format of strtotime() to specify when the current page should expire.
-	 * @param	string	$etag	Set to false prevents Morrow to set an eTag header. That means the client cache cannot be unset until the Last-Modified header time expires.
+	 * @param	string	$filename	The filename that should be offered to the client.
 	 * @return	null
 	 */
 	public function setFilename($filename) {

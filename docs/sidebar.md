@@ -12,7 +12,6 @@ Advanced topics
 
 * [Multiple Sites](page/multiplesites)
 * [Debugging](page/debugging)
-* [URL routing](page/urlrouting)
 * [Caching](page/caching)
 * [Localization](page/localization) 
 * [Form handling](page/formhandling)

@@ -1,11 +1,14 @@
 Views
 ============
 
-At the end you want to display data. Morrow provides many so called view handlers which let you output your data in different ways: (X)HTML, XML, CSV and some more.
-Your output is handled via the \Morrow\View class which is loaded automatically.
+At the end you want to display data.
+To display data your controller has to return a string, a stream/handle or a view handler.
 
-Example
--------
+
+Returning a string
+------------------
+
+The most simple you can do is just to return a string in your controller:
 
 ~~~{.php}
 <?php
@@ -15,33 +18,67 @@ use Morrow\Debug;
 
 class Foobar extends _Default {
     public function run() {
-        // auto initialize and use the benchmark class
-        $this->load('benchmark:bm');
-       
-        // use the benchmark class
-        $this->bm->start('Section 1');
-               
-        sleep(1);
-               
-        $this->bm->stop();
-        $results = $this->bm->get();
-               
-        // output the results
-        $this->view->setHandler('xml');
-        $this->view->setContent('content', $results);
+        return 'Hello world!';
     }
 }
 ?>
 ~~~
 
-As you can see, the only thing you have to do is define the handler which should be used for the output, and pass the data you want to display to the view class.
 
-Oh, you want to get the results as JSON data? No problem: Just change the handler to JSON
+Returning a stream/handle
+-------------------------
 
+This is very useful if you want to output a large file.
+One possibility would have been to load the file into a variable and output it as string. 
+But this way you would load a big file into memory.
+Think of a 1GB movie file.
+That would kill your script.
+
+So just return the file handle (or any other stream) in your controller and you will not have any problem:
+ 
 ~~~{.php}
-$this->view->setHandler('json');
+<?php
+namespace app;
+use Morrow\Factory;
+use Morrow\Debug;
+
+class Foobar extends _Default {
+    public function run() {
+        return fopen('big_file.mp4', 'r');
+    }
+}
+?>
 ~~~
 
-and you are done.
 
-Take a look at the other view handlers to see what is possible.
+Returning a view handler
+-------------------------
+
+This is the usually used way to display data.
+Every view handler has to extend \Morrow\Views\AbstractView to be accepted as valid return value.
+Morrow provides several view handlers to output your data in different ways: HTML, XML, CSV, JSON etc.
+
+~~~{.php}
+<?php
+namespace app;
+use Morrow\Factory;
+use Morrow\Debug;
+
+class Foobar extends _Default {
+    public function run() {
+        $view = Factory::load('Views\Xml');
+        $view->setContent('content', $_SERVER);
+        return $view;
+    }
+}
+?>
+~~~
+
+Oh, you want to get the results as JSON data? No problem: Just change the handler class to JSON:
+
+~~~{.php}
+        $view = Factory::load('Views\Json');
+~~~
+
+For a more detailed description of the view handlers take a look at the corresponding documentation page.
+

@@ -152,34 +152,8 @@ class Frontcontroller {
 
 		if ($actual !== null) $language->set($actual);
 
-		/* url routing
-		********************************************************************************************/
-		$routes	= $config['routing'];
-
-		// iterate all rules
-		foreach ($routes as $rule => $new_url) {
-			$rule		= trim($rule, '/');
-			$new_url	= trim($new_url, '/');
-			$regex		= '=^'.$rule.'$=';
-
-			// rebuild route to a preg pattern
-			if (preg_match($regex, $url, $matches)) {
-				$url = trim(preg_replace($regex, $new_url, $url), '/');
-				unset($matches[0]);
-				foreach ($matches as $key => $value) {
-					$input->set('routed.' . $key, $value);	
-				}
-			}
-		}
-
-		// set nodes in page class
-		$routed_nodes = explode('/', $url);
-		$routed_nodes = array_map('strtolower', $routed_nodes);
-				
 		/* prepare some internal variables
 		********************************************************************************************/
-		$routed_alias		= implode('_', $routed_nodes);
-		$controller_name	= preg_replace('/[^a-z0-9_]/i', '', ucfirst($routed_alias));
 		$path				= implode('/', $nodes);
 		$query				= $input->getGet();
 		$fullpath			= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
@@ -192,24 +166,31 @@ class Frontcontroller {
 		Factory::prepare('Image', $config['image']['save_path']);
 		Factory::prepare('Log', $config['log']);
 		Factory::prepare('MessageQueue', $config['messagequeue'], $input);
-		Factory::prepare('Navigation', Factory::load('Language')->getTree(), $alias);
-		Factory::prepare('Pagesession', 'pagesession.' . $alias, $config['session']);
+		Factory::prepare('Navigation', Factory::load('Language')->getTree(), $path);
+		Factory::prepare('Pagesession', 'pagesession.' . $path, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
 
 		/* load classes we need anyway
 		********************************************************************************************/
-		$url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath, $basehref_depth);
+		$Url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath, $basehref_depth);
 		$header		= Factory::load('Header');
-		$security	= Factory::load('Security', $config['security'], $header, $url, $input->get('csrf_token'));
+		$security	= Factory::load('Security', $config['security'], $header, $Url, $input->get('csrf_token'));
+
+		/* url routing
+		********************************************************************************************/
+		$router			= Factory::load('Core\Router', $config['router']['routes'], $config['router']['fallback']);
+		$router_results	= $router->parse($url);
+		$controller		= $router_results['controller'];
+		
+		foreach ($router_results['parameters'] as $key => $value) {
+			$input->set('routed.' . $key, $value);	
+		}
 		
 		/* define page params
 		********************************************************************************************/
-		$base_href = $url->getBaseHref();
+		$base_href = $Url->getBaseHref();
 		$page->set('nodes', $nodes);
-		$page->set('alias', $alias);
-		$page->set('routed.nodes', $routed_nodes);
-		$page->set('routed.alias', $routed_alias);
-		$page->set('controller_name', $controller_name);
+		$page->set('controller', $controller);
 		$page->set('base_href', $base_href);
 		$page->set('path.relative', $path);
 		$page->set('path.relative_with_query', $fullpath);
@@ -223,7 +204,7 @@ class Frontcontroller {
 			throw new \Exception("$class not found");
 		});
 
-		$handle	= (new \Morrow\Core\Feature)->run('\\app\\' . $controller_name, array(), true);
+		$handle	= (new \Morrow\Core\Feature)->run($controller, array(), true);
 		
 		// output headers
 		$headers	= $header->getAll($handle);

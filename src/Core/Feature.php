@@ -52,7 +52,7 @@ class Feature {
 		********************************************************************************************/
 		// add config of features to master config
 		if (!$master) {
-			$config			= Factory::load($master ? 'Config': 'Config:feature');
+			$config = Factory::load($master ? 'Config': 'Config:feature');
 			$config->clear();
 			$config->load($root_path_absolute . 'configs/');
 
@@ -63,7 +63,7 @@ class Feature {
 
 		/* load view
 		********************************************************************************************/
-		$view = Factory::load($master ? 'Views\Serpent' : 'Views\Serpent:feature');
+		$view = Factory::load('Views\Serpent');
 		$view->template_path	= $root_path_absolute . 'templates/';
 		$view->template			= $classname;
 
@@ -78,7 +78,7 @@ class Feature {
 
 			if (is_resource($view) && get_resource_type($view) == 'stream') {
 				$handle = $view;
-			} elseif (is_subclass_of($view, '\Morrow\Views\AbstractView')) {
+			} elseif (is_object($view) && is_subclass_of($view, '\Morrow\Views\AbstractView')) {
 				$handle				= $view->getOutput();
 				$is_returning_html	= $view->is_returning_html;
 			} elseif (is_string($view)) {
@@ -93,7 +93,7 @@ class Feature {
 		********************************************************************************************/
 		$features_path	= $root_path_absolute . 'features/features.php';
 		if ($is_returning_html && is_file($features_path)) {
-			$feature	= Factory::load('Core\Features', include($features_path), $page['alias']);
+			$feature	= Factory::load('Core\Features', include($features_path), $page['path']['relative']);
 			$handle		= $feature->run($handle);
 		}
 

@@ -4,7 +4,7 @@ Welcome to Morrow
 This framework gives you the power to handle 95% of your website jobs very efficiently and is based on the principles of the hierarchical Model-View-Controller architecture (HMVC).
 It is built on the principle "Build what you have needed not what you probably could need". So you won't find any class in this framework which ist not in daily use.
 
-Furthermore it is oriented to a typical hosted environment where you usually not have things such message queue systems as RabbitMQ or some other software for special cases.
+Furthermore it is oriented to a typical hosted environment where you usually not have things such message queue systems as RabbitMQ or other specialized software.
 So it it adapted to web agencies daily business and not to companies that maintain single websites.
 
 Features
@@ -23,7 +23,8 @@ OK, some people simply need a feature list. Now, here is a list which shows what
 * Composer powered
 * Main focus on performance, security and low level requirements
 * i18n and l10n integration
-* View handlers for: XML, JSON, JSONP, CSV, Excel and Flash LoadVars files
+* View handlers for: XML, JSON, JSONP and CSV
 * Granular adjustable caching
 * Extensive form validation 
 * Well documented
+* ... :)

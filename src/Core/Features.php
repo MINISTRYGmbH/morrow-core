@@ -38,20 +38,20 @@ class Features {
 
 	/**
 	 * The alias of the currently requested URL.
-	 * @var array $_alias
+	 * @var array $_path
 	 */
-	protected $_alias;
+	protected $_path;
 
 	/**
 	 * Initializes the Feature class.
 	 *
 	 * @param  array $config The configuration array for the handling of the features.
-	 * @param  string $nodes The nodes of the currently requested URL.
+	 * @param  string $path The path of the currently requested URL.
 	 * @return null
 	 */
-	public function __construct($config, $alias) {
+	public function __construct($config, $path) {
 		$this->_config		= $config;
-		$this->_alias		= $alias;
+		$this->_path		= $path;
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Features {
 	 */
 	public function delete($feature_name) {
 		foreach ($this->_config as $controller_regex => $page_features) {
-			if (!preg_match($controller_regex, $this->_alias)) continue;
+			if (!preg_match($controller_regex, $this->_path)) continue;
 
 			foreach ($page_features as $ii => $section_features) {
 				foreach ($section_features as $iii => $actions) {
@@ -84,7 +84,7 @@ class Features {
 		// we have to use $page_references as a reference here so it shows changes on this->_config if we have modified it with delete()
 		// http://nikic.github.io/2011/11/11/PHP-Internals-When-does-foreach-copy.html
 		foreach ($this->_config as $controller_regex => &$page_features) {
-			if (!preg_match($controller_regex, $this->_alias)) continue;
+			if (!preg_match($controller_regex, $this->_path)) continue;
 
 			foreach ($page_features as $xpath_query => $section_features) {
 				foreach ($section_features as $actions) {
