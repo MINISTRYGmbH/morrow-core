@@ -57,7 +57,6 @@ $this->view->setContent('form', $form);
 OK, now he have setup our controller. Let's take a look at the template.
 
 ~~~{.php}
-<!-- first we -->
 <?php
 // set the error class the form class will append to labels and input fields in the case of errors
 // this is optional, the default class is "error"
