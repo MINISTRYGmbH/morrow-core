@@ -1,6 +1,10 @@
 Views
 ============
 
+> A View [...] is a collection of classes representing the elements in the user interface (all of the things the user can see and respond to on the screen, such as buttons, display boxes, and so forth).
+>
+> *Margaret Rouse (whatIs.com)*
+
 At the end you want to display data.
 To display data your controller has to return a string, a stream/handle or a view handler.
 

@@ -1,6 +1,10 @@
 Controllers
 ==========
 
+> A Controller [...] represents the classes connecting the model and the view, and is used to communicate between classes in the model and view.
+>
+> *Margaret Rouse (whatIs.com)*
+
 The controller is the central point where you do all your work.
 All controllers are located in the folder `app/` and are the only files there.
 

@@ -2,8 +2,10 @@ General topics
 
 * [Introduction](page/introduction)
 * [Installation](page/installation)
+* [Configuration](page/configuration)
 * [URL Layout](page/urllayout)
 * [Controllers](page/controllers)
+* [Models](page/models)
 * [Views](page/views)
 * [Environment information](page/environment)
 * [Extending](page/extending)
