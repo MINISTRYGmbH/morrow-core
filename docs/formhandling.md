@@ -18,7 +18,7 @@ $this->view->setContent('salutations', $salutations);
 
 // these are the rules for the validator class. the input data has to fulfill those requirements
 $rules =  array(
-	'salutation'	=> array('required', 'array' => array('in_keys' => $salutations)),
+	'salutation'	=> array('required', 'in_keys' => $salutations),
 	'firstname'		=> array('required'),
 	'lastname'		=> array('required'),
 );
