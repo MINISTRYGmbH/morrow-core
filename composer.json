@@ -6,8 +6,8 @@
     "license": "LGPL-3.0",
     "require": {
         "php": ">=5.4",
-        "mcsodbrenner/serpent": "2.0.*",
-        "phpmailer/phpmailer": "5.2.*"
+        "mcsodbrenner/serpent": "~2",
+        "phpmailer/phpmailer": "~5"
     },
     "autoload": {
         "psr-4": {
