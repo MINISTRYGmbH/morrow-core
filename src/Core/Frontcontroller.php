@@ -91,11 +91,10 @@ class Frontcontroller {
 		// compress the output
 		if (!ob_start("ob_gzhandler")) ob_start();
 
-		// include E_STRICT in error_reporting
-		error_reporting(E_ALL | E_STRICT);
-
 		/* declare errorhandler (needs config class)
 		********************************************************************************************/
+		ini_set('display_errors', 'on');
+		error_reporting(E_ALL);
 		set_error_handler(array($this, 'errorHandler'));
 		set_exception_handler(array($this, 'exceptionHandler'));
 
