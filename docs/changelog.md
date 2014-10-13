@@ -10,8 +10,10 @@ Initial version. Have fun coding.
 Version 1.1.0 ()
 -------------
 
-* Added Template mapping closure in `app/_configs/default.php` (`router.template`).
+* \Morrow\Feature: Added Template mapping closure in `app/_configs/default.php` (`router.template`).
+* \Morrow\Frontcontroller: Added `ini_set('display_errors', 'on');` so the debug parameters in the config are always working
+* \Morrow\Factory: Added `Factory::onload` so you don't have to set a template path if you create an instance of the \Morrow\Views\Serpent class
+* \Morrow\Debug: Removed the setting of the Header `HTTP 500` in case of an exception because of .
+* \Morrow\Debug: Changed `debug.output.screen` and `debug.output.file` from boolean to a timestamp to prevent forgetting to disable `debug.output.screen` after working in a live environment.
 * Added docs for Configuration and Models.
-* Added `ini_set('display_errors', 'on');` so the debug parameters in the config are always working
-* Added `Factory::onload` so you don't have to set a template path if you create an instance of the \Morrow\Views\Serpent class
 * Removed `composer.lock`.

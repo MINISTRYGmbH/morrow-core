@@ -65,11 +65,26 @@ If you work in a local development environment (like `localhost` or `192.168.1.1
 ~~~{.php}
 ...
 // debug
-	'debug.output.screen'	=> (isset($_SERVER['HOST']) && preg_match('/\.[a-z]+$/', $_SERVER['HOST'])) ? false : true,
-	'debug.output.file'		=> (isset($_SERVER['HOST']) && preg_match('/\.[a-z]+$/', $_SERVER['HOST'])) ? true : false,
+	'debug.output.screen'	=> (isset($_SERVER['HTTP_HOST']) && preg_match('/\.[a-z]+$/', $_SERVER['HTTP_HOST'])) ? strtotime('-1 day') : strtotime('+1 day'),
+	'debug.output.file'		=> (isset($_SERVER['HTTP_HOST']) && preg_match('/\.[a-z]+$/', $_SERVER['HTTP_HOST'])) ? strtotime('+1 day') : strtotime('-1 day'),
 	'debug.file.path'		=> APP_PATH .'logs/error_'. date('Y-m-d') .'.txt',
 ...
 ~~~
+
+We don't work with booleans here because it is more safe to let the developer define a date until errors should be logged.
+So developers that activate logging on screen in a live environment often forget to disable it after they have to done their work.
+So you have to set a date until the error should appear on screen.
+
+**app/configs/example.com.php**
+~~~{.php}
+...
+// debug
+	'debug.output.screen'	=> strtotime('2014-10-13 13:20:00'),
+...
+~~~
+
+Do not use something like `strotime('+1 hour');` because you would of course undermine this security measure.
+
 
 Date & Time Handling
 --------------

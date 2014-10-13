@@ -28,11 +28,11 @@ namespace Morrow;
 *
 * You are able to change the behaviour of these methods with the following parameters you should set in your configuration files:
 *
-* Type   | Keyname                | Default    | Description                                                              
-* -----  | ---------              | ---------  | ------------                                                             
-* bool   | `debug.output.screen`  | `true`     | Defines if errors should be displayed on screen                          
-* bool   | `debug.output.file`    | `true`     | Defines if errors should be logged to the file system
-* string | `debug.file.path`      | `STORAGE_PATH .'logs/error_'. date('Y-m-d') .'.txt'` | Defines the path where to save the errors
+* Type     | Keyname                | Default                    | Description                                                              
+* -----    | ---------              | ---------                  | ------------                                                             
+* integer  | `debug.output.screen`  | *depends on host name*     | If `time()` is smaller than this value errors will be displayed on screen                          
+* integer  | `debug.output.file`    | *depends on host name*     | If `time()` is smaller than this value errors will be logged to a file
+* string   | `debug.file.path`      | `STORAGE_PATH .'logs/error_'. date('Y-m-d') .'.txt'` | Defines the path where to save the errors
 *
 * Examples
 * ---------
@@ -253,8 +253,6 @@ class Debug {
 	 * @hidden
 	 */
 	public function errorhandler($exception) {
-		header("HTTP/1.1 500 Internal Server Error");
-
 		$errstr		= $exception->getMessage();
 		$errcode	= $exception->getCode();
 		$backtrace	= $exception->getTrace();
@@ -286,13 +284,21 @@ class Debug {
 		else $errordescription = 'EXCEPTION (Code '.$errcode.')';
 
 		// show error on screen
-		if ($this->config['output']['screen'] == true) {
+		if (!is_int($this->config['output']['screen'])) {
+			die(__CLASS__ . ': debug.output.screen has to a valid PHP timestamp.');
+		}
+
+		if (time() < $this->config['output']['screen']) {
 			$error = $this->_errorhandler_output($errstr, $backtrace, $errordescription);
 			echo $error;
 		}
 
 		// log error in logfile
-		if ($this->config['output']['file'] == true) {
+		if (!is_int($this->config['output']['file'])) {
+			die(__CLASS__ . ': debug.output.file has to a valid PHP timestamp.');
+		}
+
+		if (time() < $this->config['output']['file']) {
 			$this->_errorhandler_file($errstr, $backtrace, $errordescription);
 		}
 
