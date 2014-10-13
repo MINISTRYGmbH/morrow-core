@@ -168,6 +168,11 @@ class Frontcontroller {
 		Factory::prepare('Navigation', Factory::load('Language')->getTree(), $path);
 		Factory::prepare('Pagesession', 'pagesession.' . $path, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
+		
+		// set a default template path for all Views
+		Factory::onload('Views\Serpent', function($instance){
+			$instance->template_path	= APP_PATH . 'templates/';
+		}, true);
 
 		/* load classes we need anyway
 		********************************************************************************************/

@@ -79,6 +79,30 @@ namespace Morrow;
  * ");
  * ~~~
  * 
+ * ### onload Callbacks
+ * 
+ * Sometimes you want to automatically set a public member or to call a method on creation of the instance.
+ * Then you cannot use `Factory::prepare`, because this only works with constructor parameters.
+ * In this case you can use the method `onload` and pass a callback which itself gets the newly created instance passed.
+ *
+ * ~~~{.php}
+ * Factory::onload('Foo', function($instance){
+ *     $instance->member = 'foobar';
+ *     $instance->method('foobar');
+ * });
+ * ~~~
+ *
+ * There is a third parameter $ignore_instancename (by default `false`) which allows you to decide if the callback should get executed for all instances of the class or just for the given instancename.
+ *
+ * ~~~{.php}
+ * Factory::onload('Foo', function($instance){
+ *     $instance->member = 'foobar';
+ * }, true);
+ * 
+ * // the callback is executed because the onload callback is executed for all instances of `Foo`, also for the instance foo1
+ * $instance = Factory::load('Foo:foo1');
+ * ~~~
+ * 
  * PSR-0 standard and namespaces
  * -----------------------------
  *
@@ -189,6 +213,12 @@ class Factory {
 	protected static $_params;
 	
 	/**
+	 * Holds the callbacks for the onload functionality.
+	 * @var array $_onload_callbacks
+	 */
+	protected static $_onload_callbacks;
+	
+	/**
 	 * Holds the parameters which are later passed to the Factory.
 	 * @var array $_proxy_params
 	 */
@@ -259,6 +289,15 @@ class Factory {
 			$ref = new \ReflectionClass($classname);
 			$instance = $ref->newInstanceArgs($factory_args);
 		}
+
+		// first execute onload callback for all instances, then for the specific instance
+		if (isset(self::$_onload_callbacks[$classname])) {
+			call_user_func(self::$_onload_callbacks[$classname], $instance);
+		}
+		if (isset(self::$_onload_callbacks[$instancename])) {
+			call_user_func(self::$_onload_callbacks[$instancename], $instance);
+		}
+
 		return $instance;
 	}
 
@@ -273,8 +312,8 @@ class Factory {
 		$args = func_get_args();
 		
 		// get instance name in params string
-		$params = explode(':', $args[0]);
-		$classname = $params[0];
+		$params		= explode(':', $instance_identifier);
+		$classname	= $params[0];
 		
 		// we always have to create a fully namespaced class path
 		if ($classname{0} !== '\\') {
@@ -289,6 +328,34 @@ class Factory {
 			'classname'	=> $classname,
 			'args'		=> array_slice($args, 1),
 		);
+	}
+
+	/**
+	 * Registers a callback that is executed when an instance is created.
+	 * 
+	 * @param	string		$instance_identifier The instance identifier.
+	 * @param	callable	$callback A PHP callback.
+	 * @param	boolean		$ignore_instancename Set to true if you want all instances of the class to execute the callback.
+	 * @return	null
+	 */
+	public static function onload($instance_identifier, $callback, $ignore_instancename = false) {
+		$args = func_get_args();
+		
+		// get instance name in params string
+		$params		= explode(':', $instance_identifier);
+		$classname	= $params[0];
+		
+		// we always have to create a fully namespaced class path
+		if ($classname{0} !== '\\') {
+			$classname = '\\Morrow\\' . $classname;
+		}
+
+		// save callback
+		if ($ignore_instancename) {
+			self::$_onload_callbacks[$classname] = $callback;
+		} else {
+			self::$_onload_callbacks[$instance_identifier] = $callback;
+		}
 	}
 
 	/**
