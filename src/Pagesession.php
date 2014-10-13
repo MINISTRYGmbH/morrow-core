@@ -30,7 +30,7 @@ namespace Morrow;
 * Dot Syntax
 * ----------
 * 
-* This class works with the extended dot syntax. So if you use keys like `foo.bar` and `foo.bar2` as identifiers in your config, you can call `$this->pagesession->get("foo")` to receive an array with the keys `bar` and `bar2`. 
+* This class works with the extended dot syntax. So if you use keys like `foo.bar` and `foo.bar2` as identifiers in your config, you can call `$this->Pagesession->get("foo")` to receive an array with the keys `bar` and `bar2`. 
 * 
 * Examples
 * ---------
@@ -39,10 +39,10 @@ namespace Morrow;
 * // ... Controller code
 *  
 * // counting user visits for the current page
-* $visits = $this->pagesession->get('visits');
+* $visits = $this->Pagesession->get('visits');
 * if ($visits === null) $visits = 0;
 *  
-* $this->pagesession->set('visits', ++$visits);
+* $this->Pagesession->set('visits', ++$visits);
 * 
 * // ... Controller code
 * ~~~

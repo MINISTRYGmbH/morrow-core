@@ -49,4 +49,4 @@ extends
 Dot Syntax
 ----------
 
-This class works with the extended dot syntax. So if you use keys like `mailer.host` and `mailer.smtp` as identifiers in your config, you can call `$this->config->get("mailer")` to receive an array with the keys `host` and `smtp`. 
+This class works with the extended dot syntax. So if you use keys like `mailer.host` and `mailer.smtp` as identifiers in your config, you can call `$this->Config->get("mailer")` to receive an array with the keys `host` and `smtp`. 

@@ -50,12 +50,12 @@ namespace Morrow;
 * // ... Default controller code
 * 
 * // register a listener for the event "foo"
-* $this->event->on('foo', function($event, $data) {
+* $this->Event->on('foo', function($event, $data) {
 *     return $data*2;
 * });
 * 
 * // register a listener for the events "foo" and "bar"
-* $this->event->on(['foo', 'bar'], function($event, $data) {
+* $this->Event->on(['foo', 'bar'], function($event, $data) {
 *     return $data*2;
 * });
 *
@@ -68,8 +68,8 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 *
-* echo $this->event->trigger('foo', 1);
-* echo $this->event->trigger('bar', 1);  
+* echo $this->Event->trigger('foo', 1);
+* echo $this->Event->trigger('bar', 1);  
 *
 * // ... Controller code
 * ~~~

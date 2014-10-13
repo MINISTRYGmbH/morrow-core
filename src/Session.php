@@ -28,7 +28,7 @@ namespace Morrow;
 * Dot Syntax
 * ----------
 * 
-* This class works with the extended dot syntax. So if you use keys like `foo.bar` and `foo.bar2` as identifiers in your config, you can call `$this->session->get("foo")` to receive an array with the keys `bar` and `bar2`. 
+* This class works with the extended dot syntax. So if you use keys like `foo.bar` and `foo.bar2` as identifiers in your config, you can call `$this->Session->get("foo")` to receive an array with the keys `bar` and `bar2`. 
 * 
 * Examples
 * ---------
@@ -39,9 +39,9 @@ namespace Morrow;
 * // counting per user page visits for the whole site
 * 
 * // retrieve the value of visits and set a fallback value if visits does not exist. 
-* $visits = $this->session->get('visits', 0);
+* $visits = $this->Session->get('visits', 0);
 *  
-* $this->session->set('visits', ++$visits);
+* $this->Session->set('visits', ++$visits);
 * 
 * // ... Controller code
 * ~~~
@@ -55,8 +55,8 @@ namespace Morrow;
 * // if a username was passed we redirect the user to the welcome page ...
 * $username = $this->input->get('username');
 * if ($username !== null) {
-* 	$this->session->setFlash('welcome', $username);
-* 	$this->url->redirect('welcome-page');
+* 	$this->Session->setFlash('welcome', $username);
+* 	$this->Url->redirect('welcome-page');
 * }
 * 
 * // ... Controller code
@@ -67,7 +67,7 @@ namespace Morrow;
 * // ... Controller code
 *  
 * // and show a nice welcome message.
-* $this->view->setContent('welcome', 'Hello ' . $this->session->getFlash('username'));
+* $this->Views_Serpent->setContent('welcome', 'Hello ' . $this->Session->getFlash('username'));
 * 
 * // ... Controller code
 * ~~~
@@ -116,15 +116,13 @@ class Session extends Core\Base {
 		
 		// we start an own session handler which supports stream wrappers
 		session_set_save_handler(
-			array($this, "sessionhandler_open"),
-			array($this, "sessionhandler_close"),
-			array($this, "sessionhandler_read"),
-			array($this, "sessionhandler_write"),
-			array($this, "sessionhandler_destroy"),
-			array($this, "sessionhandler_gc")
+			[$this, "sessionhandler_open"],
+			[$this, "sessionhandler_close"],
+			[$this, "sessionhandler_read"],
+			[$this, "sessionhandler_write"],
+			[$this, "sessionhandler_destroy"],
+			[$this, "sessionhandler_gc"]
 		);
-
-
 		
 		// set save path
 		if (!is_dir($config['save_path'])) mkdir($config['save_path']);

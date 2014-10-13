@@ -40,13 +40,13 @@ namespace Morrow;
 * // ... Controller code
 *
 * // extend an absolute URL with an additional GET parameter
-* $url = $this->url->create('http://chuck:norris@example.com:80/home?foo=bar#42', array('foo2' => 'bar2'));
+* $url = $this->Url->create('http://chuck:norris@example.com:80/home?foo=bar#42', ['foo2' => 'bar2']);
 * 
 * // URLs without a scheme work too
-* $url = $this->url->create('//example.com/home', array('foo' => 'bar'));
+* $url = $this->Url->create('//example.com/home', ['foo' => 'bar']);
 *
 * // create an URL to the actual page
-* $url = $this->url->create();
+* $url = $this->Url->create();
 *
 * // ... Controller code
 * ~~~
@@ -60,9 +60,9 @@ namespace Morrow;
 *
 * // create an absolute URL to the homepage and change the language
 *
-* $url = $this->url->create('home', array('language' => 'de'), true);
+* $url = $this->Url->create('home', ['language' => 'de'], true);
 * // is the same as
-* $url = $this->url->create('de/home', [], true);
+* $url = $this->Url->create('de/home', [], true);
 *
 * // ... Controller code
 * ~~~
@@ -73,7 +73,7 @@ namespace Morrow;
 * // ... Controller code
 *
 * // redirect to the not-found page
-* $this->url->redirect('not-found/', [], 404);
+* $this->Url->redirect('not-found/', [], 404);
 *
 * // ... Controller code
 * ~~~
@@ -128,7 +128,7 @@ class Url {
 	 * @return	array	An array with all the keys.
 	 */
 	public function parse($url) {
-		$template = array(
+		$template = [
 			'scheme'			=> '',
 			'scheme_divider'	=> '',
 			'user'				=> '',
@@ -143,7 +143,7 @@ class Url {
 			'query'				=> '',
 			'fragment_divider'	=> '',
 			'fragment'			=> '',
-		);
+		];
 		$parts = array_merge($template, parse_url($url));
 
 		if ($parts['scheme']	!== '') $parts['scheme_divider'] = '://';
@@ -185,7 +185,7 @@ class Url {
 	 * @return	string	The created slug.
 	 */
 	public function slug($text) {
-		$table = array(
+		$table = [
 			'Š'=>'S', 'š'=>'s', 'Đ'=>'Dj', 'đ'=>'dj', 'Ž'=>'Z', 'ž'=>'z', 'Č'=>'C', 'č'=>'c', 'Ć'=>'C', 'ć'=>'c',
 			'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'AE', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
 			'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
@@ -194,7 +194,7 @@ class Url {
 			'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
 			'ô'=>'o', 'õ'=>'o', 'ö'=>'oe', 'ø'=>'o', 'ü'=>'ue', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
 			'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r',
-		);
+		];
 
 		$slug = strtr($text, $table);
 		$slug = trim(preg_replace("|\W+|", '-', $slug), '-');

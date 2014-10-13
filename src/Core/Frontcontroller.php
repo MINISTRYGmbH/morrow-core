@@ -95,8 +95,8 @@ class Frontcontroller {
 		********************************************************************************************/
 		ini_set('display_errors', 'on');
 		error_reporting(E_ALL);
-		set_error_handler(array($this, 'errorHandler'));
-		set_exception_handler(array($this, 'exceptionHandler'));
+		set_error_handler([$this, 'errorHandler']);
+		set_exception_handler([$this, 'exceptionHandler']);
 
 		/* load all config files
 		********************************************************************************************/

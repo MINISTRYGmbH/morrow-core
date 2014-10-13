@@ -168,7 +168,7 @@ abstract class AbstractTableDataGateway {
 	 * @return array Returns an array of dataset arrays the the requested data. The keys of the datasets are the ids of the rows.
 	 */
 	public function get($conditions) {
-		if (is_scalar($conditions)) $conditions = array('id' => $conditions);
+		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
 		$where = $this->_createWhere($conditions);
 
 		$sql = $this->_db->get("
@@ -204,7 +204,7 @@ abstract class AbstractTableDataGateway {
 		$data = $this->filterFields($data, $this->_allowed_update_fields);
 		$data['updated_at'] = Factory::load('\datetime')->format('Y-m-d H:i:s');
 
-		if (is_scalar($conditions)) $conditions = array('id' => $conditions);
+		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
 		$where = $this->_createWhere($conditions);
 
 		return $this->_db->updateSafe($this->_table, $data, "WHERE {$where}", array_values($conditions), true);
@@ -217,7 +217,7 @@ abstract class AbstractTableDataGateway {
 	 * @return array An result array with the keys `SUCCESS` (boolean Was the query successful) and `AFFECTED_ROWS` (int The count of the affected rows).
 	 */
 	public function delete($conditions) {
-		if (is_scalar($conditions)) $conditions = array('id' => $conditions);
+		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
 		$where = $this->_createWhere($conditions);
 
 		return $this->_db->delete($this->_table, "WHERE {$where}", array_values($conditions));

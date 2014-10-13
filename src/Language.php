@@ -28,7 +28,7 @@ namespace Morrow;
  *
  * Type  | Keyname     | Default                                             | Description                                                                                      
  * ----- | ---------   | ---------                                           | ------------                                                                                     
- * array | `languages` | `array("en")` as defined in `_configs/_default.php` | An array of possible language keys (the first array entry is automatically the default language) 
+ * array | `languages` | `["en"]` as defined in `_configs/_default.php` | An array of possible language keys (the first array entry is automatically the default language) 
  *
  * Example
  * -------
@@ -36,15 +36,15 @@ namespace Morrow;
  * ~~~{.php}
  * // ... Controller code
  *  
- * $alias = $this->page->get('alias');
+ * $alias = $this->Page->get('alias');
  *  
  * // passing language content to the template
- * $language_content = $this->language->getContent($alias);
- * $this->view->setContent('language_content', $language_content);
+ * $language_content = $this->Language->getContent($alias);
+ * $this->Views_Serpent->setContent('language_content', $language_content);
  *  
  * // passing the list of available translations to the template
- * $translations = $this->language->getTranslations($alias);
- * $this->view->setContent('translations', $translations);
+ * $translations = $this->Language->getTranslations($alias);
+ * $this->Views_Serpent->setContent('translations', $translations);
  *  
  * // ... Controller code
  * ~~~
@@ -112,7 +112,7 @@ class Language extends Core\Base {
 	 */
 	public function __construct($settings) {
 		// check for required setting keys
-		$required = array('possible', 'language_path', 'search_paths');
+		$required = ['possible', 'language_path', 'search_paths'];
 		if (count(array_diff($required, array_keys($settings))) > 0) {
 			throw new \Exception("Missing key(s). Required params are : " . implode(", ", $required));
 		}
@@ -403,11 +403,11 @@ class Language extends Core\Base {
 			// valid entries
 			$valid = array_intersect_key($current, $catalog);
 
-			$export = "<?php\n/* This is an automatically created file */\n\nreturn array(";
+			$export = "<?php\n/* This is an automatically created file */\n\nreturn [";
 			$export .= $this->_varExport($new, 'entries to translate');
 			$export .= $this->_varExport($old, 'unknown entries');
 			$export .= $this->_varExport($valid, 'translated entries');
-			$export .= ");";
+			$export .= "];";
 
 			file_put_contents($path, $export);
 		}

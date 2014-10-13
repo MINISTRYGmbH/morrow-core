@@ -99,19 +99,19 @@ The only valid counteragent is to use a server generated token which is used for
 **Controller**
 ~~~{.php}
 // Get a token for the current user
-$token = $this->security->getCSRFToken();
+$token = $this->Security->getCSRFToken();
 ~~~
 
 ~~~{.php}
 // create a secure URL with an CSRF token
-// This method works exactly as $this->url->create() but adds the token
-$url = $this->security->createCSRFUrl('cms/product/34', ['delete' => 'true']);
+// This method works exactly as $this->Url->create() but adds the token
+$url = $this->Security->createCSRFUrl('cms/product/34', ['delete' => 'true']);
 ~~~
 
 ~~~{.php}
 // checks if the token was submitted and is valid
 // the URL has to be created by $this->security->createCSRFUrl
-$valid = $this->security->checkCSRFToken();
+$valid = $this->Security->checkCSRFToken();
 ~~~
 
 In a template just use the mapping `:securl()` instead of `:url()` to create secure URLs.

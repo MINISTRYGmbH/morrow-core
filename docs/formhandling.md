@@ -14,7 +14,7 @@ This is an commented controller example for a form with only three fields:
 // we define salutations we want to validate (it has to be one of the keys of this array)
 // and we pass the salutations to the template so we can use them with the Form class to output the HTML
 $salutations = ['salutations' => ['mr' => 'Mister', 'mrs' => 'Misses']];
-$this->view->setContent('salutations', $salutations);
+$this->Views_Serpent->setContent('salutations', $salutations);
 
 // these are the rules for the validator class. the input data has to fulfill those requirements
 $rules =  [
@@ -24,7 +24,7 @@ $rules =  [
 ];
 
 // we get the user input
-$input  = $this->input->get();
+$input  = $this->Input->get();
 
 // the array which will contain the errors after validating
 $errors = [];
@@ -33,7 +33,7 @@ $errors = [];
 if (isset($input['sent'])) {
 	// now let's validate the data
 	// on success $data will only contain values that exist in the $rules array
-	if ($data = $this->validator->filter($input, $rules, $errors, true)) {
+	if ($data = $this->Validator->filter($input, $rules, $errors, true)) {
 		// ok, data was valid
 		Debug::dump($data);
 	} else {
@@ -48,7 +48,7 @@ if (isset($input['sent'])) {
 // we pass an instance of the form class to the template.
 // the form class need the user input and the errors of the validation process as constructor parameters
 $form = Factory::load('Form', $input, $errors);
-$this->view->setContent('form', $form);
+$this->Views_Serpent->setContent('form', $form);
 
 // ... Controller code
 ?>

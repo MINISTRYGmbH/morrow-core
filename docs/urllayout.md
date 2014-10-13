@@ -122,7 +122,7 @@ Just do it like this:
 ...
 ~~~
 
-In this example the controller `app/Products.php` will be used and you have access to the category and the product via `$this->input->get('routed.category')` and `$this->input->get('routed.product_id')`.
+In this example the controller `app/Products.php` will be used and you have access to the category and the product via `$this->Input->get('routed.category')` and `$this->Input->get('routed.product_id')`.
 We have used named groups (a feature of regular expressions) to name the parameters. You could also have used
 
 **app/configs/_default_app.php**
@@ -158,17 +158,17 @@ Just define the following route and call the action in your default controller m
 **app/\_Default.php**
 ~~~{.php}
 // init "application url design"
-$controller = $this->input->get('routed.controller');
-$action     = $this->input->get('routed.action');
-$params     = explode('/', trim($this->input->get('routed.params'), '/'));
+$controller = $this->Input->get('routed.controller');
+$action     = $this->Input->get('routed.action');
+$params     = explode('/', trim($this->Input->get('routed.params'), '/'));
 
 if (!is_null($action)) {
     if (!method_exists($this, $action)) {
-        $this->url->redirect( $this->page->get('base_href') );
+        $this->Url->redirect( $this->Page->get('base_href') );
     }
     call_user_func_array( [$this, $action], $params);
 
     // set default template
-    $this->view->template = $controller . '_' . $action;
+    $this->Views_Serpent->template = $controller . '_' . $action;
 }
 ~~~

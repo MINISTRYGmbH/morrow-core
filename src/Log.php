@@ -36,11 +36,11 @@ namespace Morrow;
  * $string  = 'foobar';
  * $boolean = false;
  * $null    = null;
- * $array   = array('foo'=>'bar', 'foo2'=>'bar2');
+ * $array   = ['foo'=>'bar', 'foo2'=>'bar2'];
  * $object  = new stdClass();
  *
  * // now log
- * $this->log->set($integer, $string, $boolean, $null, $array, $object);
+ * $this->Log->set($integer, $string, $boolean, $null, $array, $object);
  *
  * // ... Controller code
  * ~~~

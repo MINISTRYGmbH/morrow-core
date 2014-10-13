@@ -76,12 +76,12 @@ use Morrow\Debug;
 class Products_hardstuff_funkystuff_coolfunkyproduct extends _Default {
 	public function run() {
 		// auto initialize and use the benchmark class
-		$this->benchmark->start('Section 1');
+		$this->Benchmark->start('Section 1');
 		
 		sleep(1);
 			   
-		$this->benchmark->stop();
-		$results = $this->benchmark->get();
+		$this->Benchmark->stop();
+		$results = $this->Benchmark->get();
 	}
 }
 ?>

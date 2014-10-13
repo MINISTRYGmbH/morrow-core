@@ -102,7 +102,7 @@ class Serpent extends AbstractView {
 		$_engine = new \McSodbrenner\Serpent\Serpent($compile_dir, 'utf-8', $this->force_compile);
 		
 		// handle mappings
-		$mappings = array(
+		$mappings = [
 			'dump'			=> '\\Morrow\\Debug::dump',
 			'url'			=> '\\Morrow\\Factory::load("Url")->create',
 			'securl'		=> '\\Morrow\\Factory::load("Security")->createCSRFUrl',
@@ -111,12 +111,12 @@ class Serpent extends AbstractView {
 			'hidelink'		=> '\\Morrow\\Views\\Serpent::hidelink',
 			'thumb'			=> '\\Morrow\\Views\\Serpent::thumb',
 			'truncate'		=> '\\Morrow\\Views\\Serpent::truncate',
-			'strip'			=> 'ob_start(array("\\Morrow\\Views\\Serpent::strip")) //',
+			'strip'			=> 'ob_start(["\\Morrow\\Views\\Serpent::strip"]) //',
 			'endstrip'		=> 'ob_end_flush',
 			'loremipsum'	=> '\\Morrow\\Views\\Serpent::loremipsum',
 			'_'				=> '\\Morrow\\Factory::load("Language")->_',
 			'feature'		=> 'stream_get_contents(\\Morrow\\Factory::load("Core\\Feature")->run',
-		);
+		];
 		// add user mappings
 		foreach ($this->mappings as $key => $value) {
 			$mappings[$key] = $value;
@@ -130,7 +130,7 @@ class Serpent extends AbstractView {
 		);
 		
 		foreach ($this->resources as $resource) {
-			call_user_func_array(array($_engine, 'addResource'), $resource);
+			call_user_func_array([$_engine, 'addResource'], $resource);
 		}
 		
 		// create stream handle for the output
@@ -163,8 +163,8 @@ class Serpent extends AbstractView {
 	 * @return  string Returns the edited buffer.
 	 */
 	public static function strip($buffer) {
-		$pat = array("=^\s+=", "=\s{2,}=", "=\s+\$=", "=>\s*<([a-z])=");
-		$rep = array("", " ", "", "><$1");
+		$pat = ["=^\s+=", "=\s{2,}=", "=\s+\$=", "=>\s*<([a-z])="];
+		$rep = ["", " ", "", "><$1"];
 		$buffer = preg_replace($pat, $rep, $buffer);
 		return $buffer;
 	}

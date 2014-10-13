@@ -31,7 +31,7 @@ namespace Morrow;
 * Dot Syntax
 * ----------
 * 
-* This class works with the extended dot syntax. So if you use keys like `mailer.host` and `mailer.smtp` as identifiers in your config, you can call `$this->config->get("mailer")` to receive an array with the keys `host` and `smtp`. 
+* This class works with the extended dot syntax. So if you use keys like `mailer.host` and `mailer.smtp` as identifiers in your config, you can call `$this->Config->get("mailer")` to receive an array with the keys `host` and `smtp`. 
 * 
 * Examples
 * ---------
@@ -40,13 +40,13 @@ namespace Morrow;
 * // ... Controller code
 *  
 * // show full framework configuration
-* Debug::dump($this->config->get());
+* Debug::dump($this->Config->get());
 * 
 * // overwrite a debug parameter
-* $this->config->set('debug.output.screen', false);
+* $this->Config->set('debug.output.screen', false);
 * 
 * // get the debug output configuration
-* $this->config->get('debug.output');
+* $this->Config->get('debug.output');
 * 
 * // ... Controller code
 * ~~~

@@ -191,7 +191,7 @@ We also pass an array to the *Feature* to overwrite the configuration variable `
 <?php
 
 $handle = Factory::load('Core\Feature')->run('\\app\\features\\Foo\\Bar', ['foo' => 'bar']);
-$this->view->setContent('widget', stream_get_contents($handle));
+$this->Views_Serpent->setContent('widget', stream_get_contents($handle));
 
 ?>
 ~~~

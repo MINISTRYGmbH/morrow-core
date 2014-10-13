@@ -32,16 +32,16 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 *  
-* $params = array(
+* $params = [
 *     'height' => 100,
 *     'width' => 100,
 *     'sharpen' => true,
 *     'type' => 'jpg',
-* );
+* ];
 * $filename = 'very_big_image.jpg';
 *
 * // get path for the thumbed image
-* $thumb = $this->image->get($filename, $params);
+* $thumb = $this->Image->get($filename, $params);
 * Debug::dump($thumb);
 *  
 * // ... Controller code
@@ -51,16 +51,16 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 *  
-* $params = array(
+* $params = [
 *     'height' => 100,
 *     'width' => 100,
 *     'sharpen' => true,
 *     'type' => 'png',
-* );
+* ];
 * $filename = 'very_big_image.jpg';
 *
 * // get path for the thumbed image
-* $thumb = $this->image->get($filename, $params);
+* $thumb = $this->Image->get($filename, $params);
 *
 * // get image object
 * $img_obj = imagecreatefrompng($thumb);
@@ -68,7 +68,7 @@ namespace Morrow;
 * // ... work with image object
 *
 * // pass path to temporary image to save the new created image with the same path
-* $thumb = $this->image->get($filename, $params, $thumb);
+* $thumb = $this->Image->get($filename, $params, $thumb);
 * Debug::dump($thumb);
 *  
 * // ... Controller code
@@ -136,7 +136,7 @@ class Image {
 	 */
 	protected function _sharpen($img_obj) { 
 		imagesavealpha($img_obj, true); // preserve full alpha transparency for png files
-		$matrix = array(array( -1, -1, -1 ), array( -1, 16, -1 ), array( -1, -1, -1 ));
+		$matrix = [[-1, -1, -1], [-1, 16, -1], [-1, -1, -1]];
 		$divisor = array_sum(array_map('array_sum', $matrix));
 		imageconvolution($img_obj, $matrix, $divisor, 0);
 		return $img_obj;
@@ -150,20 +150,20 @@ class Image {
 	 */
 	protected function _validateParams($params) {
 		// all params with type and default_value
-		$defaults['sharpen']			= array('boolean', true);
-		$defaults['extrapolate']		= array('boolean', true);
-		$defaults['crop']				= array('boolean', true);
-		$defaults['crop_position']		= array('integer', 2);
-		$defaults['overlay_position']	= array('integer', 9);
-		$defaults['background']			= array('string', '#fff');
-		$defaults['transparent']		= array('boolean', false);
-		$defaults['trim']				= array('boolean', false);
-		$defaults['trim_tolerance']		= array('integer', 10);
-		$defaults['overlay']			= array('string', null);
-		$defaults['shortside']			= array('integer', null);
-		$defaults['longside']			= array('integer', null);
-		$defaults['width']				= array('integer', null);
-		$defaults['height']				= array('integer', null);
+		$defaults['sharpen']			= ['boolean', true];
+		$defaults['extrapolate']		= ['boolean', true];
+		$defaults['crop']				= ['boolean', true];
+		$defaults['crop_position']		= ['integer', 2];
+		$defaults['overlay_position']	= ['integer', 9];
+		$defaults['background']			= ['string', '#fff'];
+		$defaults['transparent']		= ['boolean', false];
+		$defaults['trim']				= ['boolean', false];
+		$defaults['trim_tolerance']		= ['integer', 10];
+		$defaults['overlay']			= ['string', null];
+		$defaults['shortside']			= ['integer', null];
+		$defaults['longside']			= ['integer', null];
+		$defaults['width']				= ['integer', null];
+		$defaults['height']				= ['integer', null];
 
 		// validate params
 		foreach ($defaults as $key => $value) {
@@ -236,12 +236,12 @@ class Image {
 	protected function _trim($im, $tolerance) {
 		// grab the colour from the top left corner and use that as default
 		$rgb = imagecolorat($im, 0, 0); // 2 pixels in to avoid messy edges
-		$ref = array(
+		$ref = [
 			'a' => ($rgb >> 24) & 0xFF,
 			'r' => ($rgb >> 16) & 0xFF,
 			'g' => ($rgb >> 8) & 0xFF,
 			'b' => $rgb & 0xFF,
-		);
+		];
 
 		$w = imagesx($im); // image width
 		$h = imagesy($im); // image height
@@ -349,7 +349,7 @@ class Image {
 	protected function _getCacheFilenameByPath($file_path, &$params) {
 		if (!is_readable($file_path)) throw new \Exception(__CLASS__.': file "'.$file_path.'" does not exist or is not readable');
 
-		$types = array('jpg', 'gif', 'png', 'png8');
+		$types = ['jpg', 'gif', 'png', 'png8'];
 		if (!isset($params['type']) || !in_array($params['type'], $types)) {
 			$params['type'] = 'jpg';
 		}
@@ -458,10 +458,10 @@ class Image {
 		if (file_exists($cache_filepath)) return basename($cache_filepath);
 
 		// save params and file path to params file
-		$data = array(
+		$data = [
 			'filename' => $file_path,
 			'params' => $params
-		);
+		];
 		file_put_contents($cache_filepath . '_params', serialize($data));
 		
 		return basename($cache_filepath);
@@ -543,11 +543,11 @@ class Image {
 		if (strlen($hex) !== 6) return false;
 
 		$dec = hexdec($hex);
-		$rgb = array(
+		$rgb = [
 			0xFF & ($dec >> 0x10),
 			0xFF & ($dec >> 0x8),
 			0xFF & $dec
-		);
+		];
 
 		return $rgb;
 	}

@@ -80,9 +80,9 @@ class Router {
 			$class = call_user_func($this->_fallback, $url);
 		}
 
-		return array(
+		return [
 			'controller'		=> $class,
 			'parameters'		=> $parameters,
-		);
+		];
 	}
 }

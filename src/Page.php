@@ -30,7 +30,7 @@ namespace Morrow;
 * Dot Syntax
 * ----------
 * 
-* This class works with the extended dot syntax. So if you use keys like `foo.bar` and `foo.bar2` as identifiers in your config, you can call `$this->page->get("foo")` to receive an array with the keys `bar` and `bar2`. 
+* This class works with the extended dot syntax. So if you use keys like `foo.bar` and `foo.bar2` as identifiers in your config, you can call `$this->Page->get("foo")` to receive an array with the keys `bar` and `bar2`. 
 * 
 * Examples
 * ---------
@@ -39,7 +39,7 @@ namespace Morrow;
 * // ... Controller code
 *  
 * // show current page environment
-* Debug::dump($this->page->get());
+* Debug::dump($this->Page->get());
 * 
 * // ... Controller code
 * ~~~

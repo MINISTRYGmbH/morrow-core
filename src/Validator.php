@@ -41,41 +41,41 @@ namespace Morrow;
  * // ... Controller code
  * 
  * // optional: we add a integer validator
- * $this->validator->add('equal', function($input, $value, $compare_value) {
+ * $this->Validator->add('equal', function($input, $value, $compare_value) {
  * 	return is_integer($value) ? $value === $compare_value : false;
  * }, 'This field must be an integer with the value "%s"');
  * 
  * // optional: we want a different error message for the "minlength" validator
  * // for the password field we want a custom required message
- * $this->validator->setMessages(array(
+ * $this->Validator->setMessages([
  * 	'minlength'				=> 'This field should have at least %s characters.',
  * 	'password.required'		=> 'You have to enter a password.',
- * ));
+ * ]);
  *
  * // it is also possible to create custom error messages for specific compositions:
  * // for our composition 'animals', we want to display a custom message for the validator 'required'
  * // and for the specific field 'insects', we want to set up a further customized message
- * $this->validator->setMessages(array(
+ * $this->Validator->setMessages([
  *	'composition.animals.required' 			=> 'Enter an animal.',
  *	'composition.animals.insects.required' 	=> 'Enter an insect.',
- * ));
+ * ]);
   * 
  * // optional: we want always the same validator rules for a username
  * // so do this in the default controller
- * $this->validator->addComposition('username', array(
+ * $this->Validator->addComposition('username', [
  * 	'regex'			=> '/[a-z0-9-_]{8,}/i',
- * ));
+ * ]);
  * 
  * // now let us validate the input data
- * $rules =  array(
- * 	'username'			=> array('required', 'composition' => 'username'),
- * 	'email'				=> array('email'),
- * 	'password'			=> array('required', 'minlength' => 8),
- * 	'repeat_password'	=> array('required', 'same' => 'password'),
- * 	'captcha'			=> array('required', 'equal' => $this->session->get('captcha')),
- * );
+ * $rules =  [
+ * 	'username'			=> ['required', 'composition' => 'username'],
+ * 	'email'				=> ['email'],
+ * 	'password'			=> ['required', 'minlength' => 8],
+ * 	'repeat_password'	=> ['required', 'same' => 'password'],
+ * 	'captcha'			=> ['required', 'equal' => $this->session->get('captcha')],
+ * ];
  * 
- * $input = $this->validator->filter($this->input->get(), $rules, $errors);
+ * $input = $this->Validator->filter($this->input->get(), $rules, $errors);
  *
  * // ... Controller code
  * ~~~
@@ -86,40 +86,40 @@ namespace Morrow;
  * If you want to check if a person is at least 18 years old, you could use this:
  * 
  * ~~~{.php}
- * $rules =  array(
- * 	'birthdate' => array('required', 'date' => '%Y-%m-%d', 'before' => '-18 years'),
- * );
+ * $rules =  [
+ * 	'birthdate' => ['required', 'date' => '%Y-%m-%d', 'before' => '-18 years'],
+ * ];
  * ~~~
  * 
  * Or think of validating an image upload:
  * 
  * ~~~{.php}
- * $rules =  array(
- * 	'file'			=> array('upload'),
- * 	'file.tmp_name'	=> array('invalidates' => 'file', 'image' => array('jpg')),			// the image has to be a JPG
- * 	'file.name'		=> array('invalidates' => 'file', 'regex' => '/^[a-z0-9_.]+$/'),	// only specific characters allowed
- * 	'file.size'		=> array('invalidates' => 'file', 'number', 'max' => 1024 * 2000),	// no more than 2 MB
- * );
+ * $rules =  [
+ * 	'file'			=> ['upload'],
+ * 	'file.tmp_name'	=> ['invalidates' => 'file', 'image' => ['jpg']],			// the image has to be a JPG
+ * 	'file.name'		=> ['invalidates' => 'file', 'regex' => '/^[a-z0-9_.]+$/'],	// only specific characters allowed
+ * 	'file.size'		=> ['invalidates' => 'file', 'number', 'max' => 1024 * 2000],	// no more than 2 MB
+ * ];
  * ~~~
  * 
  * Or think of a `<select>` box with groups. You can throw the same nested array into the `in_keys` validator as you do with `$form->select(...)` in your template.
  * 
  * ~~~{.php}
  *
- * $states = array(
- * 	'States with A' = array(
+ * $states = [
+ * 	'States with A' = [
  * 		'alabama'	=> 'Alabama',
  * 		'arkansas'	=> 'Arkansas',
- * 	),
- * 	'States with T' = array(
+ * 	],
+ * 	'States with T' = [
  * 		'tennessee'	=> 'Tennessee',
  * 		'texas'		=> 'Texas',
- * 	),
- * );
+ * 	],
+ * ];
  * 
- * $rules =  array(
- * 	'states'		=> array('in_keys' => $states),
- * );
+ * $rules =  [
+ * 	'states'		=> ['in_keys' => $states],
+ * ];
  * ~~~
  * 
  * ### Be careful
@@ -152,7 +152,7 @@ namespace Morrow;
  * `width`       | `$width`                | integer | Returns `true` if the image has the given width.
  * `height`      | `$height`               | integer | Returns `true` if the image has the given height.
  * `email`       |                         |         | Returns `true` if the email address is valid.
- * `url`         | `$schemes`              | array   | Returns `true` if the scheme of the url is one of the given, eg. `array('http', 'https')`.
+ * `url`         | `$schemes`              | array   | Returns `true` if the scheme of the url is one of the given, eg. `['http', 'https']`.
  * `ip`          | `$flags = []`      | array   | Returns `true` if the IP is valid. You can pass the following parameters to specify the requirements: `ipv4` (IP must be an IPV4 address), `ipv6` (IP must be an IPV6 address), `private` (IP can be a private address like 192.168.*) and `reserved` (IP can be a reserved address like 100.64.0.0/10). Default is `ipv4`.
  * `date`        | `$date_format`          | string  | Returns `true` if the date is valid and the date could be successfully checked against `$date_format` (in `\DateTime::createFromFormat` format).
  * `before_date` | `$before`               | string  | Returns `true` if the date is before the given date. Both dates have to be passed in a format `strtotime` is able to read. 
@@ -183,7 +183,7 @@ class Validator extends Core\Base {
 	 * Initializes the class and sets default error messages.
 	 */
 	public function __construct() {
-		$this->_messages = array(
+		$this->_messages = [
 			'required'		=> 'VALIDATOR_REQUIRED',
 			'equal'			=> 'VALIDATOR_EQUAL%s',
 			'same'			=> 'VALIDATOR_SAME%s',
@@ -209,7 +209,7 @@ class Validator extends Core\Base {
 			'before_field'	=> 'VALIDATOR_BEFORE_FIELD%s',
 			'after_field'	=> 'VALIDATOR_AFTER_FIELD%s',
 			'upload'		=> 'VALIDATOR_UPLOAD',
-		);
+		];
 	}
 
 	/**
@@ -251,7 +251,7 @@ class Validator extends Core\Base {
 				if (is_numeric($unknown_key)) {
 					$rules_array_temp[$unknown_value] = null;
 				} else {
-					$rules_array_temp[$unknown_key] = array($unknown_value);
+					$rules_array_temp[$unknown_key] = [$unknown_value];
 				}
 			}
 			$rules_array = $rules_array_temp;
@@ -271,13 +271,13 @@ class Validator extends Core\Base {
 
 				$callback = null;
 				// does the user wants to use a predefined validator
-				if (method_exists($this, $method)) $callback = array($this, $method);
+				if (method_exists($this, $method)) $callback = [$this, $method];
 				// or his own closure
 				if (!isset($callback) && isset($this->_callbacks[$name])) $callback = $this->_callbacks[$name];
 				// we did not found any callable validator
 				if (!isset($callback)) throw new \Exception(__CLASS__ . ': Validator "'.$name.'" does not exist.');
 
-				if (isset($params)) $result		= call_user_func_array($callback, array_merge(array($input, $value), $params));
+				if (isset($params)) $result		= call_user_func_array($callback, array_merge([$input, $value], $params));
 				else $result					= call_user_func($callback, $input, $value);
 
 				if ($result === false) {
@@ -322,7 +322,7 @@ class Validator extends Core\Base {
 	/**
 	 * Adds a user defined validator.
 	 * @param	string	$name	The name of the validator.
-	 * @param	callable	$callback	A valid PHP callback like `array('OBJECT', 'METHOD')`, `array($obj, 'METHOD')` or a n anonymous function like `function($input, $value){}`. The method gets at least two parameters passed. An array of all `$input` parameters and the `$value` to validate. Other parameters are the passed parameters.
+	 * @param	callable	$callback	A valid PHP callback like `['OBJECT', 'METHOD']`, `[$obj, 'METHOD']` or a n anonymous function like `function($input, $value){}`. The method gets at least two parameters passed. An array of all `$input` parameters and the `$value` to validate. Other parameters are the passed parameters.
 	 * @param	string	$error_message	The error message that get all parameters passed via `sprintf`, so you can use `%s` and other `sprintf` replacements.
 	 */
 	public function add($name, $callback, $error_message) {
@@ -408,7 +408,7 @@ class Validator extends Core\Base {
 		if (!is_array($value)) return false;
 
 		foreach ($value as $item) {
-			$result = $this->filter(array('item' => $item), array('item' => $validators), $errors, true);
+			$result = $this->filter(['item' => $item], ['item' => $validators], $errors, true);
 			if ($result === null) return false;
 		}
 		return true;
@@ -539,11 +539,11 @@ class Validator extends Core\Base {
 		if (!is_string($value)) return false;
 
 		$types = array_map('strtolower', $types);
-		$types		= array_intersect_key( array(
+		$types		= array_intersect_key([
 			'jpg'	=> IMAGETYPE_JPEG,
 			'png'	=> IMAGETYPE_PNG,
 			'gif'	=> IMAGETYPE_GIF,
-		), array_flip($types));
+		], array_flip($types));
 
 		try {
 			$imagesize = getimagesize($value);
@@ -756,7 +756,7 @@ class Validator extends Core\Base {
 		if (!is_array($value)) return false;
 		if (count($value) !== 5) return false;
 
-		$fields = array('name', 'type', 'tmp_name', 'error', 'size');
+		$fields = ['name', 'type', 'tmp_name', 'error', 'size'];
 		if (array_keys($value) !== $fields) return false;
 
 		if ($value['error'] !== '0') return false;

@@ -56,11 +56,11 @@ namespace Morrow;
 * rewind($body);
 * 
 * // send mail
-* $this->load('Mail', $this->Config->get('mail'));
-* $this->Mail->Subject = 'Welcome new user';
-* $this->Mail->Body    = stream_get_contents($body);
-* $this->Mail->AddAddress($user['email']);
-* $this->Mail->Send(true);
+* $mail = Factory::load('Mail', $this->Config->get('mail'));
+* $mail->Subject = 'Welcome new user';
+* $mail->Body    = stream_get_contents($body);
+* $mail->AddAddress($user['email']);
+* $mail->Send(true);
 *
 * // controller code
 * ~~~

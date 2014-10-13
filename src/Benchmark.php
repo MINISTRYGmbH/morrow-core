@@ -31,12 +31,12 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 *  
-* $this->benchmark->start('Section 1');
+* $this->Benchmark->start('Section 1');
 *  
 * // ... The code to be benchmarked
 *  
-* $this->benchmark->stop();
-* $benchmarking_results = $this->benchmark->get();
+* $this->Benchmark->stop();
+* $benchmarking_results = $this->Benchmark->get();
 * Debug::dump($benchmarking_results);
 *  
 * // ... Controller code

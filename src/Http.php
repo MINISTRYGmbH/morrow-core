@@ -32,23 +32,23 @@ namespace Morrow;
  * // ... Controller code
  *
  * // configure HTTP class
- * $this->load('Http', array(
+ * $this->load('Http', [
  *     CURLOPT_USERAGENT => 'Mozilla/2.0 (compatible; MSIE 3.0; AK; Windows 95)',
  *     CURLOPT_REFERER => 'http://www.google.com',
- *     CURLOPT_HTTPHEADER => array('X-Foo-1: Bar 1', 'X-Foo-2: Bar 2'),
- * ));
+ *     CURLOPT_HTTPHEADER => ['X-Foo-1: Bar 1', 'X-Foo-2: Bar 2'],
+ * ]);
  *
  * // HEAD request
- * $response = $this->http->head('http://localhost/?test_fdfd=123');
+ * $response = $this->Http->head('http://localhost/?test_fdfd=123');
  *
  * // GET request
- * $response = $this->http->get('http://localhost/?test_fdfd=123');
+ * $response = $this->Http->get('http://localhost/?test_fdfd=123');
  *
  * // POST request with sending post parameters and a file
- * $response = $this->http->post(
+ * $response = $this->Http->post(
  *     'http://localhost/?test_get=get',
- *     array('test_post' => 'post'),
- * 	   array('test_file' => 'test.png')
+ *     ['test_post' => 'post'],
+ * 	   ['test_file' => 'test.png])
  * );
  *
  * // ... Controller code
@@ -168,10 +168,10 @@ class Http {
 		$curl_info = curl_getinfo($ch);
 		$header_size = $curl_info["header_size"];
 		
-		$returner = array(
+		$returner = [
 			'header' => explode("\r\n\r\n", trim(substr($data, 0, $header_size))),
 			'body' => substr($data, $header_size),
-		);
+		];
 
 		return $returner;
 	}

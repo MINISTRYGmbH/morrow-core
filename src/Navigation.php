@@ -35,17 +35,17 @@ namespace Morrow;
  *
  * tree.php
  * ~~~{.php}
- * return array(
- * 	'main' => array(
+ * return [
+ * 	'main' => [
  * 		'home'	=> 'Homepage',
- * 		'products' => array('title' => 'Products', 'foo' => 'bar'),
+ * 		'products' => ['title' => 'Products', 'foo' => 'bar'],
  * 		'products/boxes' => 'Boxes',
  * 		'products/things' => 'Things',
- * 	),
- * 	'meta' => array(
+ * 	],
+ * 	'meta' => [
  * 		'imprint'	=> 'Imprint',
- * 	),
- * );
+ * 	],
+ * ];
  * ~~~
  * 
  * Default controller
@@ -53,19 +53,19 @@ namespace Morrow;
  * // ... Controller code
  *
  * // the complete navigation tree
- * $navi = $this->navigation->get();
+ * $navi = $this->Navigation->get();
  * Debug::dump($navi);
  *
  * // the breadcrumb
- * $breadcrumb = $this->navigation->getBreadcrumb();
+ * $breadcrumb = $this->Navigation->getBreadcrumb();
  * Debug::dump($breadcrumb);
  *
  * // the current page
- * $active = $this->navigation->getActive();
+ * $active = $this->Navigation->getActive();
  * Debug::dump($active);
  *
  * // find a page by its title
- * $homepage = $this->navigation->find('title', 'Homepage');
+ * $homepage = $this->Navigation->find('title', 'Homepage');
  * Debug::dump($homepage);
  *
  * // ... Controller code
@@ -81,7 +81,7 @@ namespace Morrow;
  * $results_per_page = 5;
  * $page             = $this->input->get('page');
  * 
- * $pager_data = $this->navigation->getPager($total_results, $results_per_page, $page);
+ * $pager_data = $this->Navigation->getPager($total_results, $results_per_page, $page);
  * Debug::dump($pager_data);
  *
  * // Controller code
@@ -146,13 +146,13 @@ class Navigation {
 	 * @return	null
 	 */
 	public function add($data, $branch = null) {
-		if (!is_null($branch)) $data = array($branch => $data);
+		if (!is_null($branch)) $data = [$branch => $data];
 		
 		foreach ($data as $branch => $tree) {
 			// first create the flat tree
 			foreach ($tree as $path => $node) {
 				// its ok just to pass a string as title
-				if (is_string($node)) $node = array('title' => $node);
+				if (is_string($node)) $node = ['title' => $node];
 				
 				if (!isset($node['title']) or empty($node['title'])) {
 					throw new \Exception(__CLASS__ . "': You have to define a title for path '{$path}'.");
@@ -304,7 +304,7 @@ class Navigation {
 		$offset_end		= min($offset_start + $results_per_page - 1, $total_results);
 		$mysql_limit	= $offset_start . ',' . $results_per_page;
 
-		return array(
+		return [
 			'page_prev'			=> $current_page > 1 ? $current_page - 1 : false,
 			'page_current'		=> $current_page,
 			'page_next'			=> $current_page < $total_pages ? $current_page + 1 : false,
@@ -314,6 +314,6 @@ class Navigation {
 			'offset_start'		=> $offset_start,
 			'offset_end'		=> $offset_end,
 			'mysql_limit'		=> $mysql_limit,
-		);
+		];
 	}
 }

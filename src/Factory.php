@@ -328,10 +328,10 @@ class Factory {
 		$instancename = (isset($params[1])) ? $params[1] : '_morrow_default';
 		
 		// save params for later
-		self::$_params[$classname][$instancename] = array(
+		self::$_params[$classname][$instancename] = [
 			'classname'	=> $classname,
 			'args'		=> array_slice($args, 1),
-		);
+		];
 	}
 
 	/**

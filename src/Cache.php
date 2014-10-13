@@ -36,10 +36,10 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 * 
-* if (!$result = $this->cache->load('result_id')) {
+* if (!$result = $this->Cache->load('result_id')) {
 *     // ... time consuming calculation
 *     $result = 'result of a very time consuming calculation';
-*     $this->cache->save('result_id', $result, '+5 seconds');
+*     $this->Cache->save('result_id', $result, '+5 seconds');
 * }
 *
 * // your data
@@ -53,14 +53,14 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 * 
-* if (!$result = $this->cache->load('result_id')) {
+* if (!$result = $this->Cache->load('result_id')) {
 *     try {
 *         // ... time consuming calculation
 *         $result = 'result of a very time consuming calculation';
-*         $this->cache->save('result_id', $result, '+5 seconds');
+*         $this->Cache->save('result_id', $result, '+5 seconds');
 *     } catch (Exception $e) {
 *         // use the old result if something went wrong
-*         $temp = $this->cache->get($id);
+*         $temp = $this->Cache->get($id);
 *         $result = $temp['object'];
 *     }
 * }

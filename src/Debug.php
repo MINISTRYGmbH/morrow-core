@@ -40,7 +40,7 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 * 
-* Debug::dump($this->page->get());
+* Debug::dump($this->Page->get());
 *  
 * // ... Controller code
 * ~~~ 

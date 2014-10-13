@@ -53,7 +53,7 @@ use Morrow\Debug;
 class Foobar extends _Default {
     public function run() {
         // Dump the contents of the page class
-        Debug::dump($this->page->get());
+        Debug::dump($this->Page->get());
     }
 }
 ?>

@@ -38,7 +38,7 @@ use Morrow\Debug;
 * ~~~{.php}
 * // ... Controller-Code
 *  
-* $this->header->set('X-Foo: Bar');
+* $this->Header->set('X-Foo: Bar');
 *  
 * // ... Controller-Code
 * ~~~
@@ -56,7 +56,7 @@ use Morrow\Debug;
 * In the following example the output will be cached for five seconds.
 *
 * ~~~{.php}
-* $this->header->setCache('+5 seconds');
+* $this->Header->setCache('+5 seconds');
 * ~~~
 *
 * The passed string defines the lifetime of the cache, given as a string `strtotime()` recognizes. 
@@ -206,7 +206,7 @@ class Header {
 	 * @return	string The detected mimetype.
 	 */
 	public function getMimeType($file) {
-		$mime_types = array(
+		$mime_types = [
 			'ai'		=> 'application/postscript',
 			'aif'		=> 'audio/x-aiff',
 			'aiff'		=> 'audio/x-aiff',
@@ -323,7 +323,7 @@ class Header {
 			'xpm'		=> 'image/x-xpixmap',
 			'z'			=> 'application/x-compress',
 			'zip'		=> 'application/zip'
-		);
+		];
 		
 		$file = pathinfo($file);
 		if (isset($file['extension'])) $ext = $file['extension'];

@@ -29,7 +29,7 @@ namespace Morrow;
  * Dot Syntax
  * -----------
  * 
- * This class works with the extended dot syntax. So if you have keys like `input_example.host` and `input_example.smtp` in your input, you can call `$this->input->get('input_example')` to receive an array with the keys host and smtp.
+ * This class works with the extended dot syntax. So if you have keys like `input_example.host` and `input_example.smtp` in your input, you can call `$this->Input->get('input_example')` to receive an array with the keys host and smtp.
  * 
  * Example
  * -------
@@ -38,10 +38,10 @@ namespace Morrow;
  * // ... Controller code
  *  
  * // retrieve all input that came from outside (like PHPs $_REQUEST)
- * Debug::dump($this->input->get());
+ * Debug::dump($this->Input->get());
  * 
  * // retrieve an ID passed via POST, and set a fallback value if ID was not passed.
- * Debug::dump($this->input->getPost('id', 0));
+ * Debug::dump($this->Input->getPost('id', 0));
  *  
  * // ... Controller code
  * ~~~
@@ -88,7 +88,7 @@ class Input extends Core\Base {
 	 */
 	public function tidy($value) {
 		if (is_array($value)) {
-			$value = array_map(array(&$this, 'tidy'), $value);
+			$value = array_map([&$this, 'tidy'], $value);
 		} else {
 			$value = trim($value);
 			// unify line breaks
@@ -168,9 +168,9 @@ class Input extends Core\Base {
 	protected function _array_merge_recursive_distinct ($array) {
 		$arrays = func_get_args();
 		$base = array_shift($arrays);
-		if (!is_array($base)) $base = empty($base) ? [] : array($base);
+		if (!is_array($base)) $base = empty($base) ? [] : [$base];
 		foreach ($arrays as $append) {
-			if (!is_array($append)) $append = array($append);
+			if (!is_array($append)) $append = [$append];
 			foreach ($append as $key => $value) {
 				if (!array_key_exists($key, $base)) {
 					$base[$key] = $append[$key];

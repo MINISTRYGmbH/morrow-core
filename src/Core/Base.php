@@ -36,16 +36,16 @@ abstract class Base {
 	 * ~~~{.php}
 	 * class Dummy extends \Morrow\Core\Base {
 	 * 	public function sort() {
-	 *		$data = array(
-	 *			0 => array(
+	 *		$data = [
+	 *			0 => [
 	 *				'title' => 'Foo',
 	 * 				'position' => 1,
-	 * 			),
-	 *			1 => array(
+	 * 			],
+	 *			1 => [
 	 * 				'title' => 'Bar',
 	 * 				'position' => 0,
-	 * 			),
-	 * 		);
+	 * 			],
+	 * 		];
 	 * 
 	 *	 	return $this->arrayOrderBy($data, 'position ASC, title ASC');
 	 * 	}
@@ -71,7 +71,7 @@ abstract class Base {
 			$parts = explode(" ", $orderby);
 			if (!isset($parts[1])) $parts[1] = 'asc';
 			$parts[1] = strtolower($parts[1]);
-			if (!in_array($parts[1], array('asc', 'desc'))) $parts[1] = 'asc';
+			if (!in_array($parts[1], ['asc', 'desc'])) $parts[1] = 'asc';
 			
 			// add field name
 			$params[] = $parts[0];
@@ -108,16 +108,16 @@ abstract class Base {
 	 * ~~~{.php}
 	 * class Dummy extends \Morrow\Core\Base {
 	 * 	public function foo() {
-	 *		$data = array(
-	 *			0 => array(
+	 *		$data = [
+	 *			0 => [
 	 *				'title' => 'Foo',
 	 * 				'position' => 1,
-	 * 			),
-	 *			1 => array(
+	 * 			],
+	 *			1 => [
 	 * 				'title' => 'Bar',
 	 * 				'position' => 0,
-	 * 			),
-	 * 		);
+	 * 			],
+	 * 		];
 	 * 
 	 *	 	return $this->arrayGet($data, '1.title');
 	 * 	}
@@ -159,18 +159,18 @@ abstract class Base {
 	 * ~~~{.php}
 	 * class Dummy extends \Morrow\Core\Base {
 	 * 	public function foo() {
-	 *		$data = array(
-	 *			0 => array(
+	 *		$data = [
+	 *			0 => [
 	 *				'title' => 'Foo',
 	 * 				'position' => 1,
-	 * 			),
-	 *			1 => array(
+	 * 			],
+	 *			1 => [
 	 * 				'title' => 'Bar',
 	 * 				'position' => 0,
-	 * 			),
-	 * 		);
+	 * 			],
+	 * 		];
 	 * 
-	 *	 	return $this->arraySet($data, '1.children', array(0 => array('title' => 'FooBar', 'position' => 0)));
+	 *	 	return $this->arraySet($data, '1.children', [0 => ['title' => 'FooBar', 'position' => 0]]);
 	 * 	}
 	 * }
 	 * ~~~
@@ -202,16 +202,16 @@ abstract class Base {
 	 * ~~~{.php}
 	 * class Dummy extends \Morrow\Core\Base {
 	 * 	public function foo() {
-	 *		$data = array(
-	 *			0 => array(
+	 *		$data = [
+	 *			0 => [
 	 *				'title' => 'Foo',
 	 * 				'position' => 1,
-	 * 			),
-	 *			1 => array(
+	 * 			],
+	 *			1 => [
 	 * 				'title' => 'Bar',
 	 * 				'position' => 0,
-	 * 			),
-	 * 		);
+	 * 			],
+	 * 		];
 	 * 
 	 *	 	return $this->arrayDelete($data, '0.title');
 	 * 	}
@@ -256,12 +256,12 @@ abstract class Base {
 	 * ~~~{.php}
 	 * class Dummy extends \Morrow\Core\Base {
 	 * 	public function foo() {
-	 *		$data = array(
+	 *		$data = [
 	 *			'0.title' => 'Foo',
 	 * 			'0.position' => 1,
 	 * 			'1.title' => 'Bar',
 	 * 			'1.position' => 0,
-	 * 		);
+	 * 		];
 	 * 
 	 *	 	return $this->arrayExplode($data);
 	 * 	}

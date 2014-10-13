@@ -93,7 +93,7 @@ class Xml extends AbstractView {
 			if ($key{0} != ':') $count++;
 		}
 		
-		if ($count != 1) $this->_content['content'] = array('auto-container' => $this->_content['content']);
+		if ($count != 1) $this->_content['content'] = ['auto-container' => $this->_content['content']];
 		fwrite($handle, $this -> _outputXML($this->_content['content']));
 		return $handle;
 	}

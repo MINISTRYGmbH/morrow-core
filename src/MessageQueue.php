@@ -45,9 +45,9 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 * 
-* $this->messagequeue->set('mq/foobar', array('data' => '1'));
-* $this->messagequeue->set('mq/foobar', array('data' => '2'));
-* $this->messagequeue->set('mq/foobar', array('data' => array('foo' => 'bar')));
+* $this->Messagequeue->set('mq/foobar', ['data' => '1']);
+* $this->Messagequeue->set('mq/foobar', ['data' => '2']);
+* $this->Messagequeue->set('mq/foobar', ['data' => ['foo' => 'bar']]);
 * 
 * // ... Controller code
 * ~~~
@@ -57,15 +57,15 @@ namespace Morrow;
 * // ... Controller code
 * 
 * // Set the handler to plain because we don't want to output anything
-* $this->view->setHandler('plain');
+* $this->Views_Serpent->setHandler('plain');
 *
 * // Important line: Start the job worker if necessary
 * // You have to insert this line into all your job controllers before your own controller code
-* if ($this->messagequeue->process()) return;
+* if ($this->Messagequeue->process()) return;
 * 
 * // This is your time consuming code
 * sleep(3);
-* $this->log->set(date('H:i:s'), $this->input->get('data'));
+* $this->Log->set(date('H:i:s'), $this->Input->get('data'));
 * 
 * // ... Controller code
 * ~~~
@@ -120,11 +120,11 @@ class MessageQueue {
 		// save request to file with id
 		$id = microtime(true) . '_' . uniqid('_', true) . '.mq';
 		
-		$item = array(
+		$item = [
 			'id'			=> $id,
 			'controller'	=> $controller,
 			'data'			=> $data,
-		);
+		];
 
 		$id_file = $this->_save_path . $id;
 		file_put_contents($id_file, json_encode($item));

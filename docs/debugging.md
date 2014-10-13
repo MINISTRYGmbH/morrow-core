@@ -48,9 +48,9 @@ Use the following construct to define actions which should take place after the 
 The best place for this snippet is the first line in the setup() method of your default controller. Otherwise all code which throws exceptions before this line would not trigger your actions.
 
 ~~~{.php}
-$this->event->on('core.after_exception', function($e, $exception){
+$this->Event->on('core.after_exception', function($e, $exception){
 	// your actions
-	$this->url->redirect('error/');	
+	$this->Url->redirect('error/');	
 });
 ~~~
 

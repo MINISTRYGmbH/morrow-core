@@ -35,24 +35,24 @@ namespace Morrow;
 *  
 * // This line is not necessary if you use the default path to the config parameters (auto initialized by Morrow)
 * // You will need this if you need a second database or you want to use an other path to the config
-* $this->prepare('Db', $this->config->get('db'));
+* $this->prepare('Db', $this->Config->get('db'));
 *  
 * // Query with a prepared statement using named placeholder
-* $sql = $this->db->get('
+* $sql = $this->Db->get('
 *     SELECT *
 *     FROM table
 *     WHERE id = :id
-* ', ['id'=>$this->input->get('id')]
+* ', ['id'=>$this->Input->get('id')]
 * );
 * Debug::dump($sql);
 *  
 * // Query with a prepared statement using "?" placeholder
 * // If you just want to pass one parameter you can also pass it directly without using an array
-* $sql = $this->db->get('
+* $sql = $this->Db->get('
 *     SELECT *
 *     FROM table
 *     WHERE id = ?
-* ', $this->input->get('id'));
+* ', $this->Input->get('id'));
 *  
 * Debug::dump($sql);
 *  
@@ -65,10 +65,10 @@ namespace Morrow;
 * ~~~{.php}
 * // ... Controller code
 *  
-* $this->prepare('db', $this->config->get('db'));
+* $this->prepare('db', $this->Config->get('db'));
 *  
 * // Query with a prepared statement using named placeholder
-* $sql = $this->db->Result('
+* $sql = $this->Db->Result('
 *    SELECT *, >id
 *    FROM table
 * ');

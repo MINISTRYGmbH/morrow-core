@@ -46,8 +46,8 @@ namespace Morrow\Streams;
 * // ... Controller code
 * 
 * // Initialize the stream handler
-* $this->prepare('Db', $this->config->get('db'));
-* Factory::load('Streams\Db:files', 'db', $this->db, 'files');
+* $this->prepare('Db', $this->Config->get('db'));
+* Factory::load('Streams\Db:files', 'db', $this->Db, 'files');
 * 
 * // Write a file
 * file_put_contents('db://foo.txt', 'bar');
@@ -63,8 +63,8 @@ namespace Morrow\Streams;
 * // ... Controller code
 *  
 * // You have to init the stream wrapper before working with the session
-* $this->prepare('Db', $this->config->get('db'));
-* Factory::load('Streams\Db:sessions', 'dbs', $this->db, 'sessions');
+* $this->prepare('Db', $this->Config->get('db'));
+* Factory::load('Streams\Db:sessions', 'dbs', $this->Db, 'sessions');
 * 
 * // ... now work with the session
 * 
@@ -151,10 +151,10 @@ class Db {
 	public function __construct($scheme = null, \Morrow\Db $db = null, $table = null) {
 		if(!$scheme) return;
 		
-		self::$config[$scheme] = array(
+		self::$config[$scheme] = [
 			'db'	=> $db,
 			'table'	=> $table,
-		);
+		];
 		stream_register_wrapper($scheme, __CLASS__);
 	}
 
@@ -233,13 +233,13 @@ class Db {
 		$this->db		= self::$config[$this->scheme]['db'];
 		$this->table	= self::$config[$this->scheme]['table'];
 
-		$this->entry = array(
+		$this->entry = [
 			'id'	=> $this->id,
 			'type'	=> 'dir',
 			'data'	=> '',
 			'ctime'	=> date('Y-m-d H:i:s', time()),
 			'mtime'	=> date('Y-m-d H:i:s', time()),
-		);
+		];
 
 		//$this->db->insert($this->table, $this->entry);
 		return false;
@@ -337,13 +337,13 @@ class Db {
 		$this->mode		= $mode;
 		$this->exists	= false;
 		
-		$this->entry = array(
+		$this->entry = [
 			'id'	=> $this->id,
 			'type'	=> 'file',
 			'data'	=> '',
 			'ctime'	=> time(),
 			'mtime'	=> time(),
-		);
+		];
 
 		// handle the different modes
 		$sql = $this->db->result("
@@ -359,7 +359,7 @@ class Db {
 		", $this->id);
 
 		// if file already exists: false
-		if (in_array($this->mode, array('x', 'x+')) && $sql['NUM_ROWS'] === 0) return false;
+		if (in_array($this->mode, ['x', 'x+']) && $sql['NUM_ROWS'] === 0) return false;
 
 		if (isset($sql['RESULT'][0])) {
 			$this->entry = array_merge($this->entry, $sql['RESULT'][0]);
@@ -367,12 +367,12 @@ class Db {
 		}
 
 		// truncate file
-		if (in_array($this->mode, array('w', 'x+'))) {
+		if (in_array($this->mode, ['w', 'x+'])) {
 			$this->entry['data'] = '';
 		}
 
 		// set cursor position if different to 0
-		if (in_array($this->mode, array('a', 'a+'))) {
+		if (in_array($this->mode, ['a', 'a+'])) {
 			$this->pos = strlen($this->entry['data']) - 1;
 		}
 
@@ -423,7 +423,7 @@ class Db {
 		// do not return anything if file not exists
 		if (!$this->exists) return false;
 
-		return array(
+		return [
 			'dev'		=> 0,
 			'ino'		=> 0,
 			'mode'		=> ($this->entry['type'] === 'dir' ? 17407 : 33216),
@@ -437,7 +437,7 @@ class Db {
 			'ctime'		=> $this->entry['ctime'],
 			'blksize'	=> 0,
 			'blocks'	=> 0,
-		);
+		];
 	}
 
 	/**
@@ -466,7 +466,7 @@ class Db {
 	 */
 	public function stream_write($data) {
 		// try to add entry if it does not exist
-		if (in_array($this->mode, array('w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'))) {
+		if (in_array($this->mode, ['w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'])) {
 			
 		}
 
