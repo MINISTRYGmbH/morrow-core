@@ -169,7 +169,8 @@ class Frontcontroller {
 		Factory::prepare('Pagesession', 'pagesession.' . $path, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
 		
-		// set a default template path for all Views
+		// set a default template path for all Serpent instances
+		// the execution of Features will change the template_path
 		Factory::onload('Views\Serpent', function($instance){
 			$instance->template_path	= APP_PATH . 'templates/';
 		}, true);

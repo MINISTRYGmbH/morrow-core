@@ -61,14 +61,6 @@ class Feature {
 			}
 		}
 
-		/* load view
-		********************************************************************************************/
-		$view = Factory::load('Views\Serpent');
-		$view->template_path	= $root_path_absolute . 'templates/';
-		
-		// generate template name
-		$view->template = call_user_func(Factory::load('Config')->get('router.template'), $class);
-
 		/* load controller
 		********************************************************************************************/
 		// A missing controller will result in an empty page
@@ -81,8 +73,18 @@ class Feature {
 			if (is_resource($view) && get_resource_type($view) == 'stream') {
 				$handle = $view;
 			} elseif (is_object($view) && is_subclass_of($view, '\Morrow\Views\AbstractView')) {
-				$handle				= $view->getOutput();
-				$is_returning_html	= $view->is_returning_html;
+				
+				if (is_a($view, '\Morrow\Views\Serpent')) {
+					$view->template			= call_user_func(Factory::load('Config')->get('router.template'), $class);
+
+					// for Features we have to reconfigure the template path
+					if (!$master) {
+						$view->template_path	= $root_path_absolute . 'templates/';
+					}
+				}
+
+				$handle					= $view->getOutput();
+				$is_returning_html		= $view->is_returning_html;
 			} elseif (is_string($view)) {
 				$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
 				fwrite($handle, $view);
@@ -90,7 +92,7 @@ class Feature {
 				throw new \Exception(__CLASS__.': The return value of a controller has to of type "stream", "string" or has to be a child of \Morrow\Views\AbstractView.');
 			}
 		}
-		
+
 		/* load features
 		********************************************************************************************/
 		$features_path	= $root_path_absolute . 'features/features.php';

@@ -137,7 +137,7 @@ namespace Morrow;
  * The Morrow default controller extends the Factory by default so the following examples will work in Morrow controller files.
  *
  * If you access a not defined class member it will be understood as you want to use the class with the same name. 
- * So it will get instantiated and returned. This way you can use a method of a class and instantiating it in one line.
+ * So it will get instantiated and returned. Underscores are translated to backslashes so it is possible to load classes from different namespaces.
  * 
  * ~~~{.php}
  * <?php
@@ -148,7 +148,7 @@ namespace Morrow;
  *
  * class Foobar extends _Default { // the default controller extends the Factory
  * 		public function run() {
- * 			$result = $this->dummy->get();
+ * 			$result = $this->Dummy->get();
  * 		}
  * }
  * ~~~
@@ -158,8 +158,8 @@ namespace Morrow;
  * ~~~{.php}
  * // Controller code
  *
- * $this->prepare('Dummy:dummy2', 'foobar');
- * $result = $this->dummy2->get();
+ * $this->prepare('Dummy', 'foobar');
+ * $result = $this->Dummy->get();
  * 			
  * // Controller code
  * ~~~
@@ -292,10 +292,14 @@ class Factory {
 
 		// first execute onload callback for all instances, then for the specific instance
 		if (isset(self::$_onload_callbacks[$classname])) {
-			call_user_func(self::$_onload_callbacks[$classname], $instance);
+			foreach (self::$_onload_callbacks[$classname] as $callback) {
+				call_user_func($callback, $instance);
+			}
 		}
-		if (isset(self::$_onload_callbacks[$instancename])) {
-			call_user_func(self::$_onload_callbacks[$instancename], $instance);
+		if (isset(self::$_onload_callbacks[$classname . ':' . $instancename])) {
+			foreach (self::$_onload_callbacks[$classname . ':' . $instancename] as $callback) {
+				call_user_func($callback, $instance);
+			}
 		}
 
 		return $instance;
@@ -350,11 +354,14 @@ class Factory {
 			$classname = '\\Morrow\\' . $classname;
 		}
 
+		// use the instancename or the last part of the classname for saving the args
+		$instancename = (isset($params[1])) ? $params[1] : '_morrow_default';
+
 		// save callback
 		if ($ignore_instancename) {
-			self::$_onload_callbacks[$classname] = $callback;
+			self::$_onload_callbacks[$classname][] = $callback;
 		} else {
-			self::$_onload_callbacks[$instance_identifier] = $callback;
+			self::$_onload_callbacks[$classname . ':' . $instancename][] = $callback;
 		}
 	}
 
@@ -364,7 +371,8 @@ class Factory {
 	 * @return	object  Returns the created instance.
 	 */
 	public function __get($instance_identifier) {
-		$this->$instance_identifier = Factory::load(ucfirst($instance_identifier));
+		$instance_identifier = str_replace('_', '\\', $instance_identifier);
+		$this->$instance_identifier = Factory::load($instance_identifier);
 		return $this->$instance_identifier;
 	}
 
