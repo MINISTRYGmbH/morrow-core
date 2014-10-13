@@ -49,18 +49,18 @@ namespace Morrow;
 * // controller code
 * 
 * // create text version of the mail
-* $view = Factory::load('view:mail');
-* $view->setHandler('serpent');
+* $view = Factory::load('Views\Serpent:mail');
 * $view->template = 'mail/welcome';
-* $view->setContent('user', $user_data);
-* $body = $view->get();
+* $view->setContent('user', $user);
+* $body = $view->getOutput();
+* rewind($body);
 * 
 * // send mail
-* $this->load('Mail', $this->config->get('mail'));
-* $this->mail->Subject = 'Welcome new user';
-* $this->mail->Body    = stream_get_contents($body['content']);
-* $this->mail->AddAddress($user_data['email']);
-* $this->mail->Send(true);
+* $this->load('Mail', $this->Config->get('mail'));
+* $this->Mail->Subject = 'Welcome new user';
+* $this->Mail->Body    = stream_get_contents($body);
+* $this->Mail->AddAddress($user['email']);
+* $this->Mail->Send(true);
 *
 * // controller code
 * ~~~
