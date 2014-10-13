@@ -67,7 +67,7 @@ class Header {
 	 * Contains all HTTP headers that should be set.
 	 * @var	array $_header
 	 */
-	protected $_header = array();
+	protected $_header = [];
 
 	/**
 	 * The time when the cache should expire in a strtotime() format.

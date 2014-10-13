@@ -56,7 +56,7 @@ class Config extends Core\Base {
 	* The data array which does not have dotted keys anymore
 	* @var array $data
 	*/
-	protected $data = array(); // The array with parsed data
+	protected $data = []; // The array with parsed data
 
 	/**
 	 * Retrieves configuration parameters. If `$identifier` is not passed, it returns an array with the complete configuration. Otherwise only the parameters below `$identifier`. 
@@ -85,7 +85,7 @@ class Config extends Core\Base {
 	 * @return null
 	 */
 	public function clear() {
-		$this->data = array();
+		$this->data = [];
 	}
 
 	/**
@@ -96,7 +96,7 @@ class Config extends Core\Base {
 	 * @return	array	An array with the config.
 	 */
 	public function load($directory, $subkey = null) {
-		$config = array();
+		$config = [];
 
 		// load main config
 		$file = $directory.'_default.php';

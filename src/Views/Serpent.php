@@ -64,19 +64,19 @@ class Serpent extends AbstractView {
 	 * a
 	 * @var array $mappings
 	 */
-	public $mappings		= array();
+	public $mappings		= [];
 
 	/**
 	 * a
 	 * @var array $resources
 	 */
-	public $resources		= array();
+	public $resources		= [];
 
 	/**
 	 * Handles the cycles for cycles()
 	 * @var array $cycles
 	 */
-	public static $cycles = array();
+	public static $cycles = [];
 
 	/**
 	 * Passes page content to the template
@@ -240,7 +240,7 @@ class Serpent extends AbstractView {
 	 * @param   array $params THe parameters to edit the image. Explained in \Morrow\Image.
 	 * @return  string Returns the path to the thumbnail in the temp folder.
 	 */
-	public static function thumb($filepath, $params = array()) {
+	public static function thumb($filepath, $params = []) {
 		try {
 			$path = Factory::load('Image')->get($filepath, $params);
 			$path = str_replace(PUBLIC_PATH, '', $path);

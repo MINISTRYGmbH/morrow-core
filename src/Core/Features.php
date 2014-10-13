@@ -96,7 +96,7 @@ class Features {
 							$dom->set($content);
 						}
 						// pass config in features.php to the feature config
-						$config = isset($actions['config']) ? $actions['config'] : array();
+						$config = isset($actions['config']) ? $actions['config'] : [];
 
 						// execute MVC triad
 						$handle = (new Feature)->run($actions['class'], $config, false, $dom);

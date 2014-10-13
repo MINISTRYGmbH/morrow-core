@@ -69,7 +69,7 @@ class Page extends Core\Base {
 	* The data array which does not have dotted keys anymore
 	* @var array $data
 	*/
-	protected $data = array(); // The array with parsed data
+	protected $data = []; // The array with parsed data
 
 	/**
 	 * Retrieves configuration parameters. If `$identifier` is not passed, it returns an array with the complete configuration. Otherwise only the parameters below `$identifier`. 

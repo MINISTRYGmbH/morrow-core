@@ -260,7 +260,7 @@ class Factory {
 				$classname = self::$_params[$classname][$instancename]['classname'];
 				$factory_args = self::$_params[$classname][$instancename]['args'];
 			} else {
-				$factory_args = array();
+				$factory_args = [];
 			}
 		}
 		

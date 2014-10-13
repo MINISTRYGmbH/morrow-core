@@ -134,10 +134,10 @@ namespace Morrow;
  * ---------     | ---------               | -----   | ------------
  * `composition` | `$name`                 | string  | Check against all fields which are defined for the given composition name added by `addComposition()`.
  * `invalidates` | `$field`                | string  | Use this if you want the error be appended to the errors of another field.
- * `required`    | `$fields = array()`     | array   | Defines the field as required. Returns `false` if the value is NULL, "" or an empty array. If you pass the optional associative array `$fields`, the field will only get required if all fields (keys) in the array have the stated values.
+ * `required`    | `$fields = []`     | array   | Defines the field as required. Returns `false` if the value is NULL, "" or an empty array. If you pass the optional associative array `$fields`, the field will only get required if all fields (keys) in the array have the stated values.
  * `equal`       | `$compare_value`        | mixed   | Compares the field to a given value to compare.
  * `same`        | `$compare_field`        | string  | Compares the field to the value of a different field in the input array.
- * `array`       | `$validators = array()` |         | Returns `true` if the field is an array. If you pass `$validators` all values are checked against them. If just one value fails the `array` validator fails. Useful if you have a `<select>` with the attribute `multiple="multiple"`.
+ * `array`       | `$validators = []` |         | Returns `true` if the field is an array. If you pass `$validators` all values are checked against them. If just one value fails the `array` validator fails. Useful if you have a `<select>` with the attribute `multiple="multiple"`.
  * `number`      |                         |         | Returns `true` if the field is decimal number.
  * `numeric`     |                         |         | Returns `true` if the field is a number or a decimal number.
  * `min`         | `$min`                  | numeric | Returns `true` if the field is greater than `$min`.
@@ -153,7 +153,7 @@ namespace Morrow;
  * `height`      | `$height`               | integer | Returns `true` if the image has the given height.
  * `email`       |                         |         | Returns `true` if the email address is valid.
  * `url`         | `$schemes`              | array   | Returns `true` if the scheme of the url is one of the given, eg. `array('http', 'https')`.
- * `ip`          | `$flags = array()`      | array   | Returns `true` if the IP is valid. You can pass the following parameters to specify the requirements: `ipv4` (IP must be an IPV4 address), `ipv6` (IP must be an IPV6 address), `private` (IP can be a private address like 192.168.*) and `reserved` (IP can be a reserved address like 100.64.0.0/10). Default is `ipv4`.
+ * `ip`          | `$flags = []`      | array   | Returns `true` if the IP is valid. You can pass the following parameters to specify the requirements: `ipv4` (IP must be an IPV4 address), `ipv6` (IP must be an IPV6 address), `private` (IP can be a private address like 192.168.*) and `reserved` (IP can be a reserved address like 100.64.0.0/10). Default is `ipv4`.
  * `date`        | `$date_format`          | string  | Returns `true` if the date is valid and the date could be successfully checked against `$date_format` (in `\DateTime::createFromFormat` format).
  * `before_date` | `$before`               | string  | Returns `true` if the date is before the given date. Both dates have to be passed in a format `strtotime` is able to read. 
  * `after_date`  | `$after`                | string  | Returns `true` if the date is after the given date. Both dates have to be passed in a format `strtotime` is able to read. 
@@ -165,19 +165,19 @@ class Validator extends Core\Base {
 	 * Contains all user defined validators set by add().
 	 * @var array $_callbacks
 	 */
-	protected $_callbacks = array();
+	protected $_callbacks = [];
 
 	/**
 	 * Contains all user defined compositions set by addComposition().
 	 * @var array $_compositions
 	 */
-	protected $_compositions = array();
+	protected $_compositions = [];
 
 	/**
 	 * Contains the error messages for all validators.
 	 * @var array $_messages
 	 */
-	protected $_messages = array();
+	protected $_messages = [];
 	
 	/**
 	 * Initializes the class and sets default error messages.
@@ -220,9 +220,9 @@ class Validator extends Core\Base {
 	 * @param	boolean	$strict	If set to `true`, the function will return false if at least one field is not valid.
 	 * @return 	mixed	Returns an array with all valid fields or `false` if `$strict` was set and at least one field was not valid.
 	 */
-	public function filter(array $input, array $rules, &$errors = array(), $strict = false) {
-		$output			= array();
-		$errors			= array();
+	public function filter(array $input, array $rules, &$errors = [], $strict = false) {
+		$output			= [];
+		$errors			= [];
 		$return_null	= false;
 
 		// iterate all fields
@@ -246,7 +246,7 @@ class Validator extends Core\Base {
 			}
 
 			// rewrite rules to normal form (validator => value)
-			$rules_array_temp = array();
+			$rules_array_temp = [];
 			foreach ($rules_array as $unknown_key => $unknown_value) {
 				if (is_numeric($unknown_key)) {
 					$rules_array_temp[$unknown_value] = null;
@@ -356,7 +356,7 @@ class Validator extends Core\Base {
 	 * @param	array	$fields	If the fields in this array have the same values as in the input array this validator checks for required.
 	 * @return 	booolean	The result of the validation.
 	 */
-	protected function _validator_required($input, $value, $fields = array()) {
+	protected function _validator_required($input, $value, $fields = []) {
 		// check for values in fields to make this field required 
 		$required = true;
 		foreach ($fields as $field_key => $field_value) {
@@ -403,7 +403,7 @@ class Validator extends Core\Base {
 	 * @param	mixed	$value	The input data to validate.
 	 * @return 	booolean	The result of the validation.
 	 */
-	protected function _validator_array($input, $value, $validators = array()) {
+	protected function _validator_array($input, $value, $validators = []) {
 		if (count($validators) === 0) return is_array($value);
 		if (!is_array($value)) return false;
 
@@ -520,7 +520,7 @@ class Validator extends Core\Base {
 	 * @return 	booolean	The result of the validation.
 	 */
 	protected function _validator_in_keys($input, $value, $in) {
-		$in_flat = array();
+		$in_flat = [];
 		array_walk_recursive($in, function($item, $key) use (&$in_flat) {
 			$in_flat[] = $key;
 		});

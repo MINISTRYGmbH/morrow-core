@@ -47,8 +47,8 @@ use Morrow\Factory;
 * class Products extends \Morrow\AbstractTableDataGateway {
 * 	protected $_db;
 * 	protected $_table					= 'products';
-* 	protected $_allowed_insert_fields	= array('title', 'description');
-* 	protected $_allowed_update_fields	= array('description');
+* 	protected $_allowed_insert_fields	= ['title', 'description'];
+* 	protected $_allowed_update_fields	= ['description'];
 * 
 * 	public function __construct() {
 * 		$this->_db = Factory::load('Db');
@@ -92,8 +92,8 @@ use Morrow\Factory;
 * namespace app\models;
 * 
 * class Products extends Base {
-* 	protected $_allowed_insert_fields	= array('title', 'description');
-* 	protected $_allowed_update_fields	= array('description');
+* 	protected $_allowed_insert_fields	= ['title', 'description'];
+* 	protected $_allowed_update_fields	= ['description'];
 * 
 * 	public function exampleAction() {
 * 		$sql = $this->_db->get("SELECT *, >id FROM {$this->_table} ORDER BY id ASC");
@@ -111,17 +111,17 @@ use Morrow\Factory;
 * $products = new models\Products;
 *
 * // insert some data
-* $data = array(
+* $data = [
 * 	'title'			=> 'Cool product',
 * 	'description'	=> 'A very long description ...',
-* );
+* ];
 * $products->insert($data);
 * $id = $this->lastInsertId();
 * 
 * // update the row just inserted
-* $data = array(
+* $data = [
 * 	'description'	=> 'A very long and changed description ...',
-* );
+* ];
 * $products->update($data, $id);
 *
 * // we do not need it anymore
@@ -153,13 +153,13 @@ abstract class AbstractTableDataGateway {
 	 * All fields that allowed to be inserted.
 	 * @var array $_allowed_insert_fields
 	 */
-	protected $_allowed_insert_fields = array();
+	protected $_allowed_insert_fields = [];
 
 	/**
 	 * All fields that allowed to be updated.
 	 * @var array $_allowed_update_fields
 	 */
-	protected $_allowed_update_fields = array();
+	protected $_allowed_update_fields = [];
 
 	/**
 	 * Retrieves data from the database. 
@@ -232,7 +232,7 @@ abstract class AbstractTableDataGateway {
 	protected function _createWhere(array $conditions) {
 		$where = 'id = ?';
 		if (!is_scalar($conditions)) {
-			$where = array();
+			$where = [];
 			foreach ($conditions as $field => $value) {
 				$where[] = $field . '=?';
 			}

@@ -209,7 +209,7 @@ class Frontcontroller {
 			throw new \Exception("$class not found");
 		});
 
-		$handle	= (new \Morrow\Core\Feature)->run($controller, array(), true);
+		$handle	= (new \Morrow\Core\Feature)->run($controller, [], true);
 		
 		// output headers
 		$headers	= $header->getAll($handle);

@@ -105,7 +105,7 @@ $token = $this->security->getCSRFToken();
 ~~~{.php}
 // create a secure URL with an CSRF token
 // This method works exactly as $this->url->create() but adds the token
-$url = $this->security->createCSRFUrl('cms/product/34', array('delete' => 'true'));
+$url = $this->security->createCSRFUrl('cms/product/34', ['delete' => 'true']);
 ~~~
 
 ~~~{.php}

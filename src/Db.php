@@ -42,7 +42,7 @@ namespace Morrow;
 *     SELECT *
 *     FROM table
 *     WHERE id = :id
-* ', array('id'=>$this->input->get('id'))
+* ', ['id'=>$this->input->get('id')]
 * );
 * Debug::dump($sql);
 *  
@@ -94,7 +94,7 @@ class Db extends \PDO {
 	 * Column cache for *safe() functions
 	 * @var array $cache
 	 */
-	protected $cache = array();
+	protected $cache = [];
 	
 	/**
 	 * This method overwrites the standard method and expects the DB connection parameters.
@@ -150,7 +150,7 @@ class Db extends \PDO {
 	 * @return array Returns an array with the keys `SUCCESS` (true if the query could successfully sent to the db, otherwise false), `RESULT` (array The complete result set of the request) and `NUM_ROWS` (integer 	The count of returned results). 
 	 */
 	public function get($query, $token = null) {
-		if (is_scalar($token)) $token = array($token);
+		if (is_scalar($token)) $token = [$token];
 				
 		// search for access keys
 		$accesskey = null;
@@ -169,7 +169,7 @@ class Db extends \PDO {
 		
 		// if an access key was provided rearrange array
 		if (!is_null($accesskey)) {
-			$newreturner = array();
+			$newreturner = [];
 			foreach ($returner['RESULT'] as $row) {
 				$newreturner[$row[$accesskey]] = $row;
 			}
@@ -189,7 +189,7 @@ class Db extends \PDO {
 	 * @return array Returns an array with the keys `SUCCESS` (true if the query could successfully sent to the db, otherwise false), `RESULT` (array The complete result set of the request), `NUM_ROWS` (integer The count of returned results) and `FOUND_ROWS` (integer The count of results without the LIMIT). 
 	 */
 	public function get_calc_found_rows($query, $token = null) {
-		if (is_scalar($token)) $token = array($token);
+		if (is_scalar($token)) $token = [$token];
 
 		// because of two queries we should use transactions if available
 		$this->beginTransaction();
@@ -215,10 +215,10 @@ class Db extends \PDO {
 	 * ~~~{.php}
 	 * // Controller code
 	 * 
-	 * $data = array(
+	 * $data = [
 	 *     'foo' => 'bar',
-	 *     'foo2' => array('FUNC' => 'foo2+1')
-	 * );
+	 *     'foo2' => ['FUNC' => 'foo2+1']
+	 * ];
 	 * $this->db->insert('table', $data, true);
 	 * 
 	 * // Controller code
@@ -231,9 +231,9 @@ class Db extends \PDO {
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedLocalVariable)
 	 */
-	public function insert($table, $array, $on_duplicate_key_update = array()) {
+	public function insert($table, $array, $on_duplicate_key_update = []) {
 		// The array could be empty if processed by insertSafe
-		if (count($array) == 0) return array('SUCCESS' => true);
+		if (count($array) == 0) return ['SUCCESS' => true];
 
 		$array = $this->_createInsertAndReplaceValues($array);
 		extract($array);
@@ -263,7 +263,7 @@ class Db extends \PDO {
 	 * @param  array $on_duplicate_key_update The data which is used for an UPDATE if a PRIMARY or UNIQUE key already exists (*MySQL only*).
 	 * @return array An result array with the key `SUCCESS` (boolean Was the query successful).
 	 */
-	public function insertSafe($table, $array, $on_duplicate_key_update = array()) {
+	public function insertSafe($table, $array, $on_duplicate_key_update = []) {
 		$array						= $this->_safe($table, $array);
 		$on_duplicate_key_update	= $this->_safe($table, $on_duplicate_key_update);
 		return $this -> Insert($table, $array, $on_duplicate_key_update);
@@ -277,10 +277,10 @@ class Db extends \PDO {
 	 * ~~~{.php}
 	 * // ... Controller-Code
 	 *
-	 * $data = array(
+	 * $data = [
 	 *     'foo' => 'bar',
-	 *     'foo2' => array('FUNC' => 'foo2+1')
-	 * );
+	 *     'foo2' => ['FUNC' => 'foo2+1'],
+	 * ];
 	 * $this->db->update($table, $data, 'where id = ?', true, 1);
 	 *
 	 * // ... Controller-Code
@@ -295,15 +295,15 @@ class Db extends \PDO {
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedLocalVariable)
 	 */
-	public function update($table, $array, $where = '', $where_tokens = array(), $affected_rows = false) {
+	public function update($table, $array, $where = '', $where_tokens = [], $affected_rows = false) {
 		// The array could be empty if processed by updateSafe
-		if (count($array) == 0) return array('SUCCESS' => true, 'AFFECTED_ROWS' => 0);
+		if (count($array) == 0) return ['SUCCESS' => true, 'AFFECTED_ROWS' => 0];
 
 		$array = $this->_createUpdateValues($array);
 		extract($array);
 		
 		// add tokens of where clause
-		if (is_scalar($where_tokens)) $where_tokens = array($where_tokens);
+		if (is_scalar($where_tokens)) $where_tokens = [$where_tokens];
 		foreach ($where_tokens as $value) {
 			$values[] = $value;
 		}
@@ -330,7 +330,7 @@ class Db extends \PDO {
 	 * @param	boolean	$affected_rows Set to true to return the count of the affected rows
 	 * @return	array	An result array with the keys `SUCCESS` (boolean Was the query successful) and `AFFECTED_ROWS` (int The count of the affected rows) 
 	 */
-	public function updateSafe($table, $array, $where = '', $where_tokens = array(), $affected_rows = false) {
+	public function updateSafe($table, $array, $where = '', $where_tokens = [], $affected_rows = false) {
 		$array = $this->_safe($table, $array);
 		return $this -> Update($table, $array, $where, $where_tokens, $affected_rows);
 	}
@@ -343,10 +343,10 @@ class Db extends \PDO {
 	 * ~~~{.php}
 	 * // ... Controller-Code
 	 * 
-	 * $data = array(
+	 * $data = [
 	 *         'foo' => 'bar',
-	 *         'foo2' => array('FUNC' => 'foo2+1')
-	 * );
+	 *         'foo2' => 'FUNC' => 'foo2+1',
+	 * ];
 	 * $this->db->replace('table', $data, true);
 	 *
 	 * // ... Controller-Code
@@ -360,7 +360,7 @@ class Db extends \PDO {
 	 */
 	public function replace($table, $array) {
 		// The array could be empty if processed by replaceSafe
-		if (count($array) == 0) return array('SUCCESS' => true);
+		if (count($array) == 0) return ['SUCCESS' => true];
 
 		$array = $this->_createInsertAndReplaceValues($array);
 		extract($array);
@@ -397,10 +397,10 @@ class Db extends \PDO {
 	 * @param	boolean	$affected_rows Set to true to return the count of the affected rows
 	 * @return	array	An result array with the keys `SUCCESS` (boolean Was the query successful) and `AFFECTED_ROWS` (int The count of the affected rows) 
 	 */
-	public function delete($table, $where, $where_tokens = array(), $affected_rows = false) {
+	public function delete($table, $where, $where_tokens = [], $affected_rows = false) {
 		// add tokens of where clause
-		$values = array();
-		if (is_scalar($where_tokens)) $where_tokens = array($where_tokens);
+		$values = [];
+		if (is_scalar($where_tokens)) $where_tokens = [$where_tokens];
 		foreach ($where_tokens as $value) {
 			$values[] = $value;
 		}
@@ -438,7 +438,7 @@ class Db extends \PDO {
 	public function query($query) {
 		$this->connect();
 		$params = func_get_args();
-		return call_user_func_array(array($this, 'parent::query'), $params);
+		return call_user_func_array([$this, 'parent::query'], $params);
 	}
 
 	/**
@@ -459,8 +459,8 @@ class Db extends \PDO {
 	 * @return	string
 	 */
 	protected function _createUpdateValues($array) {
-		$values = array();
-		$tokens = array();
+		$values = [];
+		$tokens = [];
 		
 		// divide normal values from function calls
 		foreach ($array as $key => $value) {
@@ -485,9 +485,9 @@ class Db extends \PDO {
 	 * @return	string
 	 */
 	protected function _createInsertAndReplaceValues($array) {
-		$keys = array();
-		$values = array();
-		$binds = array();
+		$keys = [];
+		$values = [];
+		$binds = [];
 		
 		foreach ($array as $value) {
 			if (is_array($value)) {

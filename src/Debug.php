@@ -273,7 +273,7 @@ class Debug {
 		array_unshift($backtrace, $bt);
 		
 		// clean array
-		$backtrace_keys = array('file'=>'', 'line'=>'', 'class'=>'', 'object'=>'', 'type'=>'', 'function'=>'', 'args'=>array());
+		$backtrace_keys = ['file'=>'', 'line'=>'', 'class'=>'', 'object'=>'', 'type'=>'', 'function'=>'', 'args'=>[]];
 		foreach ($backtrace as $key => $value) {
 			$backtrace[$key] = array_merge($backtrace_keys, $value);
 		}
@@ -437,14 +437,14 @@ class Debug {
 	 * @return	string	HTML string
 	 */
 	protected function _dump_php_recursive(&$var, $var_name = null, $indent = null, $reference = null, $depth = 0) {
-		$colors = array(
+		$colors = [
 			'String' => 'green',
 			'Integer' => 'red',
 			'Float' => '#0099c5',
 			'Boolean' => '#92008d',
 			'NULL' => 'black',
 			'Resource' => 'black',
-		);
+		];
 		$grey = '#a2a2a2';
 
 		$do_dump_indent = "<span style='color:#ccc;'>|</span> &nbsp;&nbsp; ";
@@ -462,7 +462,7 @@ class Debug {
 			$type = ucfirst(gettype($real_var));
 			$output .= "$indent$var_name <span style='color:$grey'>$type</span> = <span style='color:#e87800;'>&amp;$real_name</span><br />";
 		} else {
-			$var = array($keyvar => $var, $keyname => $reference);
+			$var = [$keyvar => $var, $keyname => $reference];
 			$avar = &$var[$keyvar];
 			$type = ucfirst(gettype($avar));
 
@@ -491,7 +491,7 @@ class Debug {
 					$output .= "$indent$do_dump_indent";
 					$output .= "<span style='color: #0099c5'>";
 					$output .=  '-> '.$method->getName().'(';
-					$params = array();
+					$params = [];
 					foreach ($method->getParameters() as $param) {
 						$temp = ($param->isPassedByReference() ? '&' : '') . '$'.$param->getName();
 						if ($param->isOptional()) $temp = "[".$temp."]";
@@ -513,7 +513,7 @@ class Debug {
 				try {
 					$meta_data = stream_get_meta_data($avar);
 				} catch (\Exception $e) {
-					$meta_data = array();
+					$meta_data = [];
 				}
 				foreach ($meta_data as $key => $value) {
 					$output .= $this->_dump_php_recursive($value, "['$key']", $indent.$do_dump_indent, $reference);

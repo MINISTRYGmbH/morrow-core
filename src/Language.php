@@ -66,7 +66,7 @@ class Language extends Core\Base {
 	 * All possible languages.
 	 * @var array $_possible
 	 */
-	protected $_possible		= array();
+	protected $_possible		= [];
 
 	/**
 	 * The path to the language files.
@@ -78,13 +78,13 @@ class Language extends Core\Base {
 	 * The content from the l10n.php file.
 	 * @var array $_l10n
 	 */
-	protected $_l10n			= array();
+	protected $_l10n			= [];
 
 	/**
 	 * The content from the i18n.php file.
 	 * @var array $_content
 	 */
-	protected $_content			= array();
+	protected $_content			= [];
 
 	/**
 	 * `True` if it was already checked for new to translated strings.
@@ -96,7 +96,7 @@ class Language extends Core\Base {
 	 * The paths to look for new to translated strings.
 	 * @var array $_search_paths
 	 */
-	protected $_search_paths		= array();
+	protected $_search_paths		= [];
 
 	/**
 	 * Initializes the class and takes an array with four keys as configuration.
@@ -227,7 +227,7 @@ class Language extends Core\Base {
 	 * @return	`array`	Returns an array where the key is the language key like "en" or "de", and the value is the language title like "English".
 	 */
 	public function getTranslations($alias) {
-		$translations = array();
+		$translations = [];
 		foreach ($this->_possible as $possible) {
 			if ($this->translationExists($possible, $alias)) {
 				$config = $this->getL10n($possible);
@@ -297,7 +297,7 @@ class Language extends Core\Base {
 	 * @return	`array`	Key is the importance, value is the language code.
 	 */
 	public function getFromClient() {
-		$returner = array();
+		$returner = [];
 
 		// Example string
 		// en-ca,en;q=0.8,en-us;q=0.6,de-de;q=0.4,de;q=0.2
@@ -355,12 +355,12 @@ class Language extends Core\Base {
 		$this->_i18n_checked = true;
 
 		// search for all translation patterns
-		$files = array();
+		$files = [];
 		foreach ($this->_search_paths as $path) {
 			$files = array_merge($files, $this->_globRecursive($path));
 		}
 		
-		$catalog = array();
+		$catalog = [];
 		foreach ($files as $file) {
 			$content = file_get_contents($file);
 
@@ -390,7 +390,7 @@ class Language extends Core\Base {
 			
 			$current = include($path);
 			// only keep not empty values
-			if (!is_array($current)) $current = array();
+			if (!is_array($current)) $current = [];
 			$current = array_filter($current);
 			ksort($current);
 
@@ -420,7 +420,7 @@ class Language extends Core\Base {
 	 * @return	array	Returns the loaded config.
 	 */
 	protected function _loadFile($path, $dot_syntax_explode = true) {
-		if(!is_file($path)) return array();
+		if(!is_file($path)) return [];
 		if ($dot_syntax_explode) return $this->arrayExplode(include($path));
 		return include($path);
 	}

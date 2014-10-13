@@ -62,7 +62,7 @@ namespace Morrow;
 *
 * $url = $this->url->create('home', array('language' => 'de'), true);
 * // is the same as
-* $url = $this->url->create('de/home', array(), true);
+* $url = $this->url->create('de/home', [], true);
 *
 * // ... Controller code
 * ~~~
@@ -73,7 +73,7 @@ namespace Morrow;
 * // ... Controller code
 *
 * // redirect to the not-found page
-* $this->url->redirect('not-found/', array(), 404);
+* $this->url->redirect('not-found/', [], 404);
 *
 * // ... Controller code
 * ~~~
@@ -171,7 +171,7 @@ class Url {
 	 * @param	array	$query	Query parameters to adapt the URL.
 	 * @param	integer	$http_response_code	The HTTP code which should be submitted to the client.
 	 */
-	public function redirect($path, $query = array(), $http_response_code = 302) {
+	public function redirect($path, $query = [], $http_response_code = 302) {
 		$url = $this->create($path, $query, true, '&');
 		header('Location: '.$url, true, $http_response_code);
 		die('');
@@ -210,7 +210,7 @@ class Url {
 	 * @param	string	$separator	The string that is used to divide the query parameters.
 	 * @return	string	The created URL.
 	 */
-	public function create($path = '', $query = array(), $absolute = false, $separator = '&amp;') {
+	public function create($path = '', $query = [], $absolute = false, $separator = '&amp;') {
 		// if the passed path is empty use the path of the current page
 		if (empty($path)) $path = $this->_fullpath;
 

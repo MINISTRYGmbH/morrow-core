@@ -62,7 +62,7 @@ abstract class Base {
 		$desc = SORT_DESC;
 		
 		// the array we pass to array_multisort at the end
-		$params = array();
+		$params = [];
 
 		// explode the orderby to use it for array_multisort
 		$orderbys = explode(',', $orderby);
@@ -82,11 +82,11 @@ abstract class Base {
 		}
 
 		// create temp arrays for multisort
-		$temp = array();
+		$temp = [];
 		$count = count($params)-1;
 		for ($i=0; $i<=$count; $i=$i+2) {
 			$field = $params[$i];
-			$params[$i] = array();
+			$params[$i] = [];
 			foreach ($data as $ii => $row) {
 				$temp[$field][] = strtolower($row[$field]);
 			}
@@ -272,7 +272,7 @@ abstract class Base {
 	 * @return null
 	 */
 	public function arrayExplode(array $array) {
-		$data = array();
+		$data = [];
 
 		// iterate keys
 		foreach ($array as $rkey => $row) {
@@ -287,7 +287,7 @@ abstract class Base {
 						if (!is_array($row)) $parent[$part] = $row;
 						else $parent[$part] = $this->arrayExplode($row);
 					}
-					else $parent[$part] = array();
+					else $parent[$part] = [];
 				}
 				$parent = &$parent[$part];
 			}

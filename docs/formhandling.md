@@ -13,21 +13,21 @@ This is an commented controller example for a form with only three fields:
 
 // we define salutations we want to validate (it has to be one of the keys of this array)
 // and we pass the salutations to the template so we can use them with the Form class to output the HTML
-$salutations = array('salutations' => array('mr' => 'Mister', 'mrs' => 'Misses'));
+$salutations = ['salutations' => ['mr' => 'Mister', 'mrs' => 'Misses']];
 $this->view->setContent('salutations', $salutations);
 
 // these are the rules for the validator class. the input data has to fulfill those requirements
-$rules =  array(
-	'salutation'	=> array('required', 'in_keys' => $salutations),
-	'firstname'		=> array('required'),
-	'lastname'		=> array('required'),
-);
+$rules =  [
+	'salutation'	=> ['required', 'in_keys' => $salutations],
+	'firstname'		=> ['required'],
+	'lastname'		=> ['required'],
+];
 
 // we get the user input
 $input  = $this->input->get();
 
 // the array which will contain the errors after validating
-$errors = array();
+$errors = [];
 
 // we need a hint to notice the form was submitted. here we use the value "sent" from the submit button
 if (isset($input['sent'])) {

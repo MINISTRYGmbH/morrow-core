@@ -109,7 +109,7 @@ class Xml extends AbstractView {
 		
 		// get attributes
 		foreach ($input as $key => $value) {
-			$attribute = array();
+			$attribute = [];
 
 			if ($key[0] == $this->attribute_tag) {
 				$newkey = substr($key, 1);

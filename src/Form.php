@@ -77,7 +77,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function label($name, $value, $attributes = array()) {
+	public function label($name, $value, $attributes = []) {
 		if (isset($attributes['for'])) {
 			$attributes['id'] = $attributes['for'];
 		}
@@ -100,7 +100,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function error($name, $attributes = array()) {
+	public function error($name, $attributes = []) {
 		if (!isset($this->_errors[$name])) return '';
 
 		list($attributes) = $this->_prepare($name, $attributes);
@@ -122,7 +122,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function hidden($name, $value, $attributes = array()) {
+	public function hidden($name, $value, $attributes = []) {
 		return $this->_getDefaultInputHtml('hidden', $name, $attributes, $value);
 	}
 
@@ -132,7 +132,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function input($name, $attributes = array()) {
+	public function input($name, $attributes = []) {
 		return $this->_getDefaultInputHtml('text', $name, $attributes);
 	}
 
@@ -142,7 +142,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function text($name, $attributes = array()) {
+	public function text($name, $attributes = []) {
 		return $this->_getDefaultInputHtml('text', $name, $attributes);
 	}
 
@@ -152,7 +152,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function password($name, $attributes = array()) {
+	public function password($name, $attributes = []) {
 		return $this->_getDefaultInputHtml('password', $name, $attributes);
 	}
 
@@ -162,7 +162,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function file($name, $attributes = array()) {
+	public function file($name, $attributes = []) {
 		return $this->_getDefaultInputHtml('file', $name, $attributes);
 	}
 
@@ -172,7 +172,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function textarea($name, $attributes = array()) {
+	public function textarea($name, $attributes = []) {
 		list($attributes, $value)	= $this->_prepare($name, $attributes);
 		$attributes					= $this->_arrayToAttributesString($attributes);
 		$value						= $this->_escape($value);
@@ -186,7 +186,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function checkbox($name, $value, $attributes = array()) {
+	public function checkbox($name, $value, $attributes = []) {
 		return $this->_getDefaultInputHtml('checkbox', $name, $attributes, $value);
 	}
 
@@ -197,7 +197,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function radio($name, $value, $attributes = array()) {
+	public function radio($name, $value, $attributes = []) {
 		if (isset($this->_input[$name])) {
 			if ($this->_input[$name] === $value) $attributes['checked'] = 'checked';
 			else unset($attributes['checked']);
@@ -213,7 +213,7 @@ class Form {
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */
-	public function select($name, $values, $attributes = array()) {
+	public function select($name, $values, $attributes = []) {
 		list($attributes, $selected_value) = $this->_prepare($name, $attributes);
 		$attributes = $this->_arrayToAttributesString($attributes);
 
@@ -317,14 +317,14 @@ class Form {
 		}
 
 		// add id
-		$attributes['id']	= $this->_form_prefix . (isset($attributes['id']) ? $attributes['id'] : str_replace(array('[', ']'), '', $name));
+		$attributes['id']	= $this->_form_prefix . (isset($attributes['id']) ? $attributes['id'] : str_replace(['[', ']'], '', $name));
 
 		// add value
 		// the name could be in array syntax like "field[]" but in the input array the field has the name "field"
 		$input_key	= preg_replace('/\[[^]]*\]/', '', $attributes['name']);
 		$value		= isset($this->_input[$input_key]) ? $this->_input[$input_key] : '';
 		
-		return array($attributes, $value);
+		return [$attributes, $value];
 	}
 
 	/**

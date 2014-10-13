@@ -15,14 +15,14 @@ Whether you use a short form like `en` or long one like `english` or even `Engli
 
 ~~~{.php}
 // languages
-    'languages'     => array('en'),
+    'languages'     => ['en'],
 ~~~
 
 **A multilingual project**
 
 ~~~{.php}
 // languages
-    'languages'     => array('en', 'de'),
+    'languages'     => ['en', 'de'],
 ~~~
 
 The first language will be the default language and will not appear in the URL path. 
@@ -46,14 +46,14 @@ The `l10n.php` file contains global configuration variables that apply only to t
 ~~~{.php}
 <?php
 
-return array(
-    'key' => 'de',
-    'keys' => array('deu_deu','de_DE.utf-8','de_DE','de_de','de'), // used for user language recognition and set_locale
-    'title' => 'Deutsch',
-    'timezone' => 'Europe/Berlin',
-    'date' => array('separator' => '.', 'order' => 'DMY', 'format' => '%d. %B %Y'),
-    'currency' => array('separator' => ',', 'thou' => '.'),
-);
+return [
+	'key'		=> 'de',
+	'keys'		=> ['deu_deu','de_DE.utf-8','de_DE','de_de','de'], // used for user language recognition and set_locale
+	'title'		=> 'Deutsch',
+	'timezone'	=> 'Europe/Berlin',
+	'date'		=> ['separator' => '.', 'order' => 'DMY', 'format' => '%d. %B %Y'],
+	'currency'	=> ['separator' => ',', 'thou' => '.'],
+];
 
 ?>
 ~~~

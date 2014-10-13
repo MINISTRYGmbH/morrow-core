@@ -77,7 +77,7 @@ class Db {
 	 * @var string $config
 	 * @hidden
 	 */
-	public static $config = array();
+	public static $config = [];
 	
 	/**
 	 * The path to the log file.
@@ -484,7 +484,7 @@ class Db {
 	 * @hidden
 	 */
 	public function unlink($path) {
-		$this->stream_open($path, 'r', array(), $opath);
+		$this->stream_open($path, 'r', [], $opath);
 		$sql = $this->db->delete($this->table, 'WHERE id=?', true, $this->id);
 		if ($sql['SUCCESS'] && $sql['AFFECTED_ROWS'] !== 0) return true;
 		return false;
@@ -496,7 +496,7 @@ class Db {
 	 * @hidden
 	 */
 	public function url_stat($filename) {
-		$this->stream_open($filename, 'r', array(), $opath);
+		$this->stream_open($filename, 'r', [], $opath);
 		return $this->stream_stat();
 
 	}

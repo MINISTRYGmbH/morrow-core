@@ -168,7 +168,7 @@ class Input extends Core\Base {
 	protected function _array_merge_recursive_distinct ($array) {
 		$arrays = func_get_args();
 		$base = array_shift($arrays);
-		if (!is_array($base)) $base = empty($base) ? array() : array($base);
+		if (!is_array($base)) $base = empty($base) ? [] : array($base);
 		foreach ($arrays as $append) {
 			if (!is_array($append)) $append = array($append);
 			foreach ($append as $key => $value) {
@@ -196,7 +196,7 @@ class Input extends Core\Base {
 	 * @return	array
 	 */
 	protected function _getFileData($_files) {
-		$return_files = array();
+		$return_files = [];
 		if (is_array($_files)) {
 			foreach ($_files as $fkey => $fvalue) {
 				if (is_array($fvalue)) {

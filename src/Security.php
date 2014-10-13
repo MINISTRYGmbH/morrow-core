@@ -105,7 +105,7 @@ class Security {
 	 * @param	string	$separator	The string that is used to divide the query parameters.
 	 * @return	string	The created URL.
 	 */
-	public function createCSRFUrl($path = '', $query = array(), $absolute = false, $separator = '&amp;') {
+	public function createCSRFUrl($path = '', $query = [], $absolute = false, $separator = '&amp;') {
 		$query['csrf_token'] = $this->csrf_token;
 		return $this->url->create($path, $query, $absolute, $separator);
 	}

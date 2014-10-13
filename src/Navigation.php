@@ -108,13 +108,13 @@ class Navigation {
 	 * Contains all references to the tree nodes in a flat associative array.
 	 * @var	array $_nodes
 	 */
-	protected $_nodes = array();
+	protected $_nodes = [];
 
 	/**
 	 * Contains all references to the nodes in a tree array.
 	 * @var	array $_tree
 	 */
-	protected $_tree = array();
+	protected $_tree = [];
 
 	/**
 	 * Stores the currently active node.
@@ -268,7 +268,7 @@ class Navigation {
 	 * @return	array The active nodes.
 	 */
 	public function getBreadcrumb() {
-		$breadcrumb = array();
+		$breadcrumb = [];
 		
 		// handle not set active node
 		if (!isset($this->_nodes[$this->_active_path])) {

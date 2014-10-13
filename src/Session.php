@@ -152,7 +152,7 @@ class Session extends Core\Base {
 
 		// all data of this class will be maintained below this key
 		if (!isset(self::$_data['_session_class'])) {
-			self::$_data['_session_class'] = array();
+			self::$_data['_session_class'] = [];
 		}
 	}
 

@@ -65,7 +65,7 @@ class Http {
 	 * Sets default cUrl options 
 	 * @param	array	$options	An associative array with cUrl options.
 	 */
-	public function __construct($options = array()) {
+	public function __construct($options = []) {
 		$this->_options = $options;
 	}
 	
@@ -104,7 +104,7 @@ class Http {
 	 * @param	array	$files	An associative array with files to send.
 	 * @return	array	Returns an array with the keys `headers` and `body`.
 	 */
-	public function post($url, $post = array(), $files = array()) {
+	public function post($url, $post = [], $files = []) {
 		return $this->_request('post', $url, $post, $files);
 	}
 	
@@ -116,7 +116,7 @@ class Http {
 	 * @param	array	$files	An associative array with files to send.
 	 * @return	array	Returns an array with the keys `headers` and `body`.
 	 */
-	protected function _request($method, $url, $post = array(), $files = array()) {
+	protected function _request($method, $url, $post = [], $files = []) {
 		$ch = curl_init();
 		$this->_init($ch);
 	

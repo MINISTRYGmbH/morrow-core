@@ -55,7 +55,7 @@ namespace Morrow;
 * });
 * 
 * // register a listener for the events "foo" and "bar"
-* $this->event->on(array('foo', 'bar'), function($event, $data) {
+* $this->event->on(['foo', 'bar'], function($event, $data) {
 *     return $data*2;
 * });
 *
@@ -86,7 +86,7 @@ class Event {
 	 * All passed event callbacks.
 	 * @var array $_events
 	 */
-	protected $_events = array();
+	protected $_events = [];
 
 	/**
 	 * Registers a listener.
@@ -95,12 +95,12 @@ class Event {
 	 * @return null
 	 */
 	public function on($events, Callable $callback) {
-		if (!is_array($events)) $events = array($events);
+		if (!is_array($events)) $events = [$events];
 
 		foreach ($events as $event) {
 			$event = strtolower(trim($event));
 			
-			if (!isset($this->_events[$event])) $this->_events[$event] = array();
+			if (!isset($this->_events[$event])) $this->_events[$event] = [];
 			$this->_events[$event][] = $callback;
 		}
 	}

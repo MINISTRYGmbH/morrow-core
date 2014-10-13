@@ -70,12 +70,12 @@ The following are the routes we use for this documentation which itself is a Mor
 ~~~{.php}
 ...
 // routing rules
-    'router.routes'                 => array(
+    'router.routes'                 => [
         // '=^$='                   => '\app\Home',
         '=^object/(?P<path>.+)$='   => '\app\Object',
         '=^page/(?P<id>.+)$='       => '\app\Page',
         '=^feature/(?P<name>.+)$='  => '\app\Feature',
-    ),
+    ],
     'router.fallback'               =>  function($url) { return '\app\Error404'; },
 ...
 ~~~
@@ -115,10 +115,10 @@ Just do it like this:
 ~~~{.php}
 ...
 // routing rules
-    'router.routes' = array(
+    'router.routes' = [
         '=^$=' => '\app\Home',
         '=^products/(?P<category>.+)/.+-(?P<product_id>\d+)$=' => '\app\Products',
-    ),
+    ],
 ...
 ~~~
 
@@ -129,10 +129,10 @@ We have used named groups (a feature of regular expressions) to name the paramet
 ~~~{.php}
 ...
 // routing rules
-    'router.routes' = array(
+    'router.routes' = [
         '=^$=' => '\app\Home',
         '=^products/(.+)/.+-(\d+)$=' => '\app\Products',
-    ),
+    ],
 ...
 ~~~
 
@@ -147,10 +147,12 @@ Just define the following route and call the action in your default controller m
 
 **app/configs/\_default\_app.php**
 ~~~{.php}
-    'router.routes' = array(
+...
+// routing rules
+    'router.routes' = [
         '(?P<controller>[^/]+)/(?P<action>[^/]+)(?P<params>/.*)?'   => '\app\$1'
-    ),
-);
+    ],
+...
 ~~~
 
 **app/\_Default.php**
@@ -164,7 +166,7 @@ if (!is_null($action)) {
     if (!method_exists($this, $action)) {
         $this->url->redirect( $this->page->get('base_href') );
     }
-    call_user_func_array( array($this, $action), $params);
+    call_user_func_array( [$this, $action], $params);
 
     // set default template
     $this->view->template = $controller . '_' . $action;

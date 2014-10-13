@@ -186,7 +186,7 @@ class Cache {
 		$cachefile_tmp		= $cachefile.getmypid();
 
 		// create cache file
-		$cache_item						= array();
+		$cache_item						= [];
 		$cache_item['id']				= $cache_id;
 		$cache_item['created']			= time();
 		$cache_item['expires']			= strtotime(date('r').' '.$cachetime); // date(r) fixes a bug with older php5 versions
