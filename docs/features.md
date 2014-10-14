@@ -1,7 +1,7 @@
 Modularity with Features
 ======================
 
-The feature *Features* is the most exciting feature in the Morrow framework. OK, seriously, it is very nice.
+The feature *Features* is the most exciting feature in the Morrow framework. Seriously, it is very nice.
 If you are familiar with agile methods likes [Scrum](http://en.wikipedia.org/wiki/Scrum_(software_development)), [Extreme Programming](http://en.wikipedia.org/wiki/Extreme_programming) or [Feature-driven development](http://en.wikipedia.org/wiki/Feature-driven_development) to develop your software you will know that features are well separated from each other in your Feature list.
 But your code in an MVC environment is nevertheless a little bit messy because all the code for one webpage which contains many different features is at least squeezed into one controller and one template.
 

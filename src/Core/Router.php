@@ -82,7 +82,7 @@ class Router {
 
 		return [
 			'controller'		=> $class,
-			'parameters'		=> $parameters,
+			'parameters'		=> isset($parameters) ? $parameters : [],
 		];
 	}
 }

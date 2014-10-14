@@ -95,6 +95,7 @@ class Features {
 							$dom		= new \Morrow\DOM;
 							$dom->set($content);
 						}
+						
 						// pass config in features.php to the feature config
 						$config = isset($actions['config']) ? $actions['config'] : [];
 

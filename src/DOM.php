@@ -91,6 +91,19 @@ class DOM extends \DOMDocument {
 	}
 
 	/**
+	 * Check if a selector exists.
+	 *
+	 * @param  string $css_selector The CSS selector used to get the desired elements.
+	 * @return boolean Returns if the element does exist.
+	 */
+	public function exists($css_selector) {
+		$xpath_selector	= $this->_css_to_xpath_selector($css_selector);
+		$nodelist		= $this->_xpath->query($xpath_selector);
+		if ($nodelist->item(0) === null) return false;
+		return true;
+	}
+
+	/**
 	 * Insert content to the beginning of each element in the set of elements specified by the `$css_selector`.
 	 *
 	 * @param  string $css_selector The CSS selector used to get the desired elements.
@@ -144,7 +157,6 @@ class DOM extends \DOMDocument {
 		$xpath_selector	= $this->_css_to_xpath_selector($css_selector);
 		$nodelist		= $this->_xpath->query($xpath_selector);
 		if ($nodelist->item(0) === null) return 0;
-
 		$counter = 0;
 		foreach ($nodelist as $node) {
 			$counter++;

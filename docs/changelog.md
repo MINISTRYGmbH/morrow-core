@@ -11,6 +11,7 @@ Version 1.1.0 ()
 -------------
 
 * \Morrow\Feature: Added Template mapping closure in `app/_configs/default.php` (`router.template`).
+* \Morrow\Feature: Fixed some bugs with the execution of features.
 * \Morrow\Frontcontroller: Added `ini_set('display_errors', 'on');` so the debug parameters in the config are always working
 * \Morrow\Factory: Added `Factory::onload` so you don't have to set a template path if you create an instance of the \Morrow\Views\Serpent class
 * \Morrow\Factory: Changed magical autoloading so it is now necessary to use the correct spelling of the class as member (`$this->Input` instead of `$this->input`)

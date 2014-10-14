@@ -173,6 +173,7 @@ class Frontcontroller {
 		// the execution of Features will change the template_path
 		Factory::onload('Views\Serpent', function($instance){
 			$instance->template_path	= APP_PATH . 'templates/';
+			$instance->compile_path		= STORAGE_PATH .'serpent_templates_compiled/';
 		}, true);
 
 		/* load classes we need anyway

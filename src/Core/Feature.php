@@ -43,6 +43,7 @@ class Feature {
 	public function run($class, $config_overwrite = [], $master = false, $dom = null) {
 		$namespace			= explode('\\', $class);
 		$classname			= array_pop($namespace);
+		$feature_name		= end($namespace);
 		$namespace			= implode('\\', $namespace);
 		$root_path			= trim(str_replace('\\', '/', $namespace), '/') . '/';
 		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
@@ -80,6 +81,7 @@ class Feature {
 					// for Features we have to reconfigure the template path
 					if (!$master) {
 						$view->template_path	= $root_path_absolute . 'templates/';
+						$view->compile_path		= STORAGE_PATH .'serpent_templates_compiled_features/' . $feature_name . '/';
 					}
 				}
 

@@ -209,7 +209,7 @@ class Form {
 	/**
 	 * Outputs the HTML for a &lt;select&gt; field.
 	 * @param	string	$name	The name of the HTML field.
-	 * @param	string	$values	An associative array with the <option>s.
+	 * @param	string	$values	An associative array with the &lt;option&gt;s.
 	 * @param	array	$attributes	An associative array with attributes that should be used with the element.
 	 * @return	string	The HTML string.
 	 */

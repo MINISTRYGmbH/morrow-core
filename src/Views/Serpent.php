@@ -44,6 +44,12 @@ class Serpent extends AbstractView {
 
 	/**
 	 * a
+	 * @var string $template_path
+	 */
+	public $compile_path	= '';
+
+	/**
+	 * a
 	 * @var string $template
 	 */
 	public $template		= '';
@@ -95,11 +101,10 @@ class Serpent extends AbstractView {
 		// assign template and frame_template to page
 		$this->_content['page']['template'] = $this->template;
 
-		$compile_dir = STORAGE_PATH .'serpent_templates_compiled/';
-		if (!is_dir($compile_dir)) mkdir($compile_dir); // create temp dir if it does not exist
+		if (!is_dir($this->compile_path)) mkdir($this->compile_path, 0777, true); // create temp dir if it does not exist
 		
 		// init serpent
-		$_engine = new \McSodbrenner\Serpent\Serpent($compile_dir, 'utf-8', $this->force_compile);
+		$_engine = new \McSodbrenner\Serpent\Serpent($this->compile_path, 'utf-8', $this->force_compile);
 		
 		// handle mappings
 		$mappings = [
