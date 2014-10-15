@@ -148,6 +148,17 @@ class DOM extends \DOMDocument {
 	}
 
 	/**
+	 * Replace elements specified by the `$css_selector` with content.
+	 *
+	 * @param  string $css_selector The CSS selector used to get the desired elements.
+	 * @param  string $content The HTML source that should be added.
+	 * @return integer Returns how many existing elements were changed.
+	 */
+	public function replace($css_selector, $content) {
+		return $this->_modify('replace', $css_selector, $content);
+	}
+
+	/**
 	 * Removes all matched elements from the HTML source.
 	 *
 	 * @param  string $css_selector The CSS selector used to get the desired elements.
@@ -212,6 +223,8 @@ class DOM extends \DOMDocument {
 				$node->parentNode->insertBefore($fragment, $node);
 			} elseif ($action === 'after') {
 				$node->parentNode->appendChild($fragment);
+			} elseif ($action === 'replace') {
+				$node->parentNode->replaceChild($fragment, $node);
 			}
 		}
 
@@ -256,6 +269,9 @@ class DOM extends \DOMDocument {
 
 		// first-child
 		$xpath = preg_replace('/:first-child/', '[1]', $xpath);
+
+		// nth-child
+		$xpath = preg_replace('/:nth-child\((\d+)\)/', '[$1]', $xpath);
 
 		// following elements ( + )
 		$xpath = preg_replace('/\s*\+\s*/', '/following-sibling::*[1]/self::', $xpath);
