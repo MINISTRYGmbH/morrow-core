@@ -100,6 +100,12 @@ class Header {
 	protected $_filename = '';
 
 	/**
+	 * Is set by getAll() and shows if the requested ETag is different from the created.
+	 * @var boolean $_etag_is_different
+	 */
+	protected $_etag_is_different = true;
+
+	/**
 	 * Sets a header (`X-UA-Compatible: IE=edge,chrome=1`) for the Internet Explorer to force the browser to use its best rendering engine. 
 	 *
 	 * @return	null
@@ -148,6 +154,16 @@ class Header {
 	 * @param	object	$handle	The stream handle for the generated content.
 	 * @return	array All headers as array.
 	 */
+	public function isEtagDifferent() {
+		return $this->_etag_is_different;
+	}
+
+	/**
+	 * Returns all headers for a given content. This is internally used by the \Morrow\Core\Frontcontroller class.
+	 *
+	 * @param	object	$handle	The stream handle for the generated content.
+	 * @return	array All headers as array.
+	 */
 	public function getAll($handle) {
 		// set content type at first position so it will get overwritten by later definitions
 		array_unshift($this->_header, 'Content-Type: text/html; charset=utf-8');
@@ -185,9 +201,8 @@ class Header {
 		// check for etag
 		if (!isset($_SERVER['HTTP_CACHE_CONTROL']) || !preg_match('/max-age=0|no-cache/i', $_SERVER['HTTP_CACHE_CONTROL'])) // by-pass "not modified" on explicit reload
 			if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH'] == $hash) {
+				$this->_etag_is_different = false;
 				$this->_header[] = 'HTTP/1.1 304 Not Modified';
-				// create empty stream
-				$handle = fopen('php://temp/maxmemory:'.(1*1024), 'r+'); // 1kb
 			}
 
 		// set download header

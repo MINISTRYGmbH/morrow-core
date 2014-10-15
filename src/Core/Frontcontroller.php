@@ -216,9 +216,14 @@ class Frontcontroller {
 		$headers	= $header->getAll($handle);
 		foreach ($headers as $h) header($h);
 		
-		rewind($handle);
-		fpassthru($handle);
-		fclose($handle);
+		// create empty stream
+		if ($header->isEtagDifferent() === false) {
+			echo '';
+		} else {
+			rewind($handle);
+			fpassthru($handle);
+			fclose($handle);
+		}
 
 		ob_end_flush();
 	}
