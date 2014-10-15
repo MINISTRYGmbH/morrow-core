@@ -100,7 +100,8 @@ class Config extends Core\Base {
 
 		// load main config
 		$file = $directory.'_default.php';
-		if (is_file($file)) $config = array_merge($config, include($file));
+		if (!is_file($file)) return array();
+		$config = array_merge($config, include($file));
 
 		$file = $directory.'_default_app.php';
 		if (is_file($file)) $config = array_merge($config, include($file));
