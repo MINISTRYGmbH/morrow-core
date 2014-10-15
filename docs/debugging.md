@@ -33,7 +33,7 @@ Otherwise you would have to call
 Errors & Exceptions
 -------------------
 
-Morrow's preferred way is to work with exceptions. For that reason errors throw exceptions, so you can catch them as you would do with normal exceptions. Furthermore we integrated a state-of-the-art-top-level-exception-handler&trade;.
+Morrow's preferred way is to work with exceptions. For that reason errors throw exceptions, so you can catch them as you would do with normal exceptions. Furthermore we integrated a state-of-the-art-top-level-exception-handler&#8482;.
 
 ~~~{.php}
 try {

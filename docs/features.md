@@ -84,7 +84,7 @@ It is also possible to use XPATH 1.0 selectors. For its usage take a look a \Mor
 Some features do not need to return HTML code, so it wouldn't matter which selector you use. In such a case leave the selector empty.
 
 The second key contains an array of arrays, where each array defines one *Feature*.
-As `action` you can use `prepend`, `append`, `after` and `before` to define where the result of the Feature should be written to.
+As `action` you can use `prepend`, `append`, `after`, `before` and `replace` to define where the result of the Feature should be written to.
 Here is an overview of the positions:
 
 ~~~{.php}
@@ -148,12 +148,11 @@ class Simple extends _Default {
 		$time		= new Models\Time;
 
 		$seconds	= Factory::load('Config:feature')->get('seconds');
-		$view		= Factory::load('Views\Serpent');
-		$view->setContent('seconds', $seconds);
+		$this->Views_Serpent->setContent('seconds', $seconds);
 
 		$dom->append('body', '<script src="features/Time/public/default.js" />');
 
-		return $view;
+		return $this->Views_Serpent;
 	}
 
 ?>
@@ -170,8 +169,6 @@ Yes, it looks very similar to the usually used controllers in Morrow. There are 
 * You can also use the public folder of a feature for images, scripts and so on.
 Just use a path like this:
 `features/Time/public/default.js`
-
-Now take a look at folder `app/features/Time/` and learn how to build a simple feature.
 
 
 Call a Feature manually
@@ -206,6 +203,12 @@ This is what you probably think of by the word "widget".
 	~~:feature('\\app\\features\\Time\\Simple')~
 </div>
 ~~~
+
+Example feature
+---------------
+
+Now take a look at folder `app/features/Time/` and learn how to build a simple feature.
+This feature generates the clock below that shows the time of this server.
 
 
 Best practices

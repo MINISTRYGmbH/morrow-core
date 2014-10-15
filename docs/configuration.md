@@ -41,7 +41,7 @@ So the order is
 extends  
 `app/configs/www.example.com.php`  
 extends  
-`app/configs/_default_app.php` (required)  
+`app/configs/_default_app.php`
 extends  
 `app/configs/_default.php` (required)  
 
