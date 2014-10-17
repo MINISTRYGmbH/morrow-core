@@ -207,7 +207,7 @@ class Frontcontroller {
 		********************************************************************************************/
 		// we register this autoloader that throws an Exception if a class cannot be found
 		spl_autoload_register(function($class) {
-			throw new \Exception("$class not found");
+			throw new \RunTimeException("$class not found");
 		});
 
 		$handle	= (new \Morrow\Core\Feature)->run($controller, [], true);
