@@ -33,4 +33,4 @@ The name space for a model is `app/models`. So you can use this in your controll
 $Example = new models\Example;
 ~~~
 
-If you are used to the Table Data Gateway pattern, Morrow also provides an abstract [Table Data Gateway](object/Morrow/AbstractTableDataGateway) class to assist you.
+If you are used to the Table Data Gateway pattern, Morrow also provides the /Morrow/AbstractTableDataGateway class to assist you.

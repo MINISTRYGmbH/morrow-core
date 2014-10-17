@@ -149,10 +149,9 @@ class Header {
 	}
 
 	/**
-	 * Returns all headers for a given content. This is internally used by the \Morrow\Core\Frontcontroller class.
+	 * Returns if the requested ETag is different from the created.
 	 *
-	 * @param	object	$handle	The stream handle for the generated content.
-	 * @return	array All headers as array.
+	 * @return	boolean
 	 */
 	public function isEtagDifferent() {
 		return $this->_etag_is_different;
