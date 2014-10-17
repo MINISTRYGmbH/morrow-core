@@ -72,9 +72,9 @@ namespace Morrow;
 class DOM extends \DOMDocument {
 	/**
 	 * The currently requested URL.
-	 * @var instance $_xpath
+	 * @var instance $xpath
 	 */
-	protected $_xpath;
+	public $xpath;
 
 	/**
 	 * Set the HTML source you want to work with.
@@ -87,7 +87,19 @@ class DOM extends \DOMDocument {
 		// workaround to handle UTF-8
 		$this->loadHtml('<?xml encoding="UTF-8">' . $html_string);
 		libxml_use_internal_errors($libxml_use_internal_errors);
-		$this->_xpath = new \DOMXPath($this);
+		$this->xpath = new \DOMXPath($this);
+	}
+
+	/**
+	 * Return found nodes for a given CSS or XPATH selector.
+	 *
+	 * @param  string $css_selector The CSS selector used to get the desired elements.
+	 * @return object Returns an instance of \DOMNodeList.
+	 */
+	public function query($css_selector) {
+		$xpath_selector	= $this->_css_toxpath_selector($css_selector);
+		$nodelist		= $this->xpath->query($xpath_selector);
+		return $nodelist;
 	}
 
 	/**
@@ -97,8 +109,8 @@ class DOM extends \DOMDocument {
 	 * @return boolean Returns if the element does exist.
 	 */
 	public function exists($css_selector) {
-		$xpath_selector	= $this->_css_to_xpath_selector($css_selector);
-		$nodelist		= $this->_xpath->query($xpath_selector);
+		$xpath_selector	= $this->_css_toxpath_selector($css_selector);
+		$nodelist		= $this->xpath->query($xpath_selector);
 		if ($nodelist->item(0) === null) return false;
 		return true;
 	}
@@ -165,8 +177,8 @@ class DOM extends \DOMDocument {
 	 * @return integer Returns how many existing elements were deleted.
 	 */
 	public function delete($css_selector) {
-		$xpath_selector	= $this->_css_to_xpath_selector($css_selector);
-		$nodelist		= $this->_xpath->query($xpath_selector);
+		$xpath_selector	= $this->_css_toxpath_selector($css_selector);
+		$nodelist		= $this->xpath->query($xpath_selector);
 		if ($nodelist->item(0) === null) return 0;
 		$counter = 0;
 		foreach ($nodelist as $node) {
@@ -205,8 +217,8 @@ class DOM extends \DOMDocument {
 	protected function _modify($action, $css_selector, $content) {
 		if (empty($content)) return 0;
 
-		$xpath_selector	= $this->_css_to_xpath_selector($css_selector);
-		$nodelist		= $this->_xpath->query($xpath_selector);
+		$xpath_selector	= $this->_css_toxpath_selector($css_selector);
+		$nodelist		= $this->xpath->query($xpath_selector);
 		if ($nodelist->item(0) === null) return 0;
 
 		$counter = 0;
@@ -237,7 +249,7 @@ class DOM extends \DOMDocument {
 	 * @param  string $css_selector The CSS selector to convert.
 	 * @return string The corresponding XPATH selector.
 	 */
-	protected function _css_to_xpath_selector($css_selector) {
+	protected function _css_toxpath_selector($css_selector) {
 		$xpath = $css_selector;
 		
 		// if there was passed a xpath expression
