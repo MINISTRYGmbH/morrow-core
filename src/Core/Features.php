@@ -57,17 +57,17 @@ class Features {
 	/**
 	 * Removes a feature from the processing queue. This is also possible while the queue is processed if you do that in a feature controller.
 	 *
-	 * @param  string $feature_name The name of the feature that should be removed.
+	 * @param  string $regex The regex for the class name that should be removed.
 	 * @return null
 	 */
-	public function delete($feature_name) {
-		foreach ($this->_config as $controller_regex => $page_features) {
-			if (!preg_match($controller_regex, $this->_path)) continue;
+	public function delete($regex) {
+		foreach ($this->_config as $path_regex => $page_features) {
+			if (!preg_match($path_regex, $this->_path)) continue;
 
-			foreach ($page_features as $ii => $section_features) {
-				foreach ($section_features as $iii => $actions) {
-					if (strpos(current($actions), $feature_name . '\\') === 0) {
-						unset($this->_config[$controller_regex][$ii][$iii]);
+			foreach ($page_features as $selector => $selector_features) {
+				foreach ($selector_features as $i => $feature) {
+					if (preg_match($regex, $feature['class'])) {
+						unset($this->_config[$path_regex][$selector][$i]);
 					} 
 				}
 			}

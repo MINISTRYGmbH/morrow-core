@@ -401,6 +401,7 @@ class Validator extends Core\Base {
 	 * Look at the validator list.
 	 * @param	array	$input	All input parameters that were passed to `filter()`.
 	 * @param	mixed	$value	The input data to validate.
+	 * @param	mixed	$validators	An array of validators that should executed for each item.
 	 * @return 	booolean	The result of the validation.
 	 */
 	protected function _validator_array($input, $value, $validators = []) {
