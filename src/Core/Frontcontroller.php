@@ -24,7 +24,7 @@
 namespace Morrow;
 
 // Define paths for the Morrow namespace
-// Because this file is in the Core namespace we have to use a temporary namespace 
+// Because this file is in the Core namespace we have to use a temporary namespace
 define('PUBLIC_PATH', getcwd() . '/');
 define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
 define('APP_PATH', realpath(PUBLIC_PATH . '../app/') . '/');
@@ -38,7 +38,7 @@ use Morrow\Factory;
 
 /**
  * This class is the entry point to the Morrow framework.
- * 
+ *
  * It does some necessary configuration like setting of the top level exception handler, preparing of classes, url routing ...
  */
 class Frontcontroller {
@@ -102,13 +102,13 @@ class Frontcontroller {
 		********************************************************************************************/
 		$config = Factory::load('Config')->load(APP_PATH . 'configs/');
 
-		/* set timezone 
+		/* set timezone
 		********************************************************************************************/
 		if (!date_default_timezone_set($config['locale']['timezone'])) {
 			throw new \Exception(__METHOD__.'<br>date_default_timezone_set() failed. Timezone not valid.');
 		}
 
-		/* extract important variables
+		/* extract important environment variables
 		********************************************************************************************/
 		// map cli parameters to $_GET
 		if (php_sapi_name() === 'cli') {
@@ -122,31 +122,29 @@ class Frontcontroller {
 		unset($_GET['morrow_path_info']);
 		unset($_GET['morrow_basehref_depth']);
 
-		/* load some necessary classes
+		/* load input class
 		********************************************************************************************/
-		$input	= Factory::load('Input');
-		$page	= Factory::load('Page');
+		$Input	= Factory::load('Input');
 
 		/* set nodes
 		********************************************************************************************/
 		$url	= (preg_match('~[a-z0-9\-/]~i', $morrow_path_info)) ? trim($morrow_path_info, '/') : '';
 		$nodes	= explode('/', $url);
-		$alias	= implode('_', $nodes);
 
-		/* load languageClass and define alias
+		/* load language class
 		********************************************************************************************/
 		$language = Factory::load('Language', $config['languages']);
 
 		// language via path
 		if (isset($nodes[0]) && $language->isValid($nodes[0])) {
-			$input_lang_nodes = array_shift($nodes);
+			$input_lang_node = array_shift($nodes);
 		}
-		
-		// language via input
-		$actual = $input->get('language');
 
-		if ($actual === null && isset($input_lang_nodes)) {
-			$actual = $input_lang_nodes;
+		// language via input
+		$actual = $Input->get('language');
+
+		if ($actual === null && isset($input_lang_node)) {
+			$actual = $input_lang_node;
 		}
 
 		if ($actual !== null) $language->set($actual);
@@ -154,9 +152,9 @@ class Frontcontroller {
 		/* prepare some internal variables
 		********************************************************************************************/
 		$path				= implode('/', $nodes);
-		$query				= $input->getGet();
+		$query				= $Input->getGet();
 		$fullpath			= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
-		
+
 		/* prepare classes so the user has less to pass
 		********************************************************************************************/
 		Factory::prepare('Cache', $config['cache']['save_path']);
@@ -164,11 +162,11 @@ class Frontcontroller {
 		Factory::prepare('Debug', $config['debug'], new Factory('Event'));
 		Factory::prepare('Image', $config['image']['save_path']);
 		Factory::prepare('Log', $config['log']);
-		Factory::prepare('MessageQueue', $config['messagequeue'], $input);
+		Factory::prepare('MessageQueue', $config['messagequeue'], $Input);
 		Factory::prepare('Navigation', Factory::load('Language')->getTree(), $path);
 		Factory::prepare('Pagesession', 'pagesession.' . $path, $config['session']);
 		Factory::prepare('Session', 'main', $config['session']);
-		
+
 		// set a default template path for all Serpent instances
 		// the execution of Features will change the template_path
 		Factory::onload('Views\Serpent', function($instance){
@@ -179,29 +177,30 @@ class Frontcontroller {
 		/* load classes we need anyway
 		********************************************************************************************/
 		$Url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath, $basehref_depth);
-		$header		= Factory::load('Header');
-		$security	= Factory::load('Security', $config['security'], $header, $Url, $input->get('csrf_token'));
+		$Header		= Factory::load('Header');
+		$Security	= Factory::load('Security', $config['security'], $Header, $Url, $Input->get('csrf_token'));
 
 		/* url routing
 		********************************************************************************************/
-		$router			= Factory::load('Core\Router', $config['router']['routes'], $config['router']['fallback']);
-		$router_results	= $router->parse($url);
+		$Router			= Factory::load('Core\Router', $config['router']['routes'], $config['router']['fallback']);
+		$router_results	= $Router->parse($url);
 		$controller		= $router_results['controller'];
-		
+
 		foreach ($router_results['parameters'] as $key => $value) {
-			$input->set('routed.' . $key, $value);	
+			$Input->set('routed.' . $key, $value);
 		}
-		
+
 		/* define page params
 		********************************************************************************************/
-		$base_href = $Url->getBaseHref();
-		$page->set('nodes', $nodes);
-		$page->set('controller', $controller);
-		$page->set('base_href', $base_href);
-		$page->set('path.relative', $path);
-		$page->set('path.relative_with_query', $fullpath);
-		$page->set('path.absolute', $base_href . $path);
-		$page->set('path.absolute_with_query', $base_href . $fullpath);
+		$base_href	= $Url->getBaseHref();
+		$Page		= Factory::load('Page');
+		$Page->set('nodes', $nodes);
+		$Page->set('controller', $controller);
+		$Page->set('base_href', $base_href);
+		$Page->set('path.relative', $path);
+		$Page->set('path.relative_with_query', $fullpath);
+		$Page->set('path.absolute', $base_href . $path);
+		$Page->set('path.absolute_with_query', $base_href . $fullpath);
 
 		/* process MVC
 		********************************************************************************************/
@@ -211,13 +210,13 @@ class Frontcontroller {
 		});
 
 		$handle	= (new \Morrow\Core\Feature)->run($controller, [], true);
-		
+
 		// output headers
-		$headers	= $header->getAll($handle);
+		$headers = $Header->getAll($handle);
 		foreach ($headers as $h) header($h);
-		
+
 		// create empty stream
-		if ($header->isEtagDifferent() === false) {
+		if ($Header->isEtagDifferent() === false) {
 			echo '';
 		} else {
 			rewind($handle);
