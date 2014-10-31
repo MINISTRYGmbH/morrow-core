@@ -25,3 +25,9 @@ Version 1.1.0 (2014-10-17)
 * \Morrow\Frontcontroller: If a class cannot be found a RunTimeException is now thrown instead of an Exception.
 * Added docs for Configuration and Models and modified many docs.
 * Removed `composer.lock`.
+
+Version 1.1.0 (2014-10-17)
+-------------
+
+* \Morrow\Features: Fixed `delete()` which does not work.
+* Allowed public access to `public/` folders in nested features. So it is now possible to group features in folders.
