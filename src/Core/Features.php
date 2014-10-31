@@ -86,7 +86,7 @@ class Features {
 		foreach ($this->_config as $controller_regex => &$page_features) {
 			if (!preg_match($controller_regex, $this->_path)) continue;
 
-			foreach ($page_features as $xpath_query => $section_features) {
+			foreach ($page_features as $selector => $section_features) {
 				foreach ($section_features as $actions) {
 						// only create DOM object if we really have to change the content
 						if (!isset($dom)) {
@@ -103,7 +103,7 @@ class Features {
 						$handle = (new Feature)->run($actions['class'], $config, false, $dom);
 
 						// inject into DOM
-						$dom->{$actions['action']}($xpath_query, stream_get_contents($handle));
+						$dom->{$actions['action']}($selector, stream_get_contents($handle));
 						fclose($handle);
 				}
 			}

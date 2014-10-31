@@ -53,7 +53,8 @@ class Feature {
 		********************************************************************************************/
 		// add config of features to master config
 		if (!$master) {
-			$config = Factory::load($master ? 'Config': 'Config:feature');
+			$config = Factory::load('Config:feature');
+			// we reuse the config instance and the second call of a feature should also get a clean and empty config
 			$config->clear();
 			$config->load($root_path_absolute . 'configs/');
 
@@ -67,32 +68,30 @@ class Feature {
 		// A missing controller will result in an empty page
 		$controller	= new $class;
 
-		if (isset($controller)) {
-			$view				= $controller->run($dom);
-			$is_returning_html	= false;
+		$view				= $controller->run($dom);
+		$is_returning_html	= false;
 
-			if (is_resource($view) && get_resource_type($view) == 'stream') {
-				$handle = $view;
-			} elseif (is_object($view) && is_subclass_of($view, '\Morrow\Views\AbstractView')) {
-				
-				if (is_a($view, '\Morrow\Views\Serpent')) {
-					$view->template			= call_user_func(Factory::load('Config')->get('router.template'), $class);
+		if (is_resource($view) && get_resource_type($view) == 'stream') {
+			$handle = $view;
+		} elseif (is_object($view) && is_subclass_of($view, '\Morrow\Views\AbstractView')) {
+			
+			if (is_a($view, '\Morrow\Views\Serpent')) {
+				$view->template			= call_user_func(Factory::load('Config')->get('router.template'), $class);
 
-					// for Features we have to reconfigure the template path
-					if (!$master) {
-						$view->template_path	= $root_path_absolute . 'templates/';
-						$view->compile_path		= STORAGE_PATH .'serpent_templates_compiled_features/' . $feature_name . '/';
-					}
+				// for Features we have to reconfigure the template path
+				if (!$master) {
+					$view->template_path	= $root_path_absolute . 'templates/';
+					$view->compile_path		= STORAGE_PATH .'serpent_templates_compiled_features/' . $feature_name . '/';
 				}
-
-				$handle					= $view->getOutput();
-				$is_returning_html		= $view->is_returning_html;
-			} elseif (is_string($view)) {
-				$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
-				fwrite($handle, $view);
-			} else {
-				throw new \Exception(__CLASS__.': The return value of a controller has to of type "stream", "string" or has to be a child of \Morrow\Views\AbstractView.');
 			}
+
+			$handle					= $view->getOutput();
+			$is_returning_html		= $view->is_returning_html;
+		} elseif (is_string($view)) {
+			$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+			fwrite($handle, $view);
+		} else {
+			throw new \Exception(__CLASS__.': The return value of a controller has to be of type "stream", "string" or a child of \Morrow\Views\AbstractView.');
 		}
 
 		/* load features
