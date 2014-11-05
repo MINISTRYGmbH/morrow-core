@@ -24,14 +24,14 @@ namespace Morrow;
 /**
 * Allows to manipulate images with the GDlib.
 *
-* It is usually used to create thumbnails. For performance reasons there is a caching mechanism integrated. 
-* 
+* It is usually used to create thumbnails. For performance reasons there is a caching mechanism integrated.
+*
 * Examples
 * ---------
 *
 * ~~~{.php}
 * // ... Controller code
-*  
+*
 * $params = [
 *     'height' => 100,
 *     'width' => 100,
@@ -43,14 +43,14 @@ namespace Morrow;
 * // get path for the thumbed image
 * $thumb = $this->Image->get($filename, $params);
 * Debug::dump($thumb);
-*  
+*
 * // ... Controller code
-* ~~~ 
-* 
+* ~~~
+*
 * If you want to do some extraordinary changes to an image just create a new image object and pass the returned filename to `get()`.
 * ~~~{.php}
 * // ... Controller code
-*  
+*
 * $params = [
 *     'height' => 100,
 *     'width' => 100,
@@ -70,27 +70,27 @@ namespace Morrow;
 * // pass path to temporary image to save the new created image with the same path
 * $thumb = $this->Image->get($filename, $params, $thumb);
 * Debug::dump($thumb);
-*  
+*
 * // ... Controller code
 * ~~~
 *
 * Possible parameters:
-* 
-* Type    | Keyname            | Default     | Description                                                                                                                                                                                                                         
-* ------  | -----------        | ----------- | ---------------                                                                                                                                                                                                                     
-* string  | `type`             | `jpg`       | The output file format. Possible values are `gif`, `jpg`, `png` and `png8`. `png8` only provides other results than `png` if `pngquant` or `pngnq` is installed.                                                                    
-* integer | `width`            | `100`       | The width of your thumbnail. The height (if not set) will be automatically calculated.                                                                                                                                              
-* integer | `height`           | `null`      | The height of your thumbnail. The width (if not set) will be automatically calculated.                                                                                                                                              
-* integer | `shortside`        | `null`      | Set the shortest side of the image if width, height and longside is not set.                                                                                                                                                        
-* integer | `longside`         | `null`      | Set the longest side of the image if width, height and shortside is not set.                                                                                                                                                        
-* boolean | `sharpen`          | `true`      | Set to false if you do not want to sharpen the image.                                                                                                                                                                               
-* boolean | `crop`             | `true`      | If set to true, image will be cropped in the center to destination width and height params, while keeping aspect ratio. Otherwise the image will get resized.                                                                       
-* integer | `crop_position`    | `2`         | The cutout position if you use the crop function: Here are the positions:<br />&#160; 1<br />1 2 3<br />&#160; 3                                                                                                                    
-* boolean | `trim`             | `false`     | If set to true, the image will get trimmed. The top left corner is used as whitespace reference.                                                                                                                                    
-* integer | `trim_tolerance`   | `10`        | Defines how big the difference to the reference whitespace can be. Useful for JPGs with artefacts. Use 0 for high quality input or 20 and higher for heavily compressed input. 10 should work for most images with light artefacts. 
-* boolean | `extrapolate`      | `true`      | Set to false if for example your source image is smaller than the calculated thumb and you do not want the image to get extraploated.                                                                                               
-* string  | `overlay`          | `null`      | A PNG image which is used to create an overlay image. The position will be determined by "overlay_position". For performance reasons the overlay image will not be checked for modification.                                        
-* integer | `overlay_position` | `9`         | The position of the overlay image. Possible is an integer from 1 to 9. Here are the positions:<br />1 2 3<br />4 5 6<br />7 8 9                                                                                                     
+*
+* Type    | Keyname            | Default     | Description
+* ------  | -----------        | ----------- | ---------------
+* string  | `type`             | `jpg`       | The output file format. Possible values are `gif`, `jpg`, `png` and `png8`. `png8` only provides other results than `png` if `pngquant` or `pngnq` is installed.
+* integer | `width`            | `100`       | The width of your thumbnail. The height (if not set) will be automatically calculated.
+* integer | `height`           | `null`      | The height of your thumbnail. The width (if not set) will be automatically calculated.
+* integer | `shortside`        | `null`      | Set the shortest side of the image if width, height and longside is not set.
+* integer | `longside`         | `null`      | Set the longest side of the image if width, height and shortside is not set.
+* boolean | `sharpen`          | `true`      | Set to false if you do not want to sharpen the image.
+* boolean | `crop`             | `true`      | If set to true, image will be cropped in the center to destination width and height params, while keeping aspect ratio. Otherwise the image will get resized.
+* integer | `crop_position`    | `2`         | The cutout position if you use the crop function: Here are the positions:<br />&#160; 1<br />1 2 3<br />&#160; 3
+* boolean | `trim`             | `false`     | If set to true, the image will get trimmed. The top left corner is used as whitespace reference.
+* integer | `trim_tolerance`   | `10`        | Defines how big the difference to the reference whitespace can be. Useful for JPGs with artefacts. Use 0 for high quality input or 20 and higher for heavily compressed input. 10 should work for most images with light artefacts.
+* boolean | `extrapolate`      | `true`      | Set to false if for example your source image is smaller than the calculated thumb and you do not want the image to get extraploated.
+* string  | `overlay`          | `null`      | A PNG image which is used to create an overlay image. The position will be determined by "overlay_position". For performance reasons the overlay image will not be checked for modification.
+* integer | `overlay_position` | `9`         | The position of the overlay image. Possible is an integer from 1 to 9. Here are the positions:<br />1 2 3<br />4 5 6<br />7 8 9
 *
 */
 class Image {
@@ -99,52 +99,63 @@ class Image {
 	 * @var string $_cache_dir
 	 */
 	protected $_cache_dir;
-	
+
 	/**
 	 * Checks the path to the cache dir and creates subdirectories.
 	 * For every month a subdirectory is created. Old months will be deleted.
-	 * 
+	 *
 	 * @param string $cache_dir The path to the cache dir.
+	 * @param boolean $alternate Specifies if $_cache_dir will be extended by the numeric representation of a month
 	 * @return null
 	 */
-	public function __construct($cache_dir) {
-		// params
-		$counter = strftime('%m');
+	public function __construct($cache_dir, $alternate = false) {
 
-		// create cache dir if it does not exist
-		if (!is_dir($cache_dir)) mkdir($cache_dir);
-		
-		// delete all folders that are not the current
-		$files = scandir($cache_dir);
-		foreach ($files as $file) {
-			if ($file{0} == '.') continue;
-			if (is_dir($cache_dir.$file) && $file != $counter) {
-				$this->_rmdir_recurse( $cache_dir.$file );
-			}
-		}
+		$this->setCacheDir($cache_dir, $alternate);
 
-		// create cache dir for the current cache counter
-		$this->_cache_dir = $cache_dir . $counter . '/';
-		if (!file_exists( $this->_cache_dir )) mkdir( $this->_cache_dir );
+		if (!file_exists( $this->_cache_dir )) mkdir( $this->_cache_dir, 0777, true );
 	}
-	
+
+	private function setCacheDir($cache_dir, $alternate){
+		if($alternate){
+			// params
+			$counter = strftime('%m');
+
+			// create cache dir if it does not exist
+			if (!is_dir($cache_dir)) mkdir($cache_dir);
+
+			// delete all folders that are not the current
+			$files = scandir($cache_dir);
+			foreach ($files as $file) {
+				if ($file{0} == '.') continue;
+				if (is_dir($cache_dir.$file) && $file != $counter) {
+					$this->_rmdir_recurse( $cache_dir.$file );
+				}
+			}
+
+			// create cache dir for the current cache counter
+			$this->_cache_dir = $cache_dir . $counter . '/';
+		}else{
+			$this->_cache_dir = $cache_dir;
+		}
+	}
+
 	/**
 	 * A function to sharpen an image.
-	 * 
+	 *
 	 * @param resource $img_obj A GD image object.
-	 * @return resource The sharpened image object. 
+	 * @return resource The sharpened image object.
 	 */
-	protected function _sharpen($img_obj) { 
+	protected function _sharpen($img_obj) {
 		imagesavealpha($img_obj, true); // preserve full alpha transparency for png files
 		$matrix = [[-1, -1, -1], [-1, 16, -1], [-1, -1, -1]];
 		$divisor = array_sum(array_map('array_sum', $matrix));
 		imageconvolution($img_obj, $matrix, $divisor, 0);
 		return $img_obj;
-	} 
+	}
 
 	/**
 	 * Validates the parameters the user passed in to define the image changes in get().
-	 * 
+	 *
 	 * @param array $params Image parameters as associative array.
 	 * @return array Returns the sanitized array.
 	 */
@@ -179,7 +190,7 @@ class Image {
 				if (!is_null($value[1])) $params[$key] = $value[1];
 			}
 		}
-		
+
 		// set background color
 		$params['background']	= $this->_hex2RGB($params['background']);
 
@@ -190,17 +201,17 @@ class Image {
 			!isset($params['shortside'])
 			)
 			$params['width'] = 100;
-		
+
 		return $params;
 	}
-	
+
 	/**
 	 * Adds an image at a specified position. Useful to watermark an image or to show a zoom image.
-	 * 
+	 *
 	 * @param resource $img_obj A GD image resource.
 	 * @param resource $overlay_file The path to the image file that should be used as watermark image.
 	 * @param resource $overlay_position The position (1-9) of the watermark image.
-	 * @return resource The image object with the added watermark image. 
+	 * @return resource The image object with the added watermark image.
 	 */
 	protected function _addOverlayImage($img_obj, $overlay_file, $overlay_position) {
 		$img_width  = imagesx($img_obj);
@@ -222,16 +233,16 @@ class Image {
 		elseif ($overlay_position == '7') imagecopy($img_obj, $overlay, 0, $img_height-$overlay_size[1], 0, 0, $overlay_size[0], $overlay_size[1]); // bottom left
 		elseif ($overlay_position == '8') imagecopy($img_obj, $overlay, $img_width/2-$overlay_size[0]/2, $img_height-$overlay_size[1], 0, 0, $overlay_size[0], $overlay_size[1]); // bottom center
 		elseif ($overlay_position == '9') imagecopy($img_obj, $overlay, $img_width-$overlay_size[0], $img_height-$overlay_size[1], 0, 0, $overlay_size[0], $overlay_size[1]); // bottom right
-		
+
 		return $img_obj;
 	}
-	
+
 	/**
 	 * Removes whitespace around an image with a given tolerance.
-	 * 
+	 *
 	 * @param resource $im A GD image resource.
 	 * @param integer $tolerance The tolerance value a pixel can differ from the reference point (top left corner).
-	 * @return resource The trimmed image object. 
+	 * @return resource The trimmed image object.
 	 */
 	protected function _trim($im, $tolerance) {
 		// grab the colour from the top left corner and use that as default
@@ -245,7 +256,7 @@ class Image {
 
 		$w = imagesx($im); // image width
 		$h = imagesy($im); // image height
-		
+
 		// get top border
 		for ($top = 0; $top < $h; ++$top) {
 			for ($x = 0; $x < $w; ++$x) {
@@ -338,10 +349,10 @@ class Image {
 		imagecopyresampled($temp_image, $im, 0, 0, $left, $top, $width, $height, $width, $height);
 		return $temp_image;
 	}
-	
+
 	/**
 	 * Creates the path of the cache file for the passed parameters.
-	 * 
+	 *
 	 * @param string $file_path The path to the original file.
 	 * @param array $params The params the user passed in.
 	 * @return string The calculated file path.
@@ -353,7 +364,7 @@ class Image {
 		if (!isset($params['type']) || !in_array($params['type'], $types)) {
 			$params['type'] = 'jpg';
 		}
-		
+
 		// create hash for caching
 		$filemtime = filemtime($file_path);
 		$hash = md5($file_path.$filemtime.implode('', $params));
@@ -364,23 +375,23 @@ class Image {
 
 	/**
 	 * Returns the saved parameters for the given cache filename.
-	 * 
+	 *
 	 * @param string $cache_filename The path to the cached file you want to retrieve parameters for.
 	 * @return array The parameters for the given filename.
 	 */
 	protected function _getParamsFromHash($cache_filename) {
 		$cache_params_filename = $this->_cache_dir . $cache_filename . '_params';
-		
+
 		if (!file_exists($cache_params_filename)) return false;
 
 		$data = unserialize( file_get_contents( $cache_params_filename ));
 		unlink( $cache_params_filename );
 		return $data;
 	}
-		
+
 	/**
 	 * Converts a file readable by imagemagick to a 1000x1000 PNG, so this class can also handle PNGs, EPS and so on.
-	 * 
+	 *
 	 * @param string $file The path to the original file.
 	 * @return string The path to the converted file.
 	 */
@@ -391,7 +402,7 @@ class Image {
 		$params['fill'] = '"#999"';
 		$params['font'] = 'Arial';
 		$params['pointsize '] = '60';
-		
+
 		// create parameters from $_GET
 		foreach ($params as $key => $value) $params[$key] = "-$key $value";
 
@@ -413,7 +424,7 @@ class Image {
 
 	/**
 	 * Returns an image GD resource for a passed file path or throws an exception on error.
-	 * 
+	 *
 	 * @param string $file_path The path to the original file.
 	 * @return resource The GD image resource.
 	 */
@@ -430,7 +441,7 @@ class Image {
 			// try imagemagick to preprocess
 			// im creates a temporary image which should be deleted after gd processing
 			$tmp_file = $this->_im_get($file_path);
-			
+
 			// if preprocessing was successful use the new image for gd processing
 			if (is_file($tmp_file)) {
 				$img_obj = imagecreatefrompng($tmp_file);
@@ -439,21 +450,21 @@ class Image {
 				throw new \Exception(__CLASS__ . ': File '.$file_path.' not readable');
 			}
 		}
-		
+
 		return $img_obj;
 	}
-	
+
 	/**
 	 * Returns the file path for the cached image but does not create it.
 	 * Useful if you want to create the image at another request.
-	 * 
+	 *
 	 * @param string $file_path The path to the original file.
 	 * @param array $params The params the user passed in.
 	 * @return string The calculated file path.
 	 */
 	public function prepareGet($file_path, $params) {
 		$cache_filepath = $this->_getCacheFilename($file_path, $params);
-		
+
 		// only create params file if thumb was not created so far
 		if (file_exists($cache_filepath)) return basename($cache_filepath);
 
@@ -463,13 +474,13 @@ class Image {
 			'params' => $params
 		];
 		file_put_contents($cache_filepath . '_params', serialize($data));
-		
+
 		return basename($cache_filepath);
 	}
-		
+
 	/**
 	 * Creates the image for the params you passed in with prepareGet().
-	 * 
+	 *
 	 * @param string $hash The hash you got from prepareGet().
 	 * @return string The path to the created image file.
 	 */
@@ -486,7 +497,7 @@ class Image {
 
 	/**
 	 * Creates the image for given params and return the path to the new image.
-	 * 
+	 *
 	 * @param string $file_path The path to the source file.
 	 * @param array $params The params the user passed in.
 	 * @param string $filename Pass a filename to force the name of the cache file.
@@ -497,19 +508,19 @@ class Image {
 		if (is_null($filename)) {
 			$filename = $this->_getCacheFilenameByPath($file_path, $params);
 		}
-		
+
 		// if there is a cache file return it
 		if (file_exists($filename)) return $filename;
 
 		// load ressource
 		$img_obj = $this->load($file_path);
-		
+
 		// validate params
 		$params = $this->_validateParams($params);
 
 		// render params
 		$img_obj = $this->_render($img_obj, $params);
-		
+
 		// save data to file
 		if ($params['type'] === 'jpg') imagejpeg($img_obj, $filename, 80);
 		elseif ($params['type'] === 'gif') imagegif($img_obj, $filename);
@@ -526,19 +537,19 @@ class Image {
 				rename(str_replace('.png', '-fs8.png', $filename), $filename);
 			}
 		}
-		
+
 		return $filename;
 	}
 
 	/**
 	 * Converts a hex string to an array with the three color channels.
-	 * 
+	 *
 	 * @param string $hex The hex string like `#ffffff` or `#fff`.
 	 * @return string The array with the three color channels R, G, and B.
 	 */
 	protected function _hex2RGB($hex) {
 		$hex = preg_replace("/[^0-9a-f]/i", '', $hex);
-		
+
 		if (strlen($hex) == 3) $hex = $hex{0} . $hex{0}. $hex{1}. $hex{1}. $hex{2}. $hex{2};
 		if (strlen($hex) !== 6) return false;
 
@@ -554,7 +565,7 @@ class Image {
 
 	/**
 	 * The function that processes the image.
-	 * 
+	 *
 	 * @param resource $img_obj The GD image resource.
 	 * @param array $params The params the user passed in.
 	 * @return resource The processed GD image resource.
@@ -596,7 +607,7 @@ class Image {
 		// should the image get cropped
 		$_DST['offset_w'] = 0;
 		$_DST['offset_h'] = 0;
-				
+
 		if ($params['crop'] === true) {
 			$width_ratio = $_SRC['width']/$_DST['width'];
 			$height_ratio = $_SRC['height']/$_DST['height'];
@@ -635,13 +646,13 @@ class Image {
 		// now create the image
 		$_SRC['image'] = $img_obj;
 
-		// if the source image is too big first scale down linear to an image four times bigger than the target image 
+		// if the source image is too big first scale down linear to an image four times bigger than the target image
 		if ($_DST['width']*4 < $_SRC['width'] AND $_DST['height']*4 < $_SRC['height']) {
 			// multiplier of target dimension
 			$_TMP['width'] = round($_DST['width']*4);
 			$_TMP['height'] = round($_DST['height']*4);
 			$_TMP['image'] = imagecreatetruecolor($_TMP['width'], $_TMP['height']);
-			
+
 			// preserve image transparancy
 			imagealphablending($_TMP['image'], false);
 
@@ -675,7 +686,7 @@ class Image {
 		} else {
 			// otherwise add background color
 			imagealphablending($_DST['image'], true);
-			imagefill($_DST['image'], 0, 0, $background_color);	
+			imagefill($_DST['image'], 0, 0, $background_color);
 		}
 
 		imagecopyresampled(
@@ -707,20 +718,20 @@ class Image {
 
 		return $_DST['image'];
 	}
-	
+
 	/**
 	 * Removes recursively all files and folders for a given path.
-	 * 
+	 *
 	 * @param string $path The path to delete.
 	 */
 	protected function _rmdir_recurse($path) {
 		if (!file_exists($path)) return;
-		
+
 		$path = rtrim($path, '/').'/';
 		$handle = opendir($path);
 		for (; false !== ($file = readdir($handle));) {
 			if($file == "." or $file == ".." ) continue;
-			
+
 			$fullpath = $path.$file;
 			if (!is_link($fullpath) && is_dir($fullpath)) {
 				self::rmdir_recurse($fullpath);
@@ -730,5 +741,5 @@ class Image {
 		}
 		closedir($handle);
 		rmdir($path);
-	}	
+	}
 }
