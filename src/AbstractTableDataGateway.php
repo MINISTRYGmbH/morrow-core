@@ -165,19 +165,20 @@ abstract class AbstractTableDataGateway {
 	 * Retrieves data from the database. 
 	 * 
 	 * @param  mixed $conditions  An integer (as `id`) or an associative array with conditions that must be fulfilled by the rows to be returned.
-	 * @return array Returns an array of dataset arrays the the requested data. The keys of the datasets are the ids of the rows.
+	 * @return array Returns an array of dataset arrays with the requested data (returns all data if `$conditions` was left empty). The keys of the datasets are the ids of the rows.
 	 */
-	public function get($conditions) {
+	public function get($conditions = array()) {
 		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
-		$where = $this->_createWhere($conditions);
+		$where		= $this->_createWhere($conditions);
+		$conditions	= !empty($where) ? array_values($conditions) : [];
 
 		$sql = $this->_db->get("
 			SELECT *, >id
 			FROM {$this->_table}
-			WHERE {$where}
-		", array_values($conditions));
+			{$where}
+		", $conditions);
 
-		return current($sql['RESULT']);
+		return $sql['RESULT'];
 	}
 
 	/**
@@ -191,6 +192,15 @@ abstract class AbstractTableDataGateway {
 		$data['created_at'] = Factory::load('\datetime')->format('Y-m-d H:i:s');
 
 		return $this->_db->insertSafe($this->_table, $data);
+	}
+
+	/**
+	* Returns the id of the last inserted row.
+	*
+	* @return string The id of the last inserted row.
+	*/
+	public function lastInsertId() {
+		return $this->_db->lastInsertId();
 	}
 
 	/**
@@ -230,14 +240,12 @@ abstract class AbstractTableDataGateway {
 	 * @return array Returns the generated `WHERE ` clause. 
 	 */
 	protected function _createWhere(array $conditions) {
-		$where = 'id = ?';
-		if (!is_scalar($conditions)) {
-			$where = [];
-			foreach ($conditions as $field => $value) {
-				$where[] = $field . '=?';
-			}
-			$where = implode(' AND ', $where);
+		$where = [];
+		foreach ($conditions as $field => $value) {
+			$where[] = $field . '=?';
 		}
+		$where = implode(' AND ', $where);
+		if (!empty($where)) $where = 'WHERE ' . $where;
 		return $where;
 	}
 
