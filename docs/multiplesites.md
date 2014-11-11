@@ -34,7 +34,8 @@ RewriteEngine on
 	# You have to adapt the rules below to simulate the RewriteBase.
 
 
-# Set rewrite base for a TLD
+# Route projects
+# ---------------------------------------------------------------------------------------------
 # The slash before main simulates a "RewriteBase /"
 RewriteCond %{HTTP_HOST} \.[a-z]{2,}$
 RewriteRule ^(?!docs/)(.*)$ /main/$1?morrow_basehref_depth=2 [QSA]
