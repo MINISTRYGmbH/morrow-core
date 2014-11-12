@@ -74,17 +74,7 @@ class Feature {
 		if (is_resource($view) && get_resource_type($view) == 'stream') {
 			$handle = $view;
 		} elseif (is_object($view) && is_subclass_of($view, '\Morrow\Views\AbstractView')) {
-			
-			if (is_a($view, '\Morrow\Views\Serpent')) {
-				$view->template			= call_user_func(Factory::load('Config')->get('router.template'), $class);
-
-				// for Features we have to reconfigure the template path
-				if (!$master) {
-					$view->template_path	= $root_path_absolute . 'templates/';
-					$view->compile_path		= STORAGE_PATH .'serpent_templates_compiled_features/' . $feature_name . '/';
-				}
-			}
-
+			$view->init($class);
 			$handle					= $view->getOutput();
 			$is_returning_html		= $view->is_returning_html;
 		} elseif (is_string($view)) {
