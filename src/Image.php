@@ -105,17 +105,10 @@ class Image {
 	 * For every month a subdirectory is created. Old months will be deleted.
 	 *
 	 * @param string $cache_dir The path to the cache dir.
-	 * @param boolean $alternate Specifies if $_cache_dir will be extended by the numeric representation of a month.
+	 * @param boolean $alternate Specifies if `$_cache_dir` will be extended by the numeric representation of a month.
 	 * @return null
 	 */
 	public function __construct($cache_dir, $alternate = true) {
-
-		$this->setCacheDir($cache_dir, $alternate);
-
-		if (!file_exists( $this->_cache_dir )) mkdir( $this->_cache_dir, 0777, true );
-	}
-
-	private function setCacheDir($cache_dir, $alternate){
 		if ($alternate) {
 			// params
 			$counter = strftime('%m');
@@ -137,6 +130,8 @@ class Image {
 		} else {
 			$this->_cache_dir = $cache_dir;
 		}
+
+		if (!file_exists( $this->_cache_dir )) mkdir( $this->_cache_dir, 0777, true );
 	}
 
 	/**
