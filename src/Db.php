@@ -219,7 +219,7 @@ class Db extends \PDO {
 	 *     'foo' => 'bar',
 	 *     'foo2' => ['FUNC' => 'foo2+1']
 	 * ];
-	 * $this->db->insert('table', $data, true);
+	 * $this->db->insert('table', $data);
 	 * 
 	 * // Controller code
 	 * ~~~
