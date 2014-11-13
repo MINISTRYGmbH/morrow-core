@@ -1,10 +1,15 @@
 Changelog
 ============
 
-Version 1.0.0 (2014-10-10)
+Version 1.2.0 (2014-11-13)
 -------------
 
-Initial version. Have fun coding.
+* \Morrow\AbstractTableDataGateway: Repaired get(), added empty conditions to get() to get all results and added lastInsertId().
+* \Morrow\Image: New constructor parameter `$alternate` allows to configure the cache folder not to have a folder for the current month.
+* \Morrow\Features: Fixed `delete()` which does not work.
+* Refactored features so you have to initialize fresh instances of the view handlers in the feature controller.
+* Allowed public access to `public/` folders in nested features. So it is now possible to group features in folders.
+* Refactored htaccess. Only one htaccess file left. **It is no longer possible to set the `DOCUMENT_ROOT` to the public folder.**
 
 
 Version 1.1.0 (2014-10-17)
@@ -26,8 +31,9 @@ Version 1.1.0 (2014-10-17)
 * Added docs for Configuration and Models and modified many docs.
 * Removed `composer.lock`.
 
-Version 1.1.0 (2014-10-17)
+
+Version 1.0.0 (2014-10-10)
 -------------
 
-* \Morrow\Features: Fixed `delete()` which does not work.
-* Allowed public access to `public/` folders in nested features. So it is now possible to group features in folders.
+Initial version. Have fun coding.
+
