@@ -145,14 +145,15 @@ use Morrow\Debug;
 
 class Simple extends _Default {
 	public function run($dom) {
-		$time		= new Models\Time;
+		$view = new \Morrow\Views\Serpent;
+		$time = new Models\Time;
 
 		$seconds	= Factory::load('Config:feature')->get('seconds');
-		$this->Views_Serpent->setContent('seconds', $seconds);
+		$view->setContent('seconds', $seconds);
 
 		$dom->append('body', '<script src="features/Time/public/default.js" />');
 
-		return $this->Views_Serpent;
+		return $view;
 	}
 
 ?>
@@ -166,6 +167,7 @@ Yes, it looks very similar to the usually used controllers in Morrow. There are 
   So you are able to modify the DOM with the methods \Morrow\DOM provides.
   This is useful if your feature have to do many modifications to the DOM. For example if you want to change all paths of images, scripts, link-rels and so on to CDN paths.
 * The instance of the config for your feature is accessible by `Config:feature` instead of `Config`.
+* You have to initialize a fresh instance of the view handlers if you want to use them.
 * You can also use the public folder of a feature for images, scripts and so on.
 Just use a path like this:
 `features/Time/public/default.js`

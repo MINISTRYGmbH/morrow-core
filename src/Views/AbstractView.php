@@ -42,6 +42,13 @@ abstract class AbstractView {
 	public $is_returning_html = false;
 
 	/**
+	 * The view handler could extend this method to set some parameters.
+	 * @param	string	$class	The full class name of the currently executed controller class.
+	 */
+	public function init($class) {
+	}
+
+	/**
 	 * Assigns content variables to the actual view handler.
 	 * If $key is not set, it will be automatically set to "content". 
 	 *

@@ -19,6 +19,10 @@ To differentiate them the trailing slash is used.
 The URL `http://example.com/docs/` would request the project `docs` whereas `http://example.com/docs` would request the page `docs` in the main project.
 If there is no project name which could lead to confusion you could write the trailing slash without any problem. But to avoid the possibility of confusion you should omit it.
 
+### Allowed path characters
+
+Allowed characters in the path are `0-9`, `a-z` and `_`. Files with dots (e.g. assets like images or CSS/JS files) are not processed by Morrow.
+
 
 Controller mapping
 -------------------
