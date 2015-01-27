@@ -64,12 +64,10 @@ class Features {
 		foreach ($this->_config as $path_regex => $page_features) {
 			if (!preg_match($path_regex, $this->_path)) continue;
 
-			foreach ($page_features as $selector => $selector_features) {
-				foreach ($selector_features as $i => $feature) {
-					if (preg_match($regex, $feature['class'])) {
-						unset($this->_config[$path_regex][$selector][$i]);
-					} 
-				}
+			foreach ($page_features as $i=>$feature) {
+				if (preg_match($regex, $feature['class'])) {
+					unset($this->_config[$path_regex][$i]);
+				} 
 			}
 		}
 	}
@@ -86,28 +84,26 @@ class Features {
 		foreach ($this->_config as $controller_regex => &$page_features) {
 			if (!preg_match($controller_regex, $this->_path)) continue;
 
-			foreach ($page_features as $selector => $section_features) {
-				foreach ($section_features as $actions) {
-						// only create DOM object if we really have to change the content
-						if (!isset($dom)) {
-							rewind($handle);
-							$content	= stream_get_contents($handle);
-							$dom		= new \Morrow\DOM;
-							$dom->set($content);
-						}
-						
-						// pass config in features.php to the feature config
-						$config = isset($actions['config']) ? $actions['config'] : [];
+			foreach ($page_features as $selector => $feature) {
+					// only create DOM object if we really have to change the content
+					if (!isset($dom)) {
+						rewind($handle);
+						$content	= stream_get_contents($handle);
+						$dom		= new \Morrow\DOM;
+						$dom->set($content);
+					}
 
-						// execute MVC triad
-						$handle = (new Feature)->run($actions['class'], $config, false, $dom);
+					// pass config in features.php to the feature config
+					$config = isset($feature['config']) ? $feature['config'] : [];
 
-						if (fstat($handle)['size'] !== 0) {
-							// inject into DOM
-							$dom->{$actions['action']}($selector, stream_get_contents($handle));
-						}
-						fclose($handle);
-				}
+					// execute MVC triad
+					$handle = (new Feature)->run($feature['class'], $config, false, $dom);
+
+					if (isset($feature['action']) && isset($feature['selector']) && fstat($handle)['size'] !== 0) {
+						// inject into DOM
+						$dom->{$feature['action']}($feature['selector'], stream_get_contents($handle));
+					}
+					fclose($handle);
 			}
 		}
 
