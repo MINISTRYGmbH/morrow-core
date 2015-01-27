@@ -1,6 +1,13 @@
 Changelog
 ============
 
+Version 1.2.1 (in master)
+-------------
+
+* \Morrow\AbstractTableDataGateway: Fixed two redundant WHEREs.
+* Fixed typo: Changed `mail.password` to `mail.Password` in `configs/_default.php`.
+
+
 Version 1.2.0 (2014-11-13)
 -------------
 
