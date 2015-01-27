@@ -217,7 +217,7 @@ abstract class AbstractTableDataGateway {
 		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
 		$where = $this->_createWhere($conditions);
 
-		return $this->_db->updateSafe($this->_table, $data, "WHERE {$where}", array_values($conditions), true);
+		return $this->_db->updateSafe($this->_table, $data, $where, array_values($conditions), true);
 	}
 
 	/**
@@ -230,7 +230,7 @@ abstract class AbstractTableDataGateway {
 		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
 		$where = $this->_createWhere($conditions);
 
-		return $this->_db->delete($this->_table, "WHERE {$where}", array_values($conditions));
+		return $this->_db->delete($this->_table, $where, array_values($conditions));
 	}
 
 	/**
