@@ -71,6 +71,9 @@ class Feature {
 		$view				= $controller->run($dom);
 		$is_returning_html	= false;
 
+		// So it is also possible to return nothing
+		if ($view === null) $view = '';
+
 		if (is_resource($view) && get_resource_type($view) == 'stream') {
 			$handle = $view;
 		} elseif (is_object($view) && is_subclass_of($view, '\Morrow\Views\AbstractView')) {

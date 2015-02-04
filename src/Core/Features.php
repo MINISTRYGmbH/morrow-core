@@ -102,8 +102,10 @@ class Features {
 						// execute MVC triad
 						$handle = (new Feature)->run($actions['class'], $config, false, $dom);
 
-						// inject into DOM
-						$dom->{$actions['action']}($selector, stream_get_contents($handle));
+						if (fstat($handle)['size'] !== 0) {
+							// inject into DOM
+							$dom->{$actions['action']}($selector, stream_get_contents($handle));
+						}
 						fclose($handle);
 				}
 			}

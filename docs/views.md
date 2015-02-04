@@ -8,6 +8,8 @@ Views
 At the end you want to display data.
 To display data your controller has to return a string, a stream/handle or a view handler.
 
+Or you omit the `return`statement. That will be handled as you would have returned an empty string. 
+
 
 Returning a string
 ------------------
