@@ -172,7 +172,8 @@ class Frontcontroller {
 		********************************************************************************************/
 		$Url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath, $basehref_depth);
 		$Header		= Factory::load('Header');
-		$Security	= Factory::load('Security', $config['security'], $Header, $Url, $Input->get('csrf_token'));
+		$Session	= Factory::load('Session');
+		$Security	= Factory::load('Security', $config['security'], $Header, $Url, $Session, $Input->get('csrf_token'));
 
 		/* url routing
 		********************************************************************************************/

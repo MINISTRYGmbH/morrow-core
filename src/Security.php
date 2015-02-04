@@ -25,7 +25,7 @@ namespace Morrow;
 
 /**
  * Adds a little bit of security to your app or webpage.
- * 
+ *
  * For more information on the security handling in the Morrow framework take a look at the [Security page](page/security).
  */
 class Security {
@@ -35,21 +35,29 @@ class Security {
 	 * @param	array	$config	The configuration for this class.
 	 * @param	object	$header	An instance of the header class.
 	 * @param	object	$url	An instance of the url class.
+	 * @param	object	$session	An instance of the session class.
 	 * @param	string	$input_csrf_token	The csrf token that came from the client
 	 */
-	public function __construct($config, $header, $url, $input_csrf_token) {
+	public function __construct($config, $header, $url, $session, $input_csrf_token) {
 		$this->config			= $config;
 		$this->header			= $header;
 		$this->url				= $url;
+		$this->session			= $session;
 		$this->input_csrf_token	= $input_csrf_token;
-		$this->csrf_token		= md5(uniqid(rand(), true));
+
+		// put token into session
+		$this->csrf_token = $this->session->get('csrf_token');
+		if ($this->csrf_token === null) {
+			$this->session->set('csrf_token', md5(uniqid(rand(), true)));
+			$this->csrf_token = $this->session->get('csrf_token');
+		}
 
 		// hide PHP version
 		header_remove("X-Powered-By");
 
 		// set headers
 		$this->_setCsp($config['csp']);
-		
+
 		$this->header->set("X-Frame-Options: {$config['frame_options']}");
 
 		// prevent MIME type sniffing
@@ -84,7 +92,7 @@ class Security {
 
 		$this->header->set("Content-Security-Policy: {$csp}");
 	}
-	
+
 	/**
 	 * Gets the CSRF token for the current user.
 	 * @return	`string`
@@ -92,13 +100,13 @@ class Security {
 	public function getCSRFToken() {
 		return $this->csrf_token;
 	}
-	
+
 	/**
 	 * Creates an URL like URL::create() but adds the CSRF token as GET parameter.
 	 * You have to check the token yourself via verifyCSRFToken().
 	 *
 	 * For the parameters see: Url::create().
-	 * 
+	 *
 	 * @param	string	$path	The URL or the Morrow path to work with. Leave empty if you want to use the current page.
 	 * @param	array	$query	Query parameters to adapt the URL.
 	 * @param	boolean	$absolute	If set to true the URL will be a fully qualified URL.
@@ -120,7 +128,7 @@ class Security {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Creates a 60 characters long hash by using the crypt function with the Blowfish algorithm.
 	 * @param	string	$string	The input string (e.g. a password) to hash.
