@@ -50,7 +50,7 @@ The best place for this snippet is the first line in the setup() method of your 
 ~~~{.php}
 $this->Event->on('core.after_exception', function($e, $exception){
 	// your actions
-	$this->Url->redirect('error/');	
+	$this->Url->redirect('error/');
 });
 ~~~
 
@@ -61,13 +61,13 @@ Configuration defaults
 If the framework runs on a host with a toplevel domain, errors will not be outputted to the screen but to a logfile by default.
 If you work in a local development environment (like `localhost` or `192.168.1.100`) the other way.
 
-**app/configs/_default.php**
+**configs/_default.php**
 ~~~{.php}
 ...
 // debug
 	'debug.output.screen'	=> (isset($_SERVER['HTTP_HOST']) && preg_match('/\.[a-z]+$/', $_SERVER['HTTP_HOST'])) ? strtotime('-1 day') : strtotime('+1 day'),
 	'debug.output.file'		=> (isset($_SERVER['HTTP_HOST']) && preg_match('/\.[a-z]+$/', $_SERVER['HTTP_HOST'])) ? strtotime('+1 day') : strtotime('-1 day'),
-	'debug.file.path'		=> APP_PATH .'logs/error_'. date('Y-m-d') .'.txt',
+	'debug.file.path'		=> 'logs/error_'. date('Y-m-d') .'.txt',
 ...
 ~~~
 
@@ -75,7 +75,7 @@ We don't work with booleans here because it is more safe to let the developer de
 So developers that activate logging on screen in a live environment often forget to disable it after they have to done their work.
 So you have to set a date until the error should appear on screen.
 
-**app/configs/example.com.php**
+**configs/example.com.php**
 ~~~{.php}
 ...
 // debug

@@ -3,13 +3,13 @@ URL Layout
 
 We think the URL is an important hierarchical navigation element for the user of a website.
 It is like a breadcrumb (also for search engines like Google) and that we decided to design our URL layout.
-So by default Morrow does not have the typical *application layout* known from other frameworks:  
+So by default Morrow does not have the typical *application layout* known from other frameworks:
 
-**URL:** `http://example.com/product/show/cool-funky-product`  
+**URL:** `http://example.com/product/show/cool-funky-product`
 
-Our URLs have a hierarchical character and can be unlimited levels deep.  
+Our URLs have a hierarchical character and can be unlimited levels deep.
 
-**URL:** `http://example.com/products/categories/cool-funky-product`  
+**URL:** `http://example.com/products/categories/cool-funky-product`
 
 ### Write your URL paths without a trailing slash
 
@@ -35,8 +35,8 @@ But at the moment it is just important that there is a fallback routine defined 
 Morrow takes the given URL path (e.g. `products/categories/cool-funky-product`), changes it to lower case (the first letter to uppercase), replaces slashes by underscores,
 removes all characters that are not valid in a PHP class name (valid are `0-9`, `a-z` and `_`) and sets the namespace `\app\` as prefix.
 
-**URL:** `http://example.com/products/categories/cool-funky-product`  
-becomes to  
+**URL:** `http://example.com/products/categories/cool-funky-product`
+becomes to
 **Controller:** `app\Products_categories_coolfunkyproduct`
 
 Composers autoloader will now try to load the file `app/Products_categories_coolfunkyproduct.php` and initializes the class `Products_categories_coolfunkyproduct` within the namespace `app\`.
@@ -149,7 +149,7 @@ Change URL layout to the application layout
 If you are writing an application rather than creating a presentational website, it can make more sense to use the *application layout*.
 Just define the following route and call the action in your default controller manually.
 
-**app/configs/\_default\_app.php**
+**app/configs/\_default\_main.php**
 ~~~{.php}
 ...
 // routing rules

@@ -26,7 +26,7 @@ use Morrow\Factory;
 
 /**
  * With this view handler it is possible to output with plain PHP.
- * 
+ *
  * This handler uses the [Serpent Template Engine](https://github.com/McSodbrenner/serpent-php-template-engine) which improves PHP a little bit to have more comfort when writing templates.
  */
 class Serpent extends AbstractView {
@@ -87,26 +87,22 @@ class Serpent extends AbstractView {
 	/**
 	 * The view handler could extend this method to set some parameters.
 	 */
-	public function init($class) {
-		$namespace			= explode('\\', $class);
-		$classname			= array_pop($namespace);
-		$feature_name		= end($namespace);
-		$namespace			= implode('\\', $namespace);
-		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
-		$page				= Factory::load('Page')->get();
+	public function init($namespace) {
+		// extract template path from class namespace
+		$namespace = trim($namespace, '\\');
+		$namespace_array = explode('\\', $namespace);
+		$this->template_path = implode('/', array_slice($namespace_array, 1, 2));
+		$this->template_path .= '/templates/';
+
+		// get template name from template router
+		$this->template = call_user_func(Factory::load('Config')->get('router.template'), $namespace);
 
 		// pass the page variables to the template
 		$this->setContent('page', Factory::load('Page')->get(), true);
 
-		// set some morrow specific values
-		$this->template			= call_user_func(Factory::load('Config')->get('router.template'), $class);
-		$this->template_path	= $root_path_absolute . 'templates/';
-		$this->compile_path		= STORAGE_PATH .'serpent_templates_compiled/';
-
-		// for features we should use a different compile path
-		if (strpos($class, '\\app\\features\\') === 0) {
-			$this->compile_path		= STORAGE_PATH .'serpent_templates_compiled_features/' . $feature_name . '/';
-		}
+		// cerate template compile path fron namespace array
+		$module_name = implode('/', array_slice($namespace_array, 2, 1));
+		$this->compile_path = STORAGE_PATH .'serpent_templates_compiled/' . $module_name . '/';
 	}
 
 	/**
@@ -119,10 +115,10 @@ class Serpent extends AbstractView {
 		$this->_content['page']['template'] = $this->template;
 
 		if (!is_dir($this->compile_path)) mkdir($this->compile_path, 0777, true); // create temp dir if it does not exist
-		
+
 		// init serpent
 		$_engine = new \McSodbrenner\Serpent\Serpent($this->compile_path, 'utf-8', $this->force_compile);
-		
+
 		// handle mappings
 		$mappings = [
 			'dump'			=> '\\Morrow\\Debug::dump',
@@ -137,7 +133,7 @@ class Serpent extends AbstractView {
 			'endstrip'		=> 'ob_end_flush',
 			'loremipsum'	=> '\\Morrow\\Views\\Serpent::loremipsum',
 			'_'				=> '\\Morrow\\Factory::load("Language")->_',
-			'feature'		=> 'stream_get_contents(\\Morrow\\Factory::load("Core\\Feature")->run',
+			'module'		=> 'stream_get_contents(\\Morrow\\Factory::load("Core\\Feature")->run',
 		];
 		// add user mappings
 		foreach ($this->mappings as $key => $value) {
@@ -145,26 +141,27 @@ class Serpent extends AbstractView {
 		}
 
 		$_engine->addMappings($mappings);
-		
+
 		// handle resources
 		$_engine->addResource('file',
 			new \McSodbrenner\Serpent\ResourceFile($this->template_path, $this->template_suffix, Factory::load('Language')->get())
 		);
-		
+
 		foreach ($this->resources as $resource) {
 			call_user_func_array([$_engine, 'addResource'], $resource);
 		}
-		
+
 		// create stream handle for the output
 		$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+
 
 		// write source to stream
 		$_engine->pass($this->_content);
 		fwrite($handle, $_engine->render($this->template));
-		
+
 		return $handle;
 	}
-	
+
 	/**
 	 * Used for the Serpent mapping `:cycle`. Every call of cycle will return the next of the parameters you have passed initially. All function paramters will be used to cycle.
 	 * @return  mixed Returns the next cyvle value.
@@ -172,13 +169,13 @@ class Serpent extends AbstractView {
 	public static function cycle() {
 		$values = func_get_args();
 		$name = array_shift($values);
-		
+
 		if (!isset(self::$cycles[$name])) self::$cycles[$name] = -1;
 		$index =& self::$cycles[$name];
 		if (!isset($values[++$index])) $index = 0;
 		return $values[ $index ];
 	}
-		
+
 	/**
 	 * Used for the Serpent block `:strip`. Removes unnecessary whitespace from an html string.
 	 * @param   string $buffer The content to work with.
@@ -190,7 +187,7 @@ class Serpent extends AbstractView {
 		$buffer = preg_replace($pat, $rep, $buffer);
 		return $buffer;
 	}
-		
+
 	/**
 	 * Used for the Serpent mapping `:mailto`. Obfuscates an email address with javascript and returns the necessary html.
 	 * @param   string $address The email address to obfuscate.
@@ -247,11 +244,11 @@ class Serpent extends AbstractView {
 
 		$multiplier = ceil($word_count/$count);
 		$text = str_repeat($text, $multiplier);
-		
+
 		$text = explode(' ', $text);
 		if ($random) shuffle($text);
 		$returner = array_slice($text, 0, $word_count);
-		
+
 		$returner = ucfirst(implode(' ', $returner)).'.';
 		return $returner;
 	}

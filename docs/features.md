@@ -21,12 +21,12 @@ Give me some useful examples for useful *Features*
 ------------------------------------------------
 
   * Those which are not essential for you website or can simply reused like comment systems, social share buttons, tracking codes ...
-  * Code optimizations like minifying the HTML, summarize JS `<script>` tags and CSS `<link>` tags. Put your *Feature* at the end of the `features.php` to get executed at the end so you get the finally rendered HTML.
+  * Code optimizations like minifying the HTML, summarize JS `<script>` tags and CSS `<link>` tags. Put your *Feature* at the end of the `modules.php` to get executed at the end so you get the finally rendered HTML.
   * It is also possible to completely build your website with *Features*. So you can recombine your *Features* to build new pages.
   * Access control. If you have build your website completely with *Features* you are able to remove other of your *Features* from the current page while the *Feature* processing queue is running.
   * A/B Tests. Just write a A/B test feature controller that removes the feature you do not need at the moment.
   * There will be a lot more ...
-  
+
 
 How does it work?
 ----------------
@@ -37,7 +37,7 @@ It is more like in jQuery where you append functionality to specific HTML DOM el
 All *Features* are in the folder `app/features/`.
 
 
-The registration file `app/features/features.php`
+The registration file `app/features/modules.php`
 -----------------------------------
 
 This file controls which *Feature* is executed on which page.
@@ -51,7 +51,7 @@ $features = [
 		'#canvas' => [
 			[
 				'action' => 'append',
-				'class' => '\\app\\features\\Time\\Simple',
+				'class' => '\\app\\modules\\Time\\Simple',
 				'config' => ['format' => '%Y-%m-%d']
 			],
 			...
@@ -101,7 +101,7 @@ Here is an overview of the positions:
 
 As `class` you define the class of the Feature that should be executed.
 In the example there could exist a second Feature controller with the name "Extended" that output a more complicated display of a clock.
-To access this controller you would write `\\app\\features\\Time\\Extended`.
+To access this controller you would write `\\app\\modules\\Time\\Extended`.
 
 The third key `config` is optional and overwrites configuration parameters of the config that may exist in the Features `config/` folder.
 
@@ -139,7 +139,7 @@ Now let's take a look at the example controller `Simple`. It could look like thi
 ~~~{.php}
 <?php
 
-namespace app\features\Time;
+namespace app\modules\Time;
 use Morrow\Factory;
 use Morrow\Debug;
 
@@ -161,7 +161,7 @@ class Simple extends _Default {
 
 Yes, it looks very similar to the usually used controllers in Morrow. There are just little differences:
 
-* The namespace is now `app\features\[FEATURE-NAME]` instead of `app`.
+* The namespace is now `app\modules\[FEATURE-NAME]` instead of `app`.
 * The method `run()` receives an instance of \Morrow\DOM.
   This instance contains the current state of the HTML.
   So you are able to modify the DOM with the methods \Morrow\DOM provides.
@@ -189,7 +189,7 @@ We also pass an array to the *Feature* to overwrite the configuration variable `
 ~~~{.php}
 <?php
 
-$handle = Factory::load('Core\Feature')->run('\\app\\features\\Foo\\Bar', ['foo' => 'bar']);
+$handle = Factory::load('Core\Feature')->run('\\app\\modules\\Foo\\Bar', ['foo' => 'bar']);
 $this->Views_Serpent->setContent('widget', stream_get_contents($handle));
 
 ?>
@@ -202,7 +202,7 @@ This is what you probably think of by the word "widget".
 
 ~~~{.php}
 <div>
-	~~:feature('\\app\\features\\Time\\Simple')~
+	~~:feature('\\app\\modules\\Time\\Simple')~
 </div>
 ~~~
 

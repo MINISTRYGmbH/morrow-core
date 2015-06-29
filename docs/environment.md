@@ -9,8 +9,8 @@ Constant               | Path                  | Description
 `ROOT_PATH`            | `./`                  | The absolute path to the public folder.
 `PUBLIC_PATH`          | `./public/`           | The absolute path to the public folder.
 `PUBLIC_STORAGE_PATH`  | `./public/storage/`   | The absolute path to the public storage folder. Use this for temporary files that should be public accessible, e.g. thumbnails of images.
-`APP_PATH`             | `./app/`              | The absolute path to the App folder.
-`STORAGE_PATH`         | `./app/storage/`      | The absolute path to the storage folder. Use this for temporary files that should NOT be public accessible, e.g. internal caches.
+`MODULES_PATH`         | `./modules/`         | The absolute path to the App folder.
+`STORAGE_PATH`         | `./storage/`          | The absolute path to the storage folder. Use this for temporary files that should NOT be public accessible, e.g. internal caches.
 `VENDOR_PATH`          | `./vendor/`           | The absolute path to the vendor folder.
 
 As in these constants all classes expect folder paths to have a trailing slash.
@@ -45,7 +45,7 @@ $ => Array (4)
 
 In the controller you have access to the page array by the \Morrow\Page class.
 
-~~~{.php} 
+~~~{.php}
 <?php
 namespace app;
 use Morrow\Factory;
