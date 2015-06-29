@@ -150,9 +150,9 @@ class Frontcontroller {
 
 		/* prepare some internal variables
 		********************************************************************************************/
-		$path				= implode('/', $nodes);
-		$query				= $Input->getGet();
-		$fullpath			= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
+		$path     = implode('/', $nodes);
+		$query    = $Input->getGet();
+		$fullpath = $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
 
 		/* prepare classes so the user has less to pass
 		********************************************************************************************/
@@ -170,7 +170,8 @@ class Frontcontroller {
 		********************************************************************************************/
 		$Url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath);
 		$Header		= Factory::load('Header');
-		$Security	= Factory::load('Security', $config['security'], $Header, $Url, $Input->get('csrf_token'));
+		$Session	= Factory::load('Session');
+		$Security	= Factory::load('Security', $config['security'], $Header, $Url, $Session, $Input->get('csrf_token'));
 
 		/* url routing
 		********************************************************************************************/
@@ -203,12 +204,14 @@ class Frontcontroller {
 			throw new \RunTimeException("$controller not found");
 		});
 
-		$Feature = Factory::load('\Morrow\Core\Modules');
-		$handle = $Feature->run($controller);
+		$Module = Factory::load('\Morrow\Core\Modules');
+		$handle = $Module->run($controller);
 
 		// output headers
 		$headers = $Header->getAll($handle);
-		foreach ($headers as $h) header($h);
+		foreach($headers as $h){
+			header($h);
+		}
 
 		// create empty stream
 		if ($Header->isEtagDifferent() === false) {
