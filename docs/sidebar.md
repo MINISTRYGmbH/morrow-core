@@ -1,7 +1,12 @@
-General topics
+First Steps
 
 * [Introduction](page/introduction)
 * [Installation](page/installation)
+* [Folder Structure](page/folder-structure)
+* [Modules](page/modules)
+
+General topics
+
 * [Configuration](page/configuration)
 * [URL Layout](page/urllayout)
 * [Controllers](page/controllers)
@@ -15,7 +20,7 @@ Advanced topics
 * [Multiple Sites](page/multiplesites)
 * [Debugging](page/debugging)
 * [Caching](page/caching)
-* [Localization](page/localization) 
+* [Localization](page/localization)
 * [Form handling](page/formhandling)
 * [Features](page/features)
 * [Security](page/security)
