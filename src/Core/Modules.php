@@ -79,6 +79,18 @@ class Modules {
 		}
 		$this->_module_queue = $temp;
 
+
+		/* check if modules exist
+		********************************************************************************************/
+		foreach($this->_module_queue as $module){
+			try{
+				class_exists($module['class']);
+			}catch(\Exception $e){
+				throw new \Exception('Namespace "' . $module['class'] . '" could not be resolved.');
+			}
+		}
+
+
 		/* put module configs into global config
 		********************************************************************************************/
 		foreach($this->_module_queue as $module){
