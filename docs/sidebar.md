@@ -3,13 +3,14 @@ First Steps
 * [Introduction](page/introduction)
 * [Installation](page/installation)
 * [Folder Structure](page/folder-structure)
+* [Introduction to _Modules_](page/introduction-to-modules)
 
 General topics
 
-* [Introduction to _Modules_](page/modules)
 * [URL Layout](page/urllayout)
 * [Controllers](page/controllers)
 * [Configuration](page/configuration)
+* [_Modules_](page/modules)
 * [Models](page/models)
 * [Views](page/views)
 * [Environment information](page/environment)

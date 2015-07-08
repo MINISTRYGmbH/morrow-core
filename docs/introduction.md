@@ -22,6 +22,7 @@ OK, some people simply need a feature list. Now, here is a list which shows what
 * HMVC powered
 * Composer powered
 * Main focus on performance, security and low level requirements
+* encourages modular application design
 * i18n and l10n integration
 * View handlers for: XML, JSON, JSONP and CSV
 * Granular adjustable caching

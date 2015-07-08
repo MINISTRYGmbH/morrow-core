@@ -21,14 +21,15 @@ If there is no project name which could lead to confusion you could write the tr
 
 ### Allowed path characters
 
+
 Allowed characters in the path are `0-9`, `a-z` and `_`. Files with dots (e.g. assets like images or CSS/JS files) are not processed by Morrow.
 
 
 Controller mapping
 -------------------
 
-The default controller mapping definition is located in the main config file `configs/_default.php`. You can find it under the key `router.fallback`.
-It is a function which gets passed the url relative to the project root and is expected to return the controller namespace. When requesting `http://localhost/morrow-framework/Hello/World`, it gets passed `Hello/World`.
+Morrow will map each requested URL to the corresponding controller of the _Main-Module_.
+Morrow's base namespace for _Main-Controllers_ is `\app\modules\_main`.
 
 Following steps will be performed:
 
@@ -39,7 +40,13 @@ Following steps will be performed:
  * put `\app\modules\_main\` in front of it
  * return the resulting namespace string
 
-So, for example, `http://localhost/morrow-framework/Hello/World` would result in `\app\modules\_main\\Hello_world`.
+So, for example, the requested URL `http://localhost/morrow-framework/Hello/World` would cause an execution of the controller `\app\modules\_main\\Hello_world`.
+
+### Customizing the mapping function
+
+The default controller mapping definition is located in the main config file `configs/_default.php`. You can find it under the key `router.fallback`.
+It is a function which gets passed the url relative to the project root and is expected to return the controller namespace. When requesting `http://localhost/morrow-framework/Hello/World`, it gets passed `Hello/World`.
+
 
 Composers autoloader will now try to load the file `modules/_main/Hello_world.php` and initializes the class `Hello_world` within the namespace `app\modules\_main\\Hello_world`.
 
