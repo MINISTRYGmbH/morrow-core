@@ -6,7 +6,7 @@ Controllers
 > *Margaret Rouse (whatIs.com)*
 
 When an URL is requested, Morrow will execute the respective _Page-Controller_ located in `modules/_main/`. In addition,
-all optional _Module-Controllers_ that have been signed up in `modules/modules.php` will be executed.
+all optional _Module-Controllers_ that have been registered in `modules/modules.php` will be executed.
 
 
 Naming Conventions
@@ -76,8 +76,7 @@ class Home extends _Default {
 ~~~
 
 ### The _Module-Controller_
-In case you have implemented a module that should run on this page, Morrow will execute its _Module-Controller_. That will only happen if that controller has been signed up
-in `modules/modules.php`. If this controller gets executed after the _Page-Controller_, its `run()` will get passed the current _DOM-Instance_ as an argument.
+In case you have implemented a module that should run on this page, Morrow will execute its _Module-Controller_. That will only happen if that controller has been registered in `modules/modules.php`. If this controller gets executed after the _Page-Controller_, its `run()` will get passed the current _DOM-Instance_ as an argument.
 Following is a _Module-Controller_ of the example-module _Clock_.
 
 **modules/Clock/Day.php**
