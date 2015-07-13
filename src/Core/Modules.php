@@ -67,7 +67,7 @@ class Modules {
 		$temp[] = [
 			'action'           => 'replace',
 			'class'            => $class_name,
-			'controller_regex' => '~.*~',
+			'controller_regex' => '=.*=',
 			'selector'         => 'html'
 		];
 		foreach($modules_config_array as $regex => $page_modules){
@@ -91,11 +91,6 @@ class Modules {
 		}
 
 
-		/* put module configs into global config
-		********************************************************************************************/
-		foreach($this->_module_queue as $module){
-			$this->_insertModuleConfig($module['class'], isset($module['config']) ? $module['config'] : []);
-		}
 
 
 		/* remove modules from the module queue array that wont be executed
@@ -114,6 +109,10 @@ class Modules {
 		foreach($this->_module_queue as $key => &$module){
 			// remove this item from queue
 			unset($this->_module_queue[$key]);
+
+			// put module configs into global config
+			$this->_insertModuleConfig($module['class'], isset($module['config']) ? $module['config'] : []);
+
 			// execute module
 			$handle = $this->runFeature($module);
 			// close returned handle
