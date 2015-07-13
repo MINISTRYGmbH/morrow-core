@@ -17,27 +17,9 @@ To install it on your own webserver you have to do this (but this is of course o
 composer create-project morrow/docs [YOUR_PATH]
 ~~~
 
-Folder structure
-----------------
+Granting Permissions
+-----------------
 
-Now you should have the following folder structure:
+Morrow will write temporary files into the following folder: `storage/`
 
-* `app/` The App folder you are mostly working in
-	* `configs/` Configuration files of the framework
-	* `features/` Contains [Feature MVC triads](page/features)
-	* `languages/` Configuration and translations for the used languages
-	* `libraries/` Your own (helper) classes, PSR-0 compatible libraries
-	* `models/` Your models for the project
-	* `storage/` Temporary files for the project (also log files and error logs)
-	* `templates/` Templates for HTML output
-* `public/` All data that is accessible by HTTP
-* `vendor/` Composer handled libraries
-
-
-Permissions
----------------
-
-The following folder has to be writable by the web server user:
- 
- * `app/storage/`
-
+Please ensure that this folder will be writable by the web server user.
