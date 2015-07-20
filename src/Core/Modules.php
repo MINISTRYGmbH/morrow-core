@@ -114,7 +114,7 @@ class Modules {
 			$this->_insertModuleConfig($module['class'], isset($module['config']) ? $module['config'] : []);
 
 			// execute module
-			$handle = $this->runFeature($module);
+			$handle = $this->runModuleController($module);
 			// close returned handle
 			if(is_resource($handle)){
 				fclose($handle);
@@ -203,7 +203,7 @@ class Modules {
 	 *                           		]
 	 * @return 	stream	$handle			handle of executed module data
 	 */
-	public function runFeature($page_module){
+	public function runModuleController($page_module){
 		// execute module controller
 		$view = (new $page_module['class'])->run($this->_dom);
 
