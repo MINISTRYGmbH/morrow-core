@@ -25,21 +25,21 @@ Whether you use a short form like `en` or long one like `english` or even `Engli
     'languages'     => ['en', 'de'],
 ~~~
 
-The first language will be the default language and will not appear in the URL path. 
+The first language will be the default language and will not appear in the URL path.
 
 
-For each of the languages you define in your config, you will have to create a folder with the name of the language within the `app/languages/` folder.
-This folder e.g. `app/languages/de/` must contain these three files:
+For each of the languages you define in your config, you will have to create a folder with the name of the language within the `languages/` folder.
+This folder e.g. `languages/de/` must contain these three files:
 
 * `i18n.php` contains translations and is maintained automatically
 * `l10n.php` contains global information for this language
 * `tree.php` contains the navigation tree structure for the \Morrow\Navigation class
 
-**app/languages/[lang]/i18n.php**
+**languages/[lang]/i18n.php**
 
 This file is created and maintained automatically for all languages that are not the default language.
 
-**app/languages/[lang]/l10n.php**
+**languages/[lang]/l10n.php**
 
 The `l10n.php` file contains global configuration variables that apply only to this language. This includes the name of the language, the date and the currency formats. You can extend the definitions for your own purposes, but the provided keys should be defined in any case, since Morrow needs them.
 
@@ -58,7 +58,7 @@ return [
 ?>
 ~~~
 
-**app/languages/[lang]/tree.php**
+**languages/[lang]/tree.php**
 
 For an explanation of this file take a look at the \Morrow\Navigation class.
 
@@ -78,5 +78,5 @@ Language Dependent Templates
 Sometimes you need different HTML templates for individual languages or you have so much text, that putting it all in variables would be time consuming or too confusing.
 The default view handler \Morrow\Views\Serpent gives you a simple way of creating templates for different languages. Simply add the language-key to the name of the template file: `[alias].[lang].htm`.
 
-**Default template:** `home.htm`  
+**Default template:** `home.htm`
 **German template:** `home.de.htm`

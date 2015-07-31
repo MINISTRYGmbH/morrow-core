@@ -26,13 +26,13 @@ namespace Morrow;
 * Provides some useful methods for dealing with URLs.
 *
 * Especially create() and redirect() are important, since they provide correct handling of Morrow paths in the context of language handling.
-* 
+*
 * A Morrow URL has this structure:
 * `language`/`node 1`/`node 2`
-* 
+*
 * `language` is optional.
 * So if you want to link to a page with the default language you can omit the language parameter.
-* 
+*
 * Examples
 * ---------
 *
@@ -41,7 +41,7 @@ namespace Morrow;
 *
 * // extend an absolute URL with an additional GET parameter
 * $url = $this->Url->create('http://chuck:norris@example.com:80/home?foo=bar#42', ['foo2' => 'bar2']);
-* 
+*
 * // URLs without a scheme work too
 * $url = $this->Url->create('//example.com/home', ['foo' => 'bar']);
 *
@@ -68,7 +68,7 @@ namespace Morrow;
 * ~~~
 *
 * ### Redirect
-* 
+*
 * ~~~{.php}
 * // ... Controller code
 *
@@ -98,25 +98,16 @@ class Url {
 	protected $_fullpath;
 
 	/**
-	 * Because of the htaccess rewriting rules the base href can be different from what we expect and want
-	 * So we have to strip x levels from the basehref. The count of levels we have to strip is defined here.
-	 * @var	int $_fullpath
-	 */
-	protected $_basehref_depth = 0;
-
-	/**
 	 * All parameters passed are used for create(). You don't have to do this yourself in Morrow.
 	 *
 	 * @param	string	$language_actual	Contains the currently active language.
 	 * @param	array	$language_possible	Contains all valid language keys.
 	 * @param	string	$fullpath	Contains the full path of the current page.
-	 * @param	integer	$basehref_depth	Necessary parameter for `getBasehref()`. Defines how man path nodes we have to skip to the the correct basehref.
 	 */
-	public function __construct($language_actual, $language_possible, $fullpath, $basehref_depth) {
-		$this->_language_actual		= $language_actual;
-		$this->_language_possible	= $language_possible;
-		$this->_fullpath			= $fullpath;
-		$this->_basehref_depth		= $basehref_depth;
+	public function __construct($language_actual, $language_possible, $fullpath) {
+		$this->_language_actual   = $language_actual;
+		$this->_language_possible = $language_possible;
+		$this->_fullpath          = $fullpath;
 	}
 
 	/**
@@ -202,7 +193,7 @@ class Url {
 	}
 
 	/**
-	 * Creates a URL for use with Morrow. It handles automatically languages in the URL. 
+	 * Creates a URL for use with Morrow. It handles automatically languages in the URL.
 	 *
 	 * @param	string	$path	The URL or the Morrow path to work with. Leave empty if you want to use the current page.
 	 * @param	array	$query	Query parameters to adapt the URL.
@@ -216,7 +207,7 @@ class Url {
 
 		// parse input url
 		$parts = $this->parse($path);
-		
+
 		// combine query parameters
 		parse_str($parts['query'], $parts['query']);
 		$parts['query'] = array_merge($parts['query'], $query);
@@ -278,17 +269,14 @@ class Url {
 		$script_name = dirname($_SERVER['SCRIPT_NAME']);
 		$script_name = str_replace('\\', '/', $script_name); // for Windows paths
 		$path = '/'. trim($script_name, '/') .'/';
-		
+
 		// If it is the root the return value of dirname is slash
 		if ($path == '//') $path = '/';
 		$scheme = isset($_SERVER['HTTPS']) || isset($_SERVER['HTTP_X_SSL_ACTIVE']) || (isset($_SERVER['SSL_PROTOCOL']) && !empty($_SERVER['SSL_PROTOCOL'])) ? 'https://' : 'http://';
-		
+
 		$host = php_sapi_name() === 'cli' ? gethostname() : $_SERVER['HTTP_HOST']; // Exception for cli
 		$base_href = $scheme . $host . $path;
 
-		// We have to strip x nodes from the end of the base href
-		// Depends on the htaccess entry point
-		$base_href = preg_replace('|([^/]+/){'. $this->_basehref_depth .'}$|', '', $base_href);
 		return $base_href;
 	}
 }

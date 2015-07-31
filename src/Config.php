@@ -24,30 +24,30 @@ namespace Morrow;
 
 /**
 * Handles the access to the framework configuration.
-* 
-* It automatically loads the config files in the configuration folder `APP_PATH/configs`. A file named `_default.php` will always be loaded. But you can override the default config with files which include either the IP address or the hostname of the server in their filename. Use for example a file `localhost.php` or `127.0.0.1.php` to override parameters for your local development server.
+*
+* It automatically loads the config files in the configuration folder `configs`. A file named `_default.php` will always be loaded. But you can override the default config with files which include either the IP address or the hostname of the server in their filename. Use for example a file `localhost.php` or `127.0.0.1.php` to override parameters for your local development server.
 * You just have to include those parameters which differ from the defaults.
 *
 * Dot Syntax
 * ----------
-* 
-* This class works with the extended dot syntax. So if you use keys like `mailer.host` and `mailer.smtp` as identifiers in your config, you can call `$this->Config->get("mailer")` to receive an array with the keys `host` and `smtp`. 
-* 
+*
+* This class works with the extended dot syntax. So if you use keys like `mailer.host` and `mailer.smtp` as identifiers in your config, you can call `$this->Config->get("mailer")` to receive an array with the keys `host` and `smtp`.
+*
 * Examples
 * ---------
 *
 * ~~~{.php}
 * // ... Controller code
-*  
+*
 * // show full framework configuration
 * Debug::dump($this->Config->get());
-* 
+*
 * // overwrite a debug parameter
 * $this->Config->set('debug.output.screen', false);
-* 
+*
 * // get the debug output configuration
 * $this->Config->get('debug.output');
-* 
+*
 * // ... Controller code
 * ~~~
 */
@@ -59,8 +59,8 @@ class Config extends Core\Base {
 	protected $data = []; // The array with parsed data
 
 	/**
-	 * Retrieves configuration parameters. If `$identifier` is not passed, it returns an array with the complete configuration. Otherwise only the parameters below `$identifier`. 
-	 * 
+	 * Retrieves configuration parameters. If `$identifier` is not passed, it returns an array with the complete configuration. Otherwise only the parameters below `$identifier`.
+	 *
 	 * @param string $identifier Config data to be retrieved
 	 * @return mixed
 	 */
@@ -69,8 +69,8 @@ class Config extends Core\Base {
 	}
 
 	/**
-	 * Sets registered config parameters below $identifier. $value can be of type string or array. 
-	 * 
+	 * Sets registered config parameters below $identifier. $value can be of type string or array.
+	 *
 	 * @param string $identifier Config data path to be set
 	 * @param mixed $value The value to be set
 	 * @return null
@@ -78,10 +78,10 @@ class Config extends Core\Base {
 	public function set($identifier, $value) {
 		return $this->arraySet($this->data, $identifier, $value);
 	}
-	
+
 	/**
 	 * Removes all config parameters.
-	 * 
+	 *
 	 * @return null
 	 */
 	public function clear() {

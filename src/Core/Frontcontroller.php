@@ -25,11 +25,11 @@ namespace Morrow;
 
 // Define paths for the Morrow namespace
 // Because this file is in the Core namespace we have to use a temporary namespace
-define('ROOT_PATH', realpath(getcwd() . '/..') . '/');
+define('ROOT_PATH', realpath(getcwd()) . '/');
 define('PUBLIC_PATH', ROOT_PATH . 'public/');
 define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
-define('APP_PATH', ROOT_PATH . 'app/');
-define('STORAGE_PATH', APP_PATH . 'storage/');
+define('MODULES_PATH', ROOT_PATH . 'modules/');
+define('STORAGE_PATH', ROOT_PATH . 'storage/');
 define('VENDOR_PATH', ROOT_PATH . 'vendor/');
 
 
@@ -101,7 +101,7 @@ class Frontcontroller {
 
 		/* load all config files
 		********************************************************************************************/
-		$config = Factory::load('Config')->load(APP_PATH . 'configs/');
+		$config = Factory::load('Config')->load(ROOT_PATH . 'configs/');
 
 		/* set timezone
 		********************************************************************************************/
@@ -119,9 +119,7 @@ class Frontcontroller {
 		}
 
 		$morrow_path_info	= $_GET['morrow_path_info'];
-		$basehref_depth		= isset($_GET['morrow_basehref_depth']) ? $_GET['morrow_basehref_depth'] : 0;
 		unset($_GET['morrow_path_info']);
-		unset($_GET['morrow_basehref_depth']);
 
 		/* load input class
 		********************************************************************************************/
@@ -152,9 +150,9 @@ class Frontcontroller {
 
 		/* prepare some internal variables
 		********************************************************************************************/
-		$path				= implode('/', $nodes);
-		$query				= $Input->getGet();
-		$fullpath			= $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
+		$path     = implode('/', $nodes);
+		$query    = $Input->getGet();
+		$fullpath = $path . (count($query) > 0 ? '?' . http_build_query($query, '', '&') : '');
 
 		/* prepare classes so the user has less to pass
 		********************************************************************************************/
@@ -170,7 +168,7 @@ class Frontcontroller {
 
 		/* load classes we need anyway
 		********************************************************************************************/
-		$Url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath, $basehref_depth);
+		$Url		= Factory::load('Url', $language->get(), $config['languages']['possible'], $fullpath);
 		$Header		= Factory::load('Header');
 		$Session	= Factory::load('Session');
 		$Security	= Factory::load('Security', $config['security'], $Header, $Url, $Session, $Input->get('csrf_token'));
@@ -197,18 +195,23 @@ class Frontcontroller {
 		$Page->set('path.absolute', $base_href . $path);
 		$Page->set('path.absolute_with_query', $base_href . $fullpath);
 
+
+
 		/* process MVC
 		********************************************************************************************/
 		// we register this autoloader that throws an Exception if a class cannot be found
-		spl_autoload_register(function($class) {
-			throw new \RunTimeException("$class not found");
+		spl_autoload_register(function($controller) {
+			throw new \RunTimeException("$controller not found");
 		});
 
-		$handle	= (new \Morrow\Core\Feature)->run($controller, [], true);
+		$Module = Factory::load('\Morrow\Core\Modules');
+		$handle = $Module->run($controller);
 
 		// output headers
 		$headers = $Header->getAll($handle);
-		foreach ($headers as $h) header($h);
+		foreach($headers as $h){
+			header($h);
+		}
 
 		// create empty stream
 		if ($Header->isEtagDifferent() === false) {

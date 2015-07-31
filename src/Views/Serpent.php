@@ -88,26 +88,22 @@ class Serpent extends AbstractView {
 	 * The view handler could extend this method to set some parameters.
 	 * @param  string  $class The MVC controller class with namespace that inits this instance.
 	 */
-	public function init($class) {
-		$namespace			= explode('\\', $class);
-		$classname			= array_pop($namespace);
-		$feature_name		= end($namespace);
-		$namespace			= implode('\\', $namespace);
-		$root_path_absolute	= realpath('../' . trim(str_replace('\\', '/', $namespace), '/')) . '/';
-		$page				= Factory::load('Page')->get();
+	public function init($namespace) {
+		// extract template path from class namespace
+		$namespace = trim($namespace, '\\');
+		$namespace_array = explode('\\', $namespace);
+		$this->template_path = implode('/', array_slice($namespace_array, 1, 2));
+		$this->template_path .= '/templates/';
+
+		// get template name from template router
+		$this->template = call_user_func(Factory::load('Config')->get('router.template'), $namespace);
 
 		// pass the page variables to the template
 		$this->setContent('page', Factory::load('Page')->get(), true);
 
-		// set some morrow specific values
-		$this->template			= call_user_func(Factory::load('Config')->get('router.template'), $class);
-		$this->template_path	= $root_path_absolute . 'templates/';
-		$this->compile_path		= STORAGE_PATH .'serpent_templates_compiled/';
-
-		// for features we should use a different compile path
-		if (strpos($class, '\\app\\features\\') === 0) {
-			$this->compile_path		= STORAGE_PATH .'serpent_templates_compiled_features/' . $feature_name . '/';
-		}
+		// cerate template compile path fron namespace array
+		$module_name = implode('/', array_slice($namespace_array, 2, 1));
+		$this->compile_path = STORAGE_PATH .'serpent_templates_compiled/' . $module_name . '/';
 	}
 
 	/**
@@ -138,7 +134,7 @@ class Serpent extends AbstractView {
 			'endstrip'		=> 'ob_end_flush',
 			'loremipsum'	=> '\\Morrow\\Views\\Serpent::loremipsum',
 			'_'				=> '\\Morrow\\Factory::load("Language")->_',
-			'feature'		=> 'stream_get_contents(\\Morrow\\Factory::load("Core\\Feature")->run',
+			'module'		=> 'stream_get_contents(\\Morrow\\Factory::load("Core\\Feature")->run',
 		];
 		// add user mappings
 		foreach ($this->mappings as $key => $value) {
@@ -158,6 +154,7 @@ class Serpent extends AbstractView {
 
 		// create stream handle for the output
 		$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
+
 
 		// write source to stream
 		$_engine->pass($this->_content);

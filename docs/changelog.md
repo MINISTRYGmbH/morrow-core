@@ -1,9 +1,14 @@
 Changelog
 ============
 
-Version 1.2.1 (in master)
+Version 1.3.0 (2015-07-31)
 -------------
 
+* 'Features' have become 'Modules' since there isnt any non-Feature anymore and coding with modules has become obligatory (at least one).
+* Folder structure has been changed to fit the removal of optional features in fervor to the modules.
+* Modules can now be executed at any timing. This means the main module is not necessarily executed at the very first.
+* \Morrow\Core\Features has become \Morrow\Core\Modules.
+* \Morrow\Core\Feature has been removed.
 * \Morrow\AbstractTableDataGateway: Fixed two redundant WHEREs.
 * Fixed typo: Changed `mail.password` to `mail.Password` in `configs/_default.php`.
 

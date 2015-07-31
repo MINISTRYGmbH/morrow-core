@@ -24,11 +24,11 @@ namespace Morrow;
 
 /**
  * Improves the handling with common navigational tasks.
- * 
+ *
  * The navigation data has to follow a strict scheme but can be passed from different sources.
- * The default way is to store the data in an array in `APP_PATH . "/languages/LANGUAGE/tree.php"`.
- * 
- * Because paths can exist in more than one navigation branch (f.e. meta and main) you have to specify the branch you want to work with. 
+ * The default way is to store the data in an array in `"/languages/LANGUAGE/tree.php"`.
+ *
+ * Because paths can exist in more than one navigation branch (f.e. meta and main) you have to specify the branch you want to work with.
  *
  * Example
  * -------
@@ -47,7 +47,7 @@ namespace Morrow;
  * 	],
  * ];
  * ~~~
- * 
+ *
  * Default controller
  * ~~~{.php}
  * // ... Controller code
@@ -80,13 +80,13 @@ namespace Morrow;
  * $total_results    = 41;
  * $results_per_page = 5;
  * $page             = $this->input->get('page');
- * 
+ *
  * $pager_data = $this->Navigation->getPager($total_results, $results_per_page, $page);
  * Debug::dump($pager_data);
  *
  * // Controller code
  * ~~~
- * 
+ *
  * ### Result for `$page = 2`
  * ~~~
  * Array
@@ -121,7 +121,7 @@ class Navigation {
 	 * @var	string $_active_path
 	 */
 	protected $_active_path = null;
-	
+
 	/**
 	 * Creates the internal structure with the given data. Usually you don't have to call it yourself.
 	 *
@@ -131,13 +131,13 @@ class Navigation {
 	public function __construct($data, $active = null) {
 		// fill $nodes and $tree
 		$this->add($data);
-		
+
 		// set the active node
 		if (isset($this->_nodes[$active])) {
 			$this->setActive($active);
 		}
 	}
-		
+
 	/**
 	 * Adds nodes to the current tree.
 	 *
@@ -147,25 +147,25 @@ class Navigation {
 	 */
 	public function add($data, $branch = null) {
 		if (!is_null($branch)) $data = [$branch => $data];
-		
+
 		foreach ($data as $branch => $tree) {
 			// first create the flat tree
 			foreach ($tree as $path => $node) {
 				// its ok just to pass a string as title
 				if (is_string($node)) $node = ['title' => $node];
-				
+
 				if (!isset($node['title']) or empty($node['title'])) {
 					throw new \Exception(__CLASS__ . "': You have to define a title for path '{$path}'.");
 				}
-				
+
 				// add other information
 				$node['active'] = false;
-				
+
 				$node['path']	= $path;
 				$parts			= explode('/', $node['path']);
 				$node['node']	= array_pop($parts);
 				$node['parent']	= implode('_', $parts);
-				
+
 				// add to nodes collection
 				$this->_nodes[$node['path']] = $node;
 
@@ -177,7 +177,7 @@ class Navigation {
 		}
 
 		$nodes =& $this->_nodes;
-		
+
 		// now create the references in between
 		foreach ($nodes as $path => $node) {
 			// add as child to parent
@@ -198,25 +198,25 @@ class Navigation {
 			throw new \Exception(__METHOD__.': path "'.$path.'" does not exist.');
 			return;
 		}
-		
+
 		// set active path to retrieve the breadcrumb
 		$this->_active_path = $path;
-		
+
 		// set all nodes to inactive
 		foreach ($this->_nodes as $key => $item) {
 			$this->_nodes[$key]['active'] = false;
 		}
-		
+
 		// set actual node to active
 		$actual =& $this->_nodes[$path];
 		$actual['active'] = true;
-		
+
 		// loop to the top and set to active
 		while (isset($this->_nodes[$actual['parent']])) {
 			$actual =& $this->_nodes[$actual['parent']];
 			$actual['active'] = true;
 		}
-		
+
 		// return actual node
 		return $this->_nodes[$path];
 	}
@@ -269,23 +269,23 @@ class Navigation {
 	 */
 	public function getBreadcrumb() {
 		$breadcrumb = [];
-		
+
 		// handle not set active node
 		if (!isset($this->_nodes[$this->_active_path])) {
 			throw new \Exception(__METHOD__.': you did not set an active node so you cannot retrieve a breadcrumb.');
 			return;
 		}
-		
+
 		// get actual node
 		$actual = $this->_nodes[$this->_active_path];
 		array_unshift($breadcrumb, $actual);
-		
+
 		// loop to the top
 		while (isset($this->_nodes[$actual['parent']])) {
 			$actual =& $this->_nodes[$actual['parent']];
 			array_unshift($breadcrumb, $actual);
 		}
-		
+
 		return $breadcrumb;
 	}
 

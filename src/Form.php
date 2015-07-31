@@ -24,7 +24,7 @@ namespace Morrow;
 
 /**
  * The Form class provides several methods to output the HTML of form elements.
- * 
+ *
  * It works together with the validator class. On more help on how to use this class take a look at the topic [Form handling](page/formhandling).
  */
 class Form {
@@ -45,7 +45,7 @@ class Form {
 	 * @var string $error_class
 	 */
 	public static $error_class = 'error';
-	
+
 	/**
 	 * Contains how often this class was initialized.
 	 * @var integer $form_counter
@@ -205,7 +205,7 @@ class Form {
 
 		return $this->_getDefaultInputHtml('radio', $name, $attributes, $value);
 	}
-	
+
 	/**
 	 * Outputs the HTML for a &lt;select&gt; field.
 	 * @param	string	$name	The name of the HTML field.
@@ -241,7 +241,7 @@ class Form {
 			} else {
 				$value		= $this->_escape($value);
 				$title		= $this->_escape($title);
-				
+
 				$selected = '';
 				if (is_scalar($selected_value) && $value == $selected_value) {
 					$selected = ' selected="selected"';
@@ -274,9 +274,9 @@ class Form {
 	 */
 	protected function _getDefaultInputHtml($type, $name, $attributes, $value_fixed = null) {
 		list($attributes, $value) = $this->_prepare($name, $attributes);
-		
+
 		$attributes['type']		= !isset($attributes['type']) ? $type : $attributes['type'];
-		
+
 		// on type "file" we would have an array (and "file" does not need a value)
 		if (is_scalar($value))		$attributes['value'] = $this->_escape($value);
 		if ($value_fixed !== null)	$attributes['value'] = $this->_escape($value_fixed);
@@ -288,6 +288,8 @@ class Form {
 			} elseif ($value_fixed == $value) {
 				$attributes['checked'] = 'checked';
 			}
+		} elseif ($type === 'file') {
+			unset($attributes['value']);
 		}
 
 		$attributes = $this->_arrayToAttributesString($attributes);
@@ -323,7 +325,7 @@ class Form {
 		// the name could be in array syntax like "field[]" but in the input array the field has the name "field"
 		$input_key	= preg_replace('/\[[^]]*\]/', '', $attributes['name']);
 		$value		= isset($this->_input[$input_key]) ? $this->_input[$input_key] : '';
-		
+
 		return [$attributes, $value];
 	}
 

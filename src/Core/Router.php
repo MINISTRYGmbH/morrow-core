@@ -44,7 +44,7 @@ class Router {
 
 	/**
 	 * Initializes the class.
-	 * 
+	 *
 	 * @param  array $routes All routes that should be explicitely executed.
 	 * @param  callable $fallback A callable construct that is executed if no one of the routes matches.
 	 * @return null
@@ -56,7 +56,7 @@ class Router {
 
 	/**
 	 * Parses a given URL path to get the resulting class name and created parameters.
-	 * 
+	 *
 	 * @param  string $url The url path.
 	 * @return array Returns an array with the keys `controller` and `parameters`.
 	 */
