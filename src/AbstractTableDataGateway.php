@@ -27,20 +27,20 @@ use Morrow\Factory;
 
 /**
 * Extend this class to have Models following the Table Data Gateway pattern.
-* 
+*
 * A Table Data Gateway holds all the SQL for accessing a single table or view: selects, inserts, updates, and deletes. Other code calls its methods for all interaction with the database.
 * If you extend this class you write Models with less code because you don't have to take care of standard actions (see method listing below).
-* 
+*
 * A database table accessed by this class must have a primary field `id`. If a table has a field `created_at` or `updated_at` of the type `DATETIME` it is automatically filled by the corresponding method.
-* 
+*
 * Example
 * ---------
 *
 * First you have to define your model, e.g. **app/models/Products.php**
-* 
+*
 * ~~~{.php}
 * <?php
-* 
+*
 * namespace app\models;
 * use Morrow\Factory;
 *
@@ -49,11 +49,11 @@ use Morrow\Factory;
 * 	protected $_table					= 'products';
 * 	protected $_allowed_insert_fields	= ['title', 'description'];
 * 	protected $_allowed_update_fields	= ['description'];
-* 
+*
 * 	public function __construct() {
 * 		$this->_db = Factory::load('Db');
 * 	}
-* 
+*
 * 	public function exampleAction() {
 * 		$sql = $this->_db->get("SELECT *, >id FROM {$this->_table} ORDER BY id ASC");
 *  		return $sql['RESULT'];
@@ -72,7 +72,7 @@ use Morrow\Factory;
 *
 * ~~~{.php}
 * <?php
-* 
+*
 * namespace app\models;
 * use Morrow\Factory;
 *
@@ -88,13 +88,13 @@ use Morrow\Factory;
 *
 * ~~~{.php}
 * <?php
-* 
+*
 * namespace app\models;
-* 
+*
 * class Products extends Base {
 * 	protected $_allowed_insert_fields	= ['title', 'description'];
 * 	protected $_allowed_update_fields	= ['description'];
-* 
+*
 * 	public function exampleAction() {
 * 		$sql = $this->_db->get("SELECT *, >id FROM {$this->_table} ORDER BY id ASC");
 *  		return $sql['RESULT'];
@@ -104,10 +104,10 @@ use Morrow\Factory;
 *
 * Now that you have your Table Data Gateway you can work with it in your controlller:
 *
-* 
+*
 * ~~~{.php}
 * // ... Controller code
-*  
+*
 * $products = new models\Products;
 *
 * // insert some data
@@ -117,7 +117,7 @@ use Morrow\Factory;
 * ];
 * $products->insert($data);
 * $id = $this->lastInsertId();
-* 
+*
 * // update the row just inserted
 * $data = [
 * 	'description'	=> 'A very long and changed description ...',
@@ -126,15 +126,15 @@ use Morrow\Factory;
 *
 * // we do not need it anymore
 * $products->delete($id);
-* 
+*
 * // we defined a method ourself
 * $data = $products->exampleAction();
-*  
+*
 * // ... Controller code
 * ~~~
 *
 * Every time you have `$conditions` (take a look at at the methods below) you can pass either an integer (which would be used for `WHERE id = $condition`) or an associative array (where all conditions would be concatenated with `AND`) which defines the `WHERE` clause in the resulting query.
-* 
+*
 */
 abstract class AbstractTableDataGateway {
 	/**
@@ -162,8 +162,8 @@ abstract class AbstractTableDataGateway {
 	protected $_allowed_update_fields = [];
 
 	/**
-	 * Retrieves data from the database. 
-	 * 
+	 * Retrieves data from the database.
+	 *
 	 * @param  mixed $conditions  An integer (as `id`) or an associative array with conditions that must be fulfilled by the rows to be returned.
 	 * @return array Returns an array of dataset arrays with the requested data (returns all data if `$conditions` was left empty). The keys of the datasets are the ids of the rows.
 	 */
@@ -183,7 +183,7 @@ abstract class AbstractTableDataGateway {
 
 	/**
 	 * Inserts a new row into the database with `$data` filtered by the member `$_allowed_insert_fields`.
-	 * 
+	 *
 	 * @param  array $data The data to insert.
 	 * @return array An result array with the key `SUCCESS` (is `true` if the query was successful).
 	 */
@@ -205,7 +205,7 @@ abstract class AbstractTableDataGateway {
 
 	/**
 	 * Updates a row in the database with `$data` filtered by the member `$_allowed_update_fields`.
-	 * 
+	 *
 	 * @param  array $data The fields to update.
 	 * @param  mixed $conditions  An integer (as `id`) or an associative array with conditions that must be fulfilled by the rows to be processed.
 	 * @return array An result array with the keys `SUCCESS` (boolean Was the query successful) and `AFFECTED_ROWS` (int The count of the affected rows).
@@ -217,12 +217,12 @@ abstract class AbstractTableDataGateway {
 		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
 		$where = $this->_createWhere($conditions);
 
-		return $this->_db->updateSafe($this->_table, $data, "WHERE {$where}", array_values($conditions), true);
+		return $this->_db->updateSafe($this->_table, $data, "{$where}", array_values($conditions), true);
 	}
 
 	/**
-	 * Deletes a table row in the database. 
-	 * 
+	 * Deletes a table row in the database.
+	 *
 	 * @param  mixed $conditions  An integer (as `id`) or an associative array with conditions that must be fulfilled by the rows to be processed.
 	 * @return array An result array with the keys `SUCCESS` (boolean Was the query successful) and `AFFECTED_ROWS` (int The count of the affected rows).
 	 */
@@ -230,14 +230,14 @@ abstract class AbstractTableDataGateway {
 		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
 		$where = $this->_createWhere($conditions);
 
-		return $this->_db->delete($this->_table, "WHERE {$where}", array_values($conditions));
+		return $this->_db->delete($this->_table, "{$where}", array_values($conditions));
 	}
 
 	/**
 	 * Created a where string of conditions for use in a SQL query.
-	 * 
+	 *
 	 * @param  mixed $conditions  An associative array with conditions.
-	 * @return array Returns the generated `WHERE ` clause. 
+	 * @return array Returns the generated `WHERE ` clause.
 	 */
 	protected function _createWhere(array $conditions) {
 		$where = [];
@@ -251,10 +251,10 @@ abstract class AbstractTableDataGateway {
 
 	/**
 	 * This method filters an associative array by the key names passed with `$allowed_fields`.
-	 * 
+	 *
 	 * @param  string $data  An associative array with the data to filter.
 	 * @param  array $allowed_fields An array of allowed fields names to be in the resulting array.
-	 * @return array Returns an array only with key names that exist in `$allowed_fields`. 
+	 * @return array Returns an array only with key names that exist in `$allowed_fields`.
 	 */
 	public function filterFields(array $data, array $allowed_fields) {
 		return array_intersect_key($data, array_flip($allowed_fields));
