@@ -278,8 +278,8 @@ class Form {
 		$attributes['type']		= !isset($attributes['type']) ? $type : $attributes['type'];
 
 		// on type "file" we would have an array (and "file" does not need a value)
-		if (is_scalar($value))		$attributes['value'] = $this->_escape($value);
-		if ($value_fixed !== null)	$attributes['value'] = $this->_escape($value_fixed);
+		if (is_scalar($value))		$attributes['value'] = $value;
+		if ($value_fixed !== null)	$attributes['value'] = $value_fixed;
 
 		// for checkboxes
 		if ($type === 'checkbox') {
@@ -288,8 +288,6 @@ class Form {
 			} elseif ($value_fixed == $value) {
 				$attributes['checked'] = 'checked';
 			}
-		} elseif ($type === 'file') {
-			unset($attributes['value']);
 		}
 
 		$attributes = $this->_arrayToAttributesString($attributes);

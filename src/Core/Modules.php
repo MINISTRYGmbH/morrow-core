@@ -33,9 +33,11 @@ use Morrow\Debug;
  */
 class Modules {
 
-	private $_dom;
+	private $_dom = null;
 	private $_global_config;
 	private $_module_queue;
+	private $_class_name;
+	private $_dom_is_set = false;
 
 	/**
 	 * Executes all defined modules as MVC-triads.
@@ -43,6 +45,7 @@ class Modules {
 	 * @return stream Returns the generated content stream.
 	 */
 	public function run($class_name){
+		$this->_class_name = $class_name;
 		$this->_global_config = Factory::load('Config');
 		$this->_rel_path = Factory::load('Page')->get('path.relative');
 
@@ -79,7 +82,6 @@ class Modules {
 		}
 		$this->_module_queue = $temp;
 
-
 		/* check if modules exist
 		********************************************************************************************/
 		foreach($this->_module_queue as $module){
@@ -90,9 +92,6 @@ class Modules {
 			}
 		}
 
-
-
-
 		/* remove modules from the module queue array that wont be executed
 		********************************************************************************************/
 		foreach($this->_module_queue as $key => $module){
@@ -101,11 +100,9 @@ class Modules {
 			}
 		}
 
-
 		/* execute module queue
 		********************************************************************************************/
-		$this->_dom = new \Morrow\DOM;
-		$this->_dom->set('<!doctype html><html></html>');
+		$nonHtmlReturner = null;
 		foreach($this->_module_queue as $key => &$module){
 			// remove this item from queue
 			unset($this->_module_queue[$key]);
@@ -114,15 +111,58 @@ class Modules {
 			$this->_insertModuleConfig($module['class'], isset($module['config']) ? $module['config'] : []);
 
 			// execute module
-			$handle = $this->runModuleController($module);
-			// close returned handle
-			if(is_resource($handle)){
-				fclose($handle);
+			$returner = $this->runModuleController($module);
+
+			// if the module view returns no HTML, put returned content into a respective variable
+			// this way, we can decide to put it into the dom or not
+			if($returner['type'] === 'string' || $returner['type'] === 'stream'){
+				// if non html or html has already been returned by another module, throw exception
+				if(!is_null($nonHtmlReturner)){
+					throw new \Exception(__CLASS__.': Multiple modules have returned a String or Stream when only one is allowed.');
+				}
+				if(!is_null($this->_dom)){
+					throw new \Exception(__CLASS__.': A module has returned a String or Stream when already HTML has been returned.');
+				}
+				rewind($returner['handle']);
+				$nonHtmlReturner = $returner['handle'];
+			}
+
+			// if the module view returns html, put it into dom
+			if($returner['type'] === 'html'){
+				// if non html has already been returned by another module, throw exception
+				if(!is_null($nonHtmlReturner)){
+					throw new \Exception(__CLASS__.': A module has returned HTML when already a String or Stream has been returned.');
+				}
+
+				// if no dom has been created yet, create it and add doctype and html tag
+				// this way, the dom class will be able to prepend/append/replace content
+				if(is_null($this->_dom)){
+					$this->_dom = new \Morrow\DOM;
+					$this->_dom->set('<!doctype html><html></html>');
+				}
+
+				// if an action is defined in the controller array, execute it (i.e. prepend/append/replace)
+				if(isset($module['action'])){
+					rewind($returner['handle']);
+					$this->_dom->{$module['action']}($module['selector'], stream_get_contents($returner['handle']));
+				}
 			}
 		}
-		$handle_full_content = fopen('php://memory', 'r+');
-		fwrite($handle_full_content, $this->_dom->get());
 
+		// TODO: Handle muss geschlossen werden.
+
+		$handle_full_content = fopen('php://memory', 'r+');
+
+		// write dom
+		if(!is_null($this->_dom)){
+			fwrite($handle_full_content, $this->_dom->get());
+		}
+
+		// write string
+		if(!is_null($nonHtmlReturner)){
+			//Debug::dump($nonHtmlReturner);
+			fwrite($handle_full_content, stream_get_contents($nonHtmlReturner));
+		}
 
 		/* trigger an event so others are able to modify the generated content at the end
 		********************************************************************************************/
@@ -209,26 +249,38 @@ class Modules {
 
 		// set the handle variable according to this module's controller return value
 		if(is_resource($view) && get_resource_type($view) == 'stream'){
-			$handle = $view;
-		}elseif(is_object($view) && is_subclass_of($view, '\Morrow\Views\AbstractView')){
+			return [
+				'handle' => $view,
+				'type' => 'stream',
+			];
+		}
+
+		if(is_object($view) && is_subclass_of($view, '\Morrow\Views\AbstractView')){
 			$view->init($page_module['class']);
-			$handle = $view->getOutput();
-		}elseif(is_string($view)) {
+			return [
+				'handle' => $view->getOutput(),
+				'type' => 'html',
+			];
+		}
+
+		if(is_string($view)){
 			$handle = fopen('php://temp/maxmemory:'.(1*1024*1024), 'r+'); // 1MB
 			fwrite($handle, $view);
-		}elseif(is_null($view)){
-			return;
-		}else{
+			return [
+				'handle' => $handle,
+				'type' => 'string',
+			];
+		}
+
+		if(is_null($view)){
+			return [
+				'handle' => null,
+				'type' => null,
+			];
+		}
+
+		if(!isset($handle)){
 			throw new \Exception(__CLASS__.': The return value of a controller has to be of type "stream", "string" or a child of \Morrow\Views\AbstractView.');
 		}
-
-		// if any action is availabe, put new content into DOM instance
-		if(isset($page_module['action'])){
-			rewind($handle);
-			$this->_dom->{$page_module['action']}($page_module['selector'], stream_get_contents($handle));
-		}
-
-		rewind($handle);
-		return $handle;
 	}
 }
