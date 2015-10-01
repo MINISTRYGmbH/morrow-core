@@ -86,6 +86,7 @@ class Serpent extends AbstractView {
 
 	/**
 	 * The view handler could extend this method to set some parameters.
+	 * @param  string  $namespace	The MVC controller class with namespace that inits this instance.
 	 */
 	public function init($namespace) {
 		// extract template path from class namespace
