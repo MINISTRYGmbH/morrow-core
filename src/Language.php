@@ -26,26 +26,26 @@ namespace Morrow;
  * The Language class provides an interface to the the data that is stored in arrays in the _i18n folder.
  * The Language class is instanced by Morrow and relies on the following configuration variable:
  *
- * Type  | Keyname     | Default                                             | Description                                                                                      
- * ----- | ---------   | ---------                                           | ------------                                                                                     
- * array | `languages` | `["en"]` as defined in `_configs/_default.php` | An array of possible language keys (the first array entry is automatically the default language) 
+ * Type  | Keyname     | Default                                             | Description
+ * ----- | ---------   | ---------                                           | ------------
+ * array | `languages` | `["en"]` as defined in `_configs/_default.php` | An array of possible language keys (the first array entry is automatically the default language)
  *
  * Example
  * -------
- * 
+ *
  * ~~~{.php}
  * // ... Controller code
- *  
+ *
  * $alias = $this->Page->get('alias');
- *  
+ *
  * // passing language content to the template
  * $language_content = $this->Language->getContent($alias);
  * $this->Views_Serpent->setContent('language_content', $language_content);
- *  
+ *
  * // passing the list of available translations to the template
  * $translations = $this->Language->getTranslations($alias);
  * $this->Views_Serpent->setContent('translations', $translations);
- *  
+ *
  * // ... Controller code
  * ~~~
  */
@@ -91,7 +91,7 @@ class Language extends Core\Base {
 	 * @var boolean $_i18n_checked
 	 */
 	protected $_i18n_checked	= false;
-	
+
 	/**
 	 * The paths to look for new to translated strings.
 	 * @var array $_search_paths
@@ -107,7 +107,7 @@ class Language extends Core\Base {
 	 * string	| `language_path`	| `""`		| Required. The path to all language files
 	 * array	| `search_paths`	| `null`	| Required. An array of paths the class should use for strings to translate
 	 * string	| `language`		| possible[0] |	The actual language.
-	 *  
+	 *
 	 * @param	array	$settings	An array that configures the language class
 	 */
 	public function __construct($settings) {
@@ -122,7 +122,7 @@ class Language extends Core\Base {
 		$this->_default			= $settings['possible'][0];
 		$this->_language_path	= rtrim($settings['language_path'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		$this->_search_paths	= $settings['search_paths'];
-		
+
 		// set language
 		// default language was provided
 		if (isset($settings['language']) && $this->isValid($settings['language'])) {
@@ -130,7 +130,7 @@ class Language extends Core\Base {
 		} else {
 			$lang = $this->_default;
 		}
-		
+
 		// now change the language
 		$this->set($lang);
 	}
@@ -279,7 +279,7 @@ class Language extends Core\Base {
 	public function getBestFromClient() {
 		// get all language keys from client
 		$client_langs = $this->getFromClient();
-		
+
 		foreach ($client_langs as $client_lang) {
 			foreach ($this->_possible as $possible) {
 				$l10n = $this->getL10n($possible);
@@ -314,7 +314,7 @@ class Language extends Core\Base {
 
 				// set quality to 1.0 if not given
 				$quality	= isset($matches[4]) ? $matches[4] : '1.0';
-				
+
 				$returner[$quality] = strtolower(trim($matches[1]));
 			}
 			krsort($returner);
@@ -324,22 +324,34 @@ class Language extends Core\Base {
 
 	/**
 	 * Tries to find a translation in the current language for the given string.
-	 * @param	string	$string	A string in the default language to get translated.
-	 * @return	string	Returns the translated string if a translation is available otherwise the passed string.
+	 * Uses vsprintf() to replace placeholders with tokens. Those tokens can be
+	 * given as parameters.
+	 *
+	 * @param	string	$string		A string in the default language to get translated.
+	 * @return	string				Returns the translated string if a translation is available otherwise the passed string.
 	 */
-	public function _($string) {
-		if ($this->_language == $this->_possible[0]) return $string;
+	public function _($string /* [$replacement1, ..., $replacementN] */) {
+		// get all optional params as replacements array
+		$replacements = func_get_args();
+		$replacements = array_pop($replacements);
+		// if current language is the default language, only replace the placeholders
+		if($this->_language == $this->_possible[0]){
+			return vsprintf($string, $replacements);
+		}
 
-		// search in language file
+		// search in language file and get content if not fetched yet
 		if ($this->_content == null) {
 			$this->getContent();
 		}
+
+		// if a translation is available, translate the given string and replace the placeholders
 		if (isset($this->_content[$string]) && !empty($this->_content[$string])) {
-			return $this->_content[$string];
+			$translatedContent = $this->_content[$string];
+			return vsprintf($translatedContent, $replacements);
 		}
 
 		// oh not found, better check all languages
-		if (!$this->_i18n_checked) {
+		if (!$this->_i18n_checked || 1) {
 			$this->checkLanguageFiles();
 		}
 
@@ -359,21 +371,15 @@ class Language extends Core\Base {
 		foreach ($this->_search_paths as $path) {
 			$files = array_merge($files, $this->_globRecursive($path));
 		}
-		
+
 		$catalog = [];
 		foreach ($files as $file) {
 			$content = file_get_contents($file);
-
-			// handle double quotes
-			preg_match_all('-_\(("(\\\.|[^"])*")\)-', $content, $matches);
-			$catalog = array_merge($catalog, $matches[1]);
-
-			// handle single quotes
-			preg_match_all("-_\(('(\\\.|[^'])*')\)-", $content, $matches);
+			// source of regex: http://stackoverflow.com/questions/1017051/php-to-extract-a-string-from-double-quote
+			preg_match_all("=_\(((?:(?:\"(?:\\\\\"|[^\"])+\")|(?:'(?:\\\'|[^'])+')))=", $content, $matches);
 			$catalog = array_merge($catalog, $matches[1]);
 		}
 
-		
 		// handle string escape sequences
 		foreach ($catalog as $i => $v) {
 			eval("\$catalog[\$i] = ".$v.";");
@@ -387,7 +393,7 @@ class Language extends Core\Base {
 			if ($i === 0) continue;
 
 			$path = $this->_language_path . $al . '/i18n.php';
-			
+
 			$current = include($path);
 			// only keep not empty values
 			if (!is_array($current)) $current = [];
@@ -396,7 +402,7 @@ class Language extends Core\Base {
 
 			// new entries
 			$new = array_diff_key($catalog, $current);
-			
+
 			// old entries
 			$old = array_diff_key($current, $catalog);
 
@@ -428,7 +434,7 @@ class Language extends Core\Base {
 	/**
 	 * Like var_export from php but creates a code styled array.  Called by checkLanguageFiles to create the i18n files.
 	 * @param	array	$array	The array to create the output string from.
-	 * @param	string	$section	A section name to use as comment 
+	 * @param	string	$section	A section name to use as comment
 	 * @return	`string`
 	 */
 	protected function _varExport($array, $section) {
@@ -459,6 +465,6 @@ class Language extends Core\Base {
 			$files = array_merge($files, $this->_globRecursive($dir.'/'.basename($pattern), $flags));
 		}
 
-		return $files;	
+		return $files;
 	}
 }
