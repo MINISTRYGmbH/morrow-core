@@ -82,15 +82,6 @@ class Modules {
 		}
 		$this->_module_queue = $temp;
 
-		/* check if modules exist
-		********************************************************************************************/
-		foreach($this->_module_queue as $module){
-			try{
-				class_exists($module['class']);
-			}catch(\Exception $e){
-				throw new \Exception('Namespace "' . $module['class'] . '" could not be resolved.');
-			}
-		}
 
 		/* remove modules from the module queue array that wont be executed
 		********************************************************************************************/
@@ -100,18 +91,26 @@ class Modules {
 			}
 		}
 
+
 		/* execute module queue
 		********************************************************************************************/
 		$nonHtmlReturner = null;
-		foreach($this->_module_queue as $key => &$module){
+		while($this->_module_queue){
 			// remove this item from queue
-			unset($this->_module_queue[$key]);
+			$module = array_shift($this->_module_queue);
+
+			// check if module controller exists
+			try{
+				class_exists($module['class']);
+			}catch(\Exception $e){
+				throw new \Exception('Namespace "' . $module['class'] . '" could not be resolved.');
+			}
 
 			// put module configs into global config
 			$this->_insertModuleConfig($module['class'], isset($module['config']) ? $module['config'] : []);
 
 			// execute module
-			$returner = $this->runModuleController($module);
+			$returner = $this->_runModuleController($module);
 
 			// if the module view returns no HTML, put returned content into a respective variable
 			// this way, we can decide to put it into the dom or not
@@ -150,7 +149,6 @@ class Modules {
 		}
 
 		// TODO: Handle muss geschlossen werden.
-
 		$handle_full_content = fopen('php://memory', 'r+');
 
 		// write dom
@@ -243,7 +241,7 @@ class Modules {
 	 *                           		]
 	 * @return 	stream	$handle			handle of executed module data
 	 */
-	public function runModuleController($page_module){
+	private function _runModuleController($page_module){
 		// execute module controller
 		$view = (new $page_module['class'])->run($this->_dom);
 
@@ -282,5 +280,14 @@ class Modules {
 		if(!isset($handle)){
 			throw new \Exception(__CLASS__.': The return value of a controller has to be of type "stream", "string" or a child of \Morrow\Views\AbstractView.');
 		}
+	}
+
+	/**
+	 * Adds a queue item to any specified index.
+	 * @param 	array	$queueItem 	The queue item array ("controller-array")
+	 * @param integer 	$index     	Execution index of this module controller. Default value is 0 (will be executed next)
+	 */
+	public function addQueueItem($queueItem, $index = 0){
+		array_splice($this->_module_queue, $index, 0, array($queueItem));
 	}
 }
