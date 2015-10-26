@@ -148,7 +148,6 @@ class Modules {
 			}
 		}
 
-		// TODO: Handle muss geschlossen werden.
 		$handle_full_content = fopen('php://memory', 'r+');
 
 		// write dom
@@ -158,7 +157,6 @@ class Modules {
 
 		// write string
 		if(!is_null($nonHtmlReturner)){
-			//Debug::dump($nonHtmlReturner);
 			fwrite($handle_full_content, stream_get_contents($nonHtmlReturner));
 		}
 
@@ -175,7 +173,7 @@ class Modules {
 	 * Get function for the module queue member
 	 * @return	array	the module queue member
 	 */
-	public function getQueue(){
+	public function getModuleQueue(){
 		return $this->_module_queue;
 	}
 
@@ -185,7 +183,7 @@ class Modules {
 	 * @param 	string	$key_or_regex	The numeric key of the queue item or a regex matched against the controller namespace
 	 * @return 	array					An array containing all removed queue items
 	 */
-	public function removeQueueItem($key_or_regex){
+	public function removeModuleQueueItem($key_or_regex){
 		$removed_queue_items = [];
 
 		// user passed the numeric key of queue item
@@ -287,7 +285,7 @@ class Modules {
 	 * @param 	array	$queueItem 	The queue item array ("controller-array")
 	 * @param integer 	$index     	Execution index of this module controller. Default value is 0 (will be executed next)
 	 */
-	public function addQueueItem($queueItem, $index = 0){
+	public function addModuleQueueItem($queueItem, $index = 0){
 		array_splice($this->_module_queue, $index, 0, array($queueItem));
 	}
 }
