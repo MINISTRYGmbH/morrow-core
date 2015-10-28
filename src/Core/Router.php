@@ -70,6 +70,7 @@ class Router {
 			// rebuild route to a preg pattern
 			if (preg_match($regex, $url, $parameters)) {
 				$class = preg_replace($regex, $new_class, $url);
+				$class = str_replace('/', '_', $class);
 				unset($parameters[0]);
 				$hit = true;
 				break;

@@ -26,10 +26,10 @@ namespace Morrow;
 // Define paths for the Morrow namespace
 // Because this file is in the Core namespace we have to use a temporary namespace
 define('ROOT_PATH', realpath(getcwd()) . '/');
-define('PUBLIC_PATH', ROOT_PATH . 'public/');
-define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
 define('MODULES_PATH', ROOT_PATH . 'modules/');
 define('STORAGE_PATH', ROOT_PATH . 'storage/');
+define('PUBLIC_PATH', MODULES_PATH . '_main/public/');
+define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
 define('VENDOR_PATH', ROOT_PATH . 'vendor/');
 
 
