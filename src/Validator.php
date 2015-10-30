@@ -24,27 +24,27 @@ namespace Morrow;
 
 /**
  * The Validator class provides several rules for validating data.
- * 
+ *
  * If you write a validator keep in mind that the validator should never throw an exception if `$input` is a scalar or an array.
  * Because if you validate data coming from a web client, data can only be a string or an array.
  *
  * Dot Syntax
  * ----------
- * 
+ *
  * This class works with the extended dot syntax. So it is possible to use keys like `email.0` and `email.1` as keys in your rules.
  * This way it is possible to validate e.g. image uploads or multi select fields.
- * 
+ *
  * Examples
  * --------
- * 
+ *
  * ~~~{.php}
  * // ... Controller code
- * 
+ *
  * // optional: we add a integer validator
  * $this->Validator->add('equal', function($input, $value, $compare_value) {
  * 	return is_integer($value) ? $value === $compare_value : false;
  * }, 'This field must be an integer with the value "%s"');
- * 
+ *
  * // optional: we want a different error message for the "minlength" validator
  * // for the password field we want a custom required message
  * $this->Validator->setMessages([
@@ -59,13 +59,13 @@ namespace Morrow;
  *	'composition.animals.required' 			=> 'Enter an animal.',
  *	'composition.animals.insects.required' 	=> 'Enter an insect.',
  * ]);
-  * 
+  *
  * // optional: we want always the same validator rules for a username
  * // so do this in the default controller
  * $this->Validator->addComposition('username', [
  * 	'regex'			=> '/[a-z0-9-_]{8,}/i',
  * ]);
- * 
+ *
  * // now let us validate the input data
  * $rules =  [
  * 	'username'			=> ['required', 'composition' => 'username'],
@@ -74,7 +74,7 @@ namespace Morrow;
  * 	'repeat_password'	=> ['required', 'same' => 'password'],
  * 	'captcha'			=> ['required', 'equal' => $this->session->get('captcha')],
  * ];
- * 
+ *
  * $input = $this->Validator->filter($this->input->get(), $rules, $errors);
  *
  * // ... Controller code
@@ -82,17 +82,17 @@ namespace Morrow;
  *
  * Be creative with the existing validators
  * ----------------------------------------
- * 
+ *
  * If you want to check if a person is at least 18 years old, you could use this:
- * 
+ *
  * ~~~{.php}
  * $rules =  [
  * 	'birthdate' => ['required', 'date' => '%Y-%m-%d', 'before' => '-18 years'],
  * ];
  * ~~~
- * 
+ *
  * Or think of validating an image upload:
- * 
+ *
  * ~~~{.php}
  * $rules =  [
  * 	'file'			=> ['upload'],
@@ -101,9 +101,9 @@ namespace Morrow;
  * 	'file.size'		=> ['invalidates' => 'file', 'number', 'max' => 1024 * 2000],	// no more than 2 MB
  * ];
  * ~~~
- * 
+ *
  * Or think of a `<select>` box with groups. You can throw the same nested array into the `in_keys` validator as you do with `$form->select(...)` in your template.
- * 
+ *
  * ~~~{.php}
  *
  * $states = [
@@ -116,17 +116,17 @@ namespace Morrow;
  * 		'texas'		=> 'Texas',
  * 	],
  * ];
- * 
+ *
  * $rules =  [
  * 	'states'		=> ['in_keys' => $states],
  * ];
  * ~~~
- * 
+ *
  * ### Be careful
- * 
+ *
  * An array sub key invalidates the complete array. If you validate array sub keys you will find the error messages in the main key, so in the example above it will be the key `file`.
  * This is also important if you validate checkboxes that have an array style name like `name[]` in the HTML source.
- * 
+ *
  * Shipped validators
  * -------------------
  *
@@ -144,7 +144,7 @@ namespace Morrow;
  * `max`         | `$max`                  | numeric | Returns `true` if the field is lower than `$max`.
  * `minlength`   | `$minlength`            | integer | Returns `true` if the length of the field is greater than `$min`.
  * `maxlength`   | `$maxlength`            | integer | Returns `true` if the length of the field is lower than `$min`.
- * `regex`       | `$regex`                | string  | Returns `true` if the regex matches the field. 
+ * `regex`       | `$regex`                | string  | Returns `true` if the regex matches the field.
  * `in`          | `$in`                   | array   | Returns `true` if the field is in the set of values.
  * `in_keys`     | `$in`                   | array   | Returns `true` if the field is one of the keys in the given array. The validator iterates the `$in` array recursively and does not accept keys whose value is itself an array. This is useful to validate nested arrays like those you can use for a `<select>` form element with the \Morrow\Form class.
  * `upload`      |                         |         | Returns `true` if the fields contains a valid file upload array.
@@ -154,11 +154,11 @@ namespace Morrow;
  * `email`       |                         |         | Returns `true` if the email address is valid.
  * `url`         | `$schemes`              | array   | Returns `true` if the scheme of the url is one of the given, eg. `['http', 'https']`.
  * `ip`          | `$flags = []`      | array   | Returns `true` if the IP is valid. You can pass the following parameters to specify the requirements: `ipv4` (IP must be an IPV4 address), `ipv6` (IP must be an IPV6 address), `private` (IP can be a private address like 192.168.*) and `reserved` (IP can be a reserved address like 100.64.0.0/10). Default is `ipv4`.
- * `date`        | `$date_format`          | string  | Returns `true` if the date is valid and the date could be successfully checked against `$date_format` (in `\DateTime::createFromFormat` format).
- * `before_date` | `$before`               | string  | Returns `true` if the date is before the given date. Both dates have to be passed in a format `strtotime` is able to read. 
- * `after_date`  | `$after`                | string  | Returns `true` if the date is after the given date. Both dates have to be passed in a format `strtotime` is able to read. 
- * `before_field`| `$compare_field`        | string  | Returns `true` if the date is before the date in the given field. Both dates have to be passed in a format `strtotime` is able to read. 
- * `after_field` | `$compare_field`        | string  | Returns `true` if the date is after the date in the given field. Both dates have to be passed in a format `strtotime` is able to read. 
+ * `date`        | `$date_format`          | string  | Returns `true` if the date is valid and the date could be successfully checked against `$date_format` (in `\\DateTime::createFromFormat` format).
+ * `before_date` | `$before`               | string  | Returns `true` if the date is before the given date. Both dates have to be passed in a format `strtotime` is able to read.
+ * `after_date`  | `$after`                | string  | Returns `true` if the date is after the given date. Both dates have to be passed in a format `strtotime` is able to read.
+ * `before_field`| `$compare_field`        | string  | Returns `true` if the date is before the date in the given field. Both dates have to be passed in a format `strtotime` is able to read.
+ * `after_field` | `$compare_field`        | string  | Returns `true` if the date is after the date in the given field. Both dates have to be passed in a format `strtotime` is able to read.
  */
 class Validator extends Core\Base {
 	/**
@@ -178,7 +178,7 @@ class Validator extends Core\Base {
 	 * @var array $_messages
 	 */
 	protected $_messages = [];
-	
+
 	/**
 	 * Initializes the class and sets default error messages.
 	 */
@@ -286,7 +286,7 @@ class Validator extends Core\Base {
 
 					// this error should be appended to a different field
 					if ($invalidates !== null) $field_name = $invalidates;
-					
+
 					// set the error message (take care of field specific messages)
 					$message = isset($this->_messages[$field_name.'.'.$name]) ? $this->_messages[$field_name.'.'.$name] : $this->_messages[$name];
 
@@ -304,9 +304,9 @@ class Validator extends Core\Base {
 
 					// one false result is enough to set a field as not valid
 					$is_valid = false;
-					
+
 					// if there is at least one error we will return null in strict mode
-					// but we don't return null immediately because we want all errors for all fields 
+					// but we don't return null immediately because we want all errors for all fields
 					if ($strict) $return_null = true;
 				}
 			}
@@ -357,7 +357,7 @@ class Validator extends Core\Base {
 	 * @return 	booolean	The result of the validation.
 	 */
 	protected function _validator_required($input, $value, $fields = []) {
-		// check for values in fields to make this field required 
+		// check for values in fields to make this field required
 		$required = true;
 		foreach ($fields as $field_key => $field_value) {
 			if (!isset($input[$field_key]) || $input[$field_key] != $field_value) {
@@ -605,20 +605,20 @@ class Validator extends Core\Base {
 	 */
 	protected function _validator_email($input, $value) {
 		if (!is_string($value)) return false;
-		
+
 		// syntax check
 		$localpart = "[a-z0-9!#$%&'*+-/\=?^_`{|}~]"; // RFC 2822
 		$domainpart = "[\.a-z0-9-]";
 		if (!preg_match("=^$localpart+(\.$localpart+)*@($domainpart+\.$domainpart+)$=i", $value, $match)) {
 			return false;
 		}
-		
+
 		// dnscheck
 		$host = $match[2];
 		if (!(checkdnsrr($host, 'MX') || checkdnsrr($host, 'A'))) {
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -673,7 +673,7 @@ class Validator extends Core\Base {
 		if ($result === false) return false;
 		return true;
 	}
-		
+
 	/**
 	 * Look at the validator list.
 	 * @param	array	$input	All input parameters that were passed to `filter()`.
@@ -686,7 +686,7 @@ class Validator extends Core\Base {
 		$date = \DateTime::createFromFormat($date_format, $value);
 		return $date && str_replace('0', '', $date->format($date_format)) === str_replace('0', '', $value);
 	}
-	
+
 	/**
 	 * Look at the validator list.
 	 * @param	array	$input	All input parameters that were passed to `filter()`.
@@ -704,7 +704,7 @@ class Validator extends Core\Base {
 		if ($timestamp >= $timestamp2) return false;
 		return true;
 	}
-	
+
 	/**
 	 * Look at the validator list.
 	 * @param	array	$input	All input parameters that were passed to `filter()`.
@@ -761,7 +761,7 @@ class Validator extends Core\Base {
 		if (array_keys($value) !== $fields) return false;
 
 		if ($value['error'] !== '0') return false;
-		
+
 		if (!is_uploaded_file($value['tmp_name'])) return false;
 
 		return true;
