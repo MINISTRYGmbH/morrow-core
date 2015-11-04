@@ -167,15 +167,18 @@ abstract class AbstractTableDataGateway {
 	 * @param  mixed $conditions  An integer (as `id`) or an associative array with conditions that must be fulfilled by the rows to be returned.
 	 * @return array Returns an array of dataset arrays with the requested data (returns all data if `$conditions` was left empty). The keys of the datasets are the ids of the rows.
 	 */
-	public function get($conditions = []) {
+	public function get($conditions = [], $order_by = '') {
 		if (is_scalar($conditions)) $conditions = ['id' => $conditions];
-		$where		= $this->_createWhere($conditions);
+		$where = $this->_createWhere($conditions);
+		$order_by = $this->_createOrderBy($order_by);
+
 		$conditions	= !empty($where) ? array_values($conditions) : [];
 
 		$sql = $this->_db->get("
 			SELECT *, >id
 			FROM {$this->_table}
 			{$where}
+			{$order_by}
 		", $conditions);
 
 		return $sql['RESULT'];
@@ -234,7 +237,7 @@ abstract class AbstractTableDataGateway {
 	}
 
 	/**
-	 * Created a where string of conditions for use in a SQL query.
+	 * Creates a where string of conditions to use in a SQL query.
 	 *
 	 * @param  mixed $conditions  An associative array with conditions.
 	 * @return array Returns the generated `WHERE ` clause.
@@ -248,6 +251,17 @@ abstract class AbstractTableDataGateway {
 		if (!empty($where)) $where = 'WHERE ' . $where;
 		return $where;
 	}
+
+	/**
+	 * Creates an ORDER BY string to use in a SQL query.
+	 *
+	 * @param  string $order_by The ORDER BY string "[COLUMN NAME] [ASC|DESC]"
+	 * @return string           Generated ORDER BY string
+	 */
+	protected function _createOrderBy($order_by){
+		return strlen($order_by) ? 'ORDER BY ' . $order_by : '';
+	}
+
 
 	/**
 	 * This method filters an associative array by the key names passed with `$allowed_fields`.
