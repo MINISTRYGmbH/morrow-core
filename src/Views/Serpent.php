@@ -256,23 +256,23 @@ class Serpent extends AbstractView {
 
 	/**
 	 * Used for the Serpent mapping `:thumb`. Outputs the path to a thumb of a passed image path.
-	 * @param   string $filepath The path to the image.
+	 * @param   string $file_path The path to the image.
 	 * @param   array $params THe parameters to edit the image. Explained in \Morrow\Image.
-	 * @return  string Returns the path to the thumbnail in the temp folder.
+	 * @return  string Returns the url to the thumbnail in the temp folder.
 	 */
-	public static function thumb($filepath, $params = []) {
+	public static function thumb($file_path, $params = []) {
 		try {
-			$path = Factory::load('Image')->get($filepath, $params);
-			$path = str_replace(PUBLIC_PATH, '', $path);
+			$path = Factory::load('Image')->get($file_path, $params);
+			$url = str_replace(ROOT_PATH, '', $path);
 		} catch (\Exception $e) {
 			if (isset($params['fallback'])) {
 				$path = Factory::load('Image')->get($params['fallback'], $params);
-				$path = str_replace(PUBLIC_PATH, '', $path);
+				$url = str_replace(ROOT_PATH, '', $path);
 			} else {
 				throw new \Exception (__CLASS__ . ': ' . $e);
 			}
 		}
-		return $path;
+		return $url;
 	}
 
 	/**

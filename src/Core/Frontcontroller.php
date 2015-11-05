@@ -28,8 +28,7 @@ namespace Morrow;
 define('ROOT_PATH', realpath(getcwd()) . '/');
 define('MODULES_PATH', ROOT_PATH . 'modules/');
 define('STORAGE_PATH', ROOT_PATH . 'storage/');
-define('PUBLIC_PATH', MODULES_PATH . '_main/public/');
-define('PUBLIC_STORAGE_PATH', PUBLIC_PATH . 'storage/');
+define('STORAGE_PUBLIC_PATH', ROOT_PATH . 'storage_public/');
 define('VENDOR_PATH', ROOT_PATH . 'vendor/');
 
 
