@@ -351,7 +351,7 @@ class Language extends Core\Base {
 		}
 
 		// oh not found, better check all languages
-		if (!$this->_i18n_checked || 1) {
+		if (!$this->_i18n_checked) {
 			$this->checkLanguageFiles();
 		}
 

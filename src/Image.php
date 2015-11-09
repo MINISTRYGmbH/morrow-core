@@ -113,26 +113,32 @@ class Image {
 			// params
 			$counter = strftime('%m');
 
-			// create cache dir if it does not exist
-			if (!is_dir($cache_dir)) mkdir($cache_dir);
-
-			// delete all folders that are not the current
-			$files = scandir($cache_dir);
-			foreach ($files as $file) {
-				if ($file{0} == '.') continue;
-				if (is_dir($cache_dir.$file) && $file != $counter) {
-					$this->_rmdir_recurse( $cache_dir.$file );
-				}
-			}
-
 			// create cache dir for the current cache counter
 			$this->_cache_dir = $cache_dir . $counter . '/';
+
+			// create cache dir if it does not exist
+			if(!is_dir($cache_dir)){
+				mkdir($this->_cache_dir, 0777, true);
+			}else{
+				// delete all folders that are not the current
+
+				$files = scandir($cache_dir);
+				foreach ($files as $file) {
+					if ($file{0} == '.') continue;
+					if (is_dir($cache_dir.$file) && $file != $counter) {
+						$this->_rmdir_recurse( $cache_dir.$file );
+					}
+				}
+			}
 		} else {
 			$this->_cache_dir = $cache_dir;
 		}
 
-		if (!file_exists( $this->_cache_dir )) mkdir( $this->_cache_dir, 0777, true );
+		if(!is_dir($this->_cache_dir)){
+			mkdir($this->_cache_dir, 0777, true);
+		}
 	}
+
 
 	/**
 	 * A function to sharpen an image.
