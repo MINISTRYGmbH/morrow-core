@@ -24,24 +24,24 @@ namespace Morrow;
 
 /**
 * This class allows to simply modify an HTML source.
-* 
+*
 * It allows the use of CSS Selectors so it should be really simple to specify an HTML element.
 * Keep in mind that your HTML markup has to be valid otherwise you will get errors.
 *
 * Example
 * -------
-* 
+*
 * ~~~{.php}
 * // ... Default controller code
 *
 * $dom = Factory::load('DOM', $html_source);
-* 
+*
 * // Add a headline to the beginning of the page
 * $dom->prepend('html', '<h1>Headline</h1>');
 *
 * // Add an arrow to all links in the sidebar
 * $dom->prepend('#sidebar a', '<span>&#187;</span> ');
-* 
+*
 * // Delete all links starting with "http://"
 * $dom->delete('a[href^="http://"]');
 *
@@ -57,7 +57,7 @@ namespace Morrow;
 * // ... Default controller code
 *
 * $dom = Factory::load('DOM', $html_source);
-* 
+*
 * // Delete all Links with the text "Sitemap"
 * $dom->delete('xpath://a[text()="Sitemap"]');
 *
@@ -225,7 +225,23 @@ class DOM extends \DOMDocument {
 		foreach ($nodelist as $node) {
 			$counter++;
 			$fragment = $this->createDocumentFragment();
-			$fragment->appendXML($content);
+
+			try{
+				$fragment->appendXML($content);
+			}catch(\Exception $e){
+				$lines = explode("\n", $content);
+				echo '<pre>';
+				foreach($lines as $no => $line){
+					if(strlen($line)){
+						if($no === $e->getLine() - 1){
+							echo '!';
+						}
+						echo str_pad($no+1, 4, ' ', STR_PAD_LEFT) . '|  ' . htmlentities($line) . "\n";
+					}
+				}
+				echo '</pre>';
+				throw($e);
+			}
 
 			if ($action === 'prepend') {
 				$node->insertBefore($fragment, $node->firstChild);
@@ -251,12 +267,12 @@ class DOM extends \DOMDocument {
 	 */
 	protected function _css_toxpath_selector($css_selector) {
 		$xpath = $css_selector;
-		
+
 		// if there was passed a xpath expression
 		if (strpos($xpath, 'xpath:') !== false) return substr($xpath, 6);
 
 		// child elements
-		$xpath = preg_replace('/([a-z0-9_-])\s+([a-z0-9_-])/', '$1//$2', $xpath);	
+		$xpath = preg_replace('/([a-z0-9_-])\s+([a-z0-9_-])/', '$1//$2', $xpath);
 
 		// direct child elements ( > )
 		$xpath = preg_replace('/\s*>\s*/', '/', $xpath);
