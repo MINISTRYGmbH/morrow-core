@@ -73,7 +73,6 @@ class Router {
 				$class = str_replace('/', '_', $class);
 				unset($parameters[0]);
 				$hit = true;
-				$class = ucfirst(strtolower($class));
 				break;
 			}
 		}
