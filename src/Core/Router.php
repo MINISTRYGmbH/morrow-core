@@ -81,6 +81,10 @@ class Router {
 			$class = call_user_func($this->_fallback, $url);
 		}
 
+		$class_shards = explode('\\', $class);
+		$class_shards[count($class_shards)-1] = ucfirst(strtolower($class_shards[count($class_shards)-1]));
+		$class = implode('\\', $class_shards);
+
 		return [
 			'controller'		=> $class,
 			'parameters'		=> isset($parameters) ? $parameters : [],
