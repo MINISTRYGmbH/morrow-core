@@ -129,6 +129,7 @@ class Serpent extends AbstractView {
 			'mailto'		=> '\\Morrow\\Views\\Serpent::mailto',
 			'hidelink'		=> '\\Morrow\\Views\\Serpent::hidelink',
 			'thumb'			=> '\\Morrow\\Views\\Serpent::thumb',
+			'fileurl'		=> '\\Morrow\\Views\\Serpent::fileurl',
 			'truncate'		=> '\\Morrow\\Views\\Serpent::truncate',
 			'strip'			=> 'ob_start(["\\Morrow\\Views\\Serpent::strip"]) //',
 			'endstrip'		=> 'ob_end_flush',
@@ -255,6 +256,16 @@ class Serpent extends AbstractView {
 	}
 
 	/**
+	 * Used for the Serpent mapping `:fileurl`. Creates an Url out from a file path. Use this to
+	 * get an Image-Url for example.
+	 * @param   string $file_path 	The path to the file.
+	 * @return 	string 				The Url to the file.
+	 */
+	public static function fileurl($file_path){
+		return str_replace(ROOT_PATH, '', $file_path);
+	}
+
+	/**
 	 * Used for the Serpent mapping `:thumb`. Outputs the path to a thumb of a passed image path.
 	 * @param   string $file_path The path to the image.
 	 * @param   array $params THe parameters to edit the image. Explained in \Morrow\Image.
@@ -263,11 +274,11 @@ class Serpent extends AbstractView {
 	public static function thumb($file_path, $params = []) {
 		try {
 			$path = Factory::load('Image')->get($file_path, $params);
-			$url = str_replace(ROOT_PATH, '', $path);
+			$url = self::fileurl($path);
 		} catch (\Exception $e) {
 			if (isset($params['fallback'])) {
 				$path = Factory::load('Image')->get($params['fallback'], $params);
-				$url = str_replace(ROOT_PATH, '', $path);
+				$url = self::fileurl($path);
 			} else {
 				throw new \Exception (__CLASS__ . ': ' . $e);
 			}

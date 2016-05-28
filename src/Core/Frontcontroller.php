@@ -147,6 +147,9 @@ class Frontcontroller {
 
 		if ($actual !== null) $language->set($actual);
 
+		// rbuild url after extracting language
+		$url = implode('/', $nodes);
+
 		/* prepare some internal variables
 		********************************************************************************************/
 		$path     = implode('/', $nodes);
